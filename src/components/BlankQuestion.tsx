@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import type { Question } from '../lib/api';
 
 interface Props {
