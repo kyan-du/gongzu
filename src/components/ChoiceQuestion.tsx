@@ -1,54 +1,66 @@
-import type { Question } from '../lib/api';
+import { useState } from 'react';
 
-interface Props {
-  question: Question;
+interface ChoiceQuestionProps {
+  question: any;
   index: number;
-  value: string | null;
-  onChange: (answer: string) => void;
+  onAnswer: (answer: string) => void;
+  submitted?: boolean;
+  result?: any;
 }
 
-export default function ChoiceQuestion({ question, index, value, onChange }: Props) {
+export default function ChoiceQuestion({ question, index, onAnswer, submitted, result }: ChoiceQuestionProps) {
+  const [selected, setSelected] = useState('');
   const content = question.content;
-  const options = content.options || [];
+
+  const handleSelect = (label: string) => {
+    if (submitted) return;
+    setSelected(label);
+    onAnswer(label);
+  };
 
   return (
-    <div className="bg-white rounded-xl p-6 shadow-sm">
-      <div className="mb-4">
-        <span className="text-sm text-gray-500">第 {index + 1} 题</span>
-        <p className="text-gray-900 mt-2 whitespace-pre-wrap">{content.stem}</p>
+    <div className="mb-6 p-4 bg-white rounded-xl shadow-sm">
+      <div className="flex items-start gap-2 mb-4">
+        <span className="text-sm font-bold text-gray-400 mt-0.5">{index + 1}.</span>
+        <p className="text-base text-gray-900 leading-relaxed">{content.stem}</p>
       </div>
 
-      <div className="space-y-3">
-        {options.map((option) => (
-          <button
-            key={option.label}
-            onClick={() => onChange(option.label)}
-            className={`w-full text-left p-4 rounded-lg border-2 transition ${
-              value === option.label
-                ? 'border-blue-500 bg-blue-50'
-                : 'border-gray-200 hover:border-gray-300'
-            }`}
-          >
-            <div className="flex items-start gap-3">
-              <div
-                className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
-                  value === option.label
-                    ? 'border-blue-500 bg-blue-500'
-                    : 'border-gray-300'
-                }`}
-              >
-                {value === option.label && (
-                  <div className="w-2 h-2 bg-white rounded-full" />
-                )}
-              </div>
-              <div>
-                <span className="font-medium text-gray-700">{option.label}.</span>{' '}
-                <span className="text-gray-700">{option.text}</span>
-              </div>
-            </div>
-          </button>
-        ))}
+      <div className="space-y-2 ml-5">
+        {content.options?.map((opt: any) => {
+          const isSelected = selected === opt.label;
+          const isCorrect = result?.correctAnswer === opt.label;
+          const isWrong = submitted && isSelected && !result?.correct;
+
+          let style = 'border-gray-200 bg-gray-50 text-gray-700';
+          if (submitted) {
+            if (isCorrect) style = 'border-green-400 bg-green-50 text-green-800';
+            else if (isWrong) style = 'border-red-400 bg-red-50 text-red-800';
+            else style = 'border-gray-100 bg-gray-50 text-gray-400';
+          } else if (isSelected) {
+            style = 'border-blue-500 bg-blue-50 text-blue-800';
+          }
+
+          return (
+            <button
+              key={opt.label}
+              onClick={() => handleSelect(opt.label)}
+              disabled={submitted}
+              className={`w-full text-left px-4 py-3 rounded-lg border-2 transition ${style}`}
+            >
+              <span className="font-medium mr-2">{opt.label}.</span>
+              <span>{opt.text}</span>
+              {submitted && isCorrect && <span className="float-right">✅</span>}
+              {submitted && isWrong && <span className="float-right">❌</span>}
+            </button>
+          );
+        })}
       </div>
+
+      {submitted && !result?.correct && question.explanation && (
+        <div className="mt-3 ml-5 text-sm text-gray-500">
+          💡 {question.explanation}
+        </div>
+      )}
     </div>
   );
 }
