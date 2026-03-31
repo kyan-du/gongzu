@@ -34,6 +34,7 @@ export default function Login() {
         muted
         loop
         playsInline
+        poster="/bg-poster.jpg"
         className="absolute inset-0 w-full h-full object-cover"
       >
         <source src="/bg-video.mp4" type="video/mp4" />
