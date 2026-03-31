@@ -1,160 +1,122 @@
-import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { getQuizzes, formatDate, getTodayDate, type DailyQuiz } from '../lib/api';
+import { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+
+interface Quiz {
+  id: string;
+  tag: string;
+  title: string;
+  date: string;
+  questions: any[];
+}
 
 export default function Home() {
   const { userId } = useParams<{ userId: string }>();
   const navigate = useNavigate();
-  const [quizzes, setQuizzes] = useState<DailyQuiz[]>([]);
+  const [quizzes, setQuizzes] = useState<Quiz[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [showSettings, setShowSettings] = useState(false);
 
-  const todayDate = getTodayDate();
   const userName = userId === 'cyan' ? '彤彤' : userId === 'ryan' ? '可可' : userId;
+  const avatarSrc = userId === 'cyan' ? '/avatar-cyan.jpg' : '/avatar-ryan.jpg';
 
   useEffect(() => {
-    loadQuizzes();
+    const fetchQuizzes = async () => {
+      try {
+        const today = new Date().toISOString().split('T')[0];
+        const res = await fetch(`/api/quiz?userId=${userId}&date=${today}`);
+        const data = await res.json();
+        setQuizzes(data.quizzes || []);
+      } catch (e) {
+        console.error('Failed to fetch quizzes:', e);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchQuizzes();
   }, [userId]);
 
-  const loadQuizzes = async () => {
-    try {
-      const data = await getQuizzes(userId);
-      setQuizzes(data);
-    } catch (err: any) {
-      if (err.message.includes('Unauthorized')) {
-        // 未登录，跳转到登录页
-        navigate(`/${userId}/login`);
-      } else {
-        setError(err.message);
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const todayQuizzes = quizzes.filter((q) => q.date === todayDate);
-  const historyQuizzes = quizzes.filter((q) => q.date !== todayDate);
-
-  // 按日期分组历史作业
-  const quizzesByDate = historyQuizzes.reduce((acc, quiz) => {
-    if (!acc[quiz.date]) {
-      acc[quiz.date] = [];
-    }
-    acc[quiz.date].push(quiz);
-    return acc;
-  }, {} as Record<string, DailyQuiz[]>);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-gray-600">加载中...</div>
-      </div>
-    );
-  }
+  const today = new Date();
+  const dateStr = `${today.getMonth() + 1}月${today.getDate()}日`;
+  const weekDays = ['日', '一', '二', '三', '四', '五', '六'];
+  const dayStr = `星期${weekDays[today.getDay()]}`;
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* 顶部导航 */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="mobile-container flex items-center justify-between py-4">
-          <div className="flex items-center gap-3">
-            <h1 className="text-xl font-bold text-gray-900">🏠 拱卒</h1>
-          </div>
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-gray-600">{userName}</span>
-            <button className="text-gray-400 hover:text-gray-600">⚙️</button>
-          </div>
+      <div className="bg-white shadow-sm px-4 py-3 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <img src="/logo-64.png" alt="拱卒" className="w-8 h-8 rounded" />
+          <span className="text-lg font-bold text-gray-900">拱卒</span>
+        </div>
+        <div className="flex items-center gap-3">
+          <img src={avatarSrc} alt={userName} className="w-8 h-8 rounded-full object-cover" />
+          <span className="text-sm font-medium text-gray-700">{userName}</span>
+          <button
+            onClick={() => setShowSettings(!showSettings)}
+            className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 transition"
+          >
+            ⚙️
+          </button>
         </div>
       </div>
 
-      <div className="mobile-container">
-        {error && (
-          <div className="mt-4 p-4 bg-red-50 text-red-700 rounded-lg">
-            {error}
-          </div>
-        )}
+      {/* 设置面板 */}
+      {showSettings && (
+        <div className="bg-white border-b px-4 py-3 shadow-sm">
+          <button
+            onClick={() => navigate('/login/select')}
+            className="w-full text-left py-2 px-3 text-sm text-gray-700 hover:bg-gray-50 rounded"
+          >
+            🔄 切换用户
+          </button>
+          <button
+            onClick={() => navigate('/')}
+            className="w-full text-left py-2 px-3 text-sm text-red-600 hover:bg-red-50 rounded"
+          >
+            🚪 退出登录
+          </button>
+        </div>
+      )}
 
-        {/* 今日作业 */}
-        <div className="mt-6">
-          <div className="flex items-center gap-2 mb-4">
-            <span className="text-lg font-semibold text-gray-900">📅 今天</span>
-            <span className="text-sm text-gray-500">{formatDate(todayDate)}</span>
-          </div>
-
-          {todayQuizzes.length === 0 ? (
-            <div className="bg-white rounded-xl p-6 text-center text-gray-500">
-              今天还没有作业哦～
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {todayQuizzes.map((quiz) => (
-                <button
-                  key={quiz.id}
-                  onClick={() => navigate(`/${userId}/quiz/${quiz.id}`)}
-                  className="w-full bg-white rounded-xl p-4 text-left hover:shadow-md transition border-l-4 border-red-500"
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="font-semibold text-gray-900">
-                        🔴 {quiz.title || quiz.tag}
-                      </div>
-                      <div className="text-sm text-gray-500 mt-1">
-                        {quiz.questions.length} 题
-                      </div>
-                    </div>
-                    <div className="text-2xl">→</div>
-                  </div>
-                </button>
-              ))}
-            </div>
-          )}
+      {/* 内容区 */}
+      <div className="max-w-md mx-auto px-4 py-6">
+        {/* 日期 */}
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-gray-900">📅 今天 {dateStr}</h2>
+          <p className="text-sm text-gray-500">{dayStr}</p>
         </div>
 
-        {/* 历史作业 */}
-        {Object.keys(quizzesByDate).length > 0 && (
-          <div className="mt-8">
-            {Object.entries(quizzesByDate).map(([date, dateQuizzes]) => (
-              <div key={date} className="mb-6">
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="text-sm font-medium text-gray-600">
-                    📅 {formatDate(date)}
-                  </span>
+        {/* 作业列表 */}
+        {loading ? (
+          <div className="text-center text-gray-400 py-12">加载中...</div>
+        ) : quizzes.length === 0 ? (
+          <div className="text-center py-12">
+            <div className="text-4xl mb-4">📝</div>
+            <p className="text-gray-500">今天还没有作业</p>
+            <p className="text-sm text-gray-400 mt-2">明天见！</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {quizzes.map((quiz) => (
+              <button
+                key={quiz.id}
+                onClick={() => navigate(`/${userId}/quiz/${quiz.id}`)}
+                className="w-full bg-white rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition active:scale-98"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="text-2xl">
+                    {quiz.tag.includes('英语') ? '🔤' : quiz.tag.includes('西游') ? '🐒' : quiz.tag.includes('单词') ? '📖' : '📝'}
+                  </div>
+                  <div className="text-left">
+                    <div className="font-medium text-gray-900">{quiz.tag}</div>
+                    <div className="text-sm text-gray-500">{quiz.questions?.length || 0} 题</div>
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  {dateQuizzes.map((quiz) => (
-                    <button
-                      key={quiz.id}
-                      onClick={() => navigate(`/${userId}/quiz/${quiz.id}`)}
-                      className="w-full bg-white rounded-lg p-3 text-left hover:shadow transition"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <div className="text-sm font-medium text-gray-700">
-                            {quiz.title || quiz.tag}
-                          </div>
-                          <div className="text-xs text-gray-500 mt-1">
-                            {quiz.questions.length} 题
-                          </div>
-                        </div>
-                        <div className="text-gray-400">→</div>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </div>
+                <div className="text-red-500 text-sm font-medium">🔴 未完成</div>
+              </button>
             ))}
           </div>
         )}
-
-        {/* 底部统计（占位） */}
-        <div className="mt-8 mb-8 bg-white rounded-xl p-6">
-          <div className="text-center text-gray-500 text-sm">
-            ──── 📊 本周统计 ────
-          </div>
-          <div className="text-center text-gray-400 text-xs mt-2">
-            即将上线
-          </div>
-        </div>
       </div>
     </div>
   );
