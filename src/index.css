@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply font-sans text-gray-900 bg-gray-50;
+  }
+}
+
+@layer utilities {
+  .mobile-container {
+    @apply max-w-md mx-auto px-4 py-6;
+  }
+}

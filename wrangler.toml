@@ -1,0 +1,12 @@
+name = "gongzu"
+compatibility_date = "2024-01-01"
+pages_build_output_dir = "dist"
+
+# D1 数据库配置
+[[d1_databases]]
+binding = "DB"
+database_name = "gongzu"
+database_id = "3276c058-d699-439b-b586-494dd0e8ef6a"
+
+[vars]
+ENVIRONMENT = "development"
