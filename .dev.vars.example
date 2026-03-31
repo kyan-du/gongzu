@@ -1,0 +1,5 @@
+# 家庭口令（用于登录验证）
+FAMILY_PASSPHRASE=your-family-passphrase-here
+
+# 管理 API 密钥（用于出题 API）
+ADMIN_API_KEY=your-admin-api-key-here
