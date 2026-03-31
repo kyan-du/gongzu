@@ -28,7 +28,7 @@ export default function Login() {
         navigate('/login/select');
       }
     } catch (err: any) {
-      setError(err.message || '口令错误，请重试');
+      setError(err.message || '密码错误，请重试');
     } finally {
       setLoading(false);
     }
@@ -65,7 +65,7 @@ export default function Login() {
           <form onSubmit={handleSubmit}>
             <div className="mb-6">
               <label htmlFor="passphrase" className="block text-sm font-medium text-gray-700 mb-2">
-                输入家庭口令
+                请输入密码
               </label>
               <input
                 id="passphrase"
@@ -74,7 +74,7 @@ export default function Login() {
                 value={passphrase}
                 onChange={(e) => setPassphrase(e.target.value)}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white/90"
-                placeholder="请输入口令"
+                placeholder="密码"
                 autoFocus
                 required
               />
