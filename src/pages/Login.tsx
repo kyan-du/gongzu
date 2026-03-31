@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { login } from '../lib/api';
+import { login, isLoggedIn, setUser } from '../lib/api';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -9,10 +9,21 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // 从路径推断用户：/cyan → cyan, /ryan → ryan, /login → null
   const path = location.pathname.replace(/^\//, '');
   const userId = (path === 'cyan' || path === 'ryan') ? path : undefined;
   const userName = userId === 'cyan' ? '彤彤' : userId === 'ryan' ? '可可' : '';
+
+  // Already logged in? Skip to home
+  useEffect(() => {
+    if (isLoggedIn()) {
+      if (userId) {
+        setUser(userId);
+        navigate(`/${userId}/home`, { replace: true });
+      } else {
+        navigate('/login/select', { replace: true });
+      }
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,7 +35,6 @@ export default function Login() {
       if (userId) {
         navigate(`/${userId}/home`);
       } else {
-        // 通用入口：口令验证后选人
         navigate('/login/select');
       }
     } catch (err: any) {
@@ -36,20 +46,11 @@ export default function Login() {
 
   return (
     <div className="relative min-h-screen flex items-center justify-center p-4 overflow-hidden">
-      {/* 背景视频（模糊） */}
-      <video
-        autoPlay
-        muted
-        loop
-        playsInline
-        poster="/bg-poster.jpg"
-        className="absolute inset-0 w-full h-full object-cover"
-      >
+      <video autoPlay muted loop playsInline poster="/bg-poster.jpg" className="absolute inset-0 w-full h-full object-cover">
         <source src="/bg-video.mp4" type="video/mp4" />
       </video>
       <div className="absolute inset-0 bg-white/40 backdrop-blur-sm" />
 
-      {/* 登录框 */}
       <div className="relative z-10 w-full max-w-md animate-fade-in">
         <div className="text-center mb-8">
           <h1 className="text-5xl font-bold text-gray-900 mb-2 drop-shadow-sm">拱卒</h1>
@@ -81,9 +82,7 @@ export default function Login() {
             </div>
 
             {error && (
-              <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-lg text-sm">
-                {error}
-              </div>
+              <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-lg text-sm">{error}</div>
             )}
 
             <button
@@ -94,12 +93,9 @@ export default function Login() {
               {loading ? '验证中...' : '进入'}
             </button>
           </form>
-
         </div>
 
-        <p className="text-center text-sm text-gray-500 mt-6 drop-shadow-sm">
-          © 2026 拱卒 · 开源项目
-        </p>
+        <p className="text-center text-sm text-gray-500 mt-6 drop-shadow-sm">© 2026 拱卒 · 开源项目</p>
       </div>
     </div>
   );

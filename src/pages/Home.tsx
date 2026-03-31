@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { logout } from '../lib/api';
 import { useNavigate, useParams } from 'react-router-dom';
 
 interface Quiz {
@@ -70,7 +71,7 @@ export default function Home() {
             🔄 切换用户
           </button>
           <button
-            onClick={() => navigate('/')}
+            onClick={() => logout(); navigate('/')}
             className="w-full text-left py-2 px-3 text-sm text-red-600 hover:bg-red-50 rounded"
           >
             🚪 退出登录
