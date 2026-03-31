@@ -95,25 +95,6 @@ export default function Login() {
             </button>
           </form>
 
-          {!userId && (
-            <div className="mt-6 pt-6 border-t border-gray-200/60">
-              <p className="text-sm text-gray-600 text-center mb-4">快速入口</p>
-              <div className="flex gap-3">
-                <a
-                  href="/cyan"
-                  className="flex-1 text-center py-2 px-4 border-2 border-blue-200 text-blue-600 rounded-lg hover:bg-blue-50/80 transition"
-                >
-                  彤彤
-                </a>
-                <a
-                  href="/ryan"
-                  className="flex-1 text-center py-2 px-4 border-2 border-green-200 text-green-600 rounded-lg hover:bg-green-50/80 transition"
-                >
-                  可可
-                </a>
-              </div>
-            </div>
-          )}
         </div>
 
         <p className="text-center text-sm text-gray-500 mt-6 drop-shadow-sm">
