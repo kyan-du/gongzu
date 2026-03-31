@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
+import SelectUser from './pages/SelectUser';
 import Home from './pages/Home';
 import Quiz from './pages/Quiz';
 import Result from './pages/Result';
@@ -15,7 +16,10 @@ function App() {
         {/* 登录页 */}
         <Route path="/login" element={<Login />} />
 
-        {/* 专属入口 - 直接到登录 */}
+        {/* 口令验证后选人 */}
+        <Route path="/login/select" element={<SelectUser />} />
+
+        {/* 专属入口 - 直接输口令 */}
         <Route path="/cyan" element={<Login />} />
         <Route path="/ryan" element={<Login />} />
 
