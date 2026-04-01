@@ -28,7 +28,7 @@ export default function Result() {
         <div className="mobile-container flex items-center justify-between py-4">
           <div className="font-semibold text-gray-900">📊 {quiz.title || quiz.tag}</div>
           <button
-            onClick={() => navigate(`/${userId}`)}
+            onClick={() => navigate(`/${userId}/home`)}
             className="text-sm text-gray-600 hover:text-gray-900"
           >
             返回首页
@@ -107,7 +107,7 @@ export default function Result() {
         {/* 底部操作 */}
         <div className="mt-8 mb-8 flex gap-3">
           <button
-            onClick={() => navigate(`/${userId}`)}
+            onClick={() => navigate(`/${userId}/home`)}
             className="flex-1 bg-blue-600 text-white py-3 px-6 rounded-xl font-medium hover:bg-blue-700 transition"
           >
             🏠 返回首页

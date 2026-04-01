@@ -110,7 +110,7 @@ export default function Quiz() {
       <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
         <div className="mobile-container flex items-center justify-between py-4">
           <button
-            onClick={() => navigate(`/${userId}`)}
+            onClick={() => navigate(`/${userId}/home`)}
             className="text-gray-600 hover:text-gray-900"
           >
             ← 返回
