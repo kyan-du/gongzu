@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 
 export default function Result() {
-  const { userId, quizId } = useParams<{ userId: string; quizId: string }>();
+  const { userId } = useParams<{ userId: string; quizId: string }>();
   const navigate = useNavigate();
 
   return (
