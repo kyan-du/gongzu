@@ -83,6 +83,7 @@ export default function DailyView() {
     const d = new Date(currentDate);
     d.setDate(d.getDate() - 1);
     setCurrentDate(d);
+    navigate(`/${userId}/${toDateStr(d)}`, { replace: true });
   };
 
   const goNext = () => {
@@ -90,9 +91,13 @@ export default function DailyView() {
     const d = new Date(currentDate);
     d.setDate(d.getDate() + 1);
     setCurrentDate(d);
+    navigate(isToday(d) ? `/${userId}/today` : `/${userId}/${toDateStr(d)}`, { replace: true });
   };
 
-  const goToday = () => setCurrentDate(new Date());
+  const goToday = () => {
+    setCurrentDate(new Date());
+    navigate(`/${userId}/today`, { replace: true });
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
