@@ -1,5 +1,5 @@
 import { getSlug } from '../lib/tags';
-import { LogOut, ChevronLeft, ChevronRight, BookOpen, Languages, PenLine, Clock, Sun, Moon, Monitor } from 'lucide-react';
+import { LogOut, ChevronLeft, ChevronRight, ChevronDown, BookOpen, Languages, PenLine, Clock, Sun, Moon, Monitor, Users, Palette, Check } from 'lucide-react';
 import { getStoredTheme, setStoredTheme } from '../lib/theme';
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -37,6 +37,7 @@ export default function Home() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const menuRef = useRef<HTMLDivElement>(null);
   const [theme, setTheme] = useState(getStoredTheme);
+  const [expandedSection, setExpandedSection] = useState<string | null>(null);
 
   const userName = userId === 'cyan' ? '彤彤' : userId === 'ryan' ? '可可' : userId;
   const avatarSrc = userId === 'cyan' ? '/avatar-cyan.jpg' : '/avatar-ryan.jpg';
@@ -70,14 +71,7 @@ export default function Home() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [showMenu]);
 
-  const cycleTheme = () => {
-    const next = theme === 'system' ? 'light' : theme === 'light' ? 'dark' : 'system';
-    setTheme(next);
-    setStoredTheme(next);
-  };
 
-  const themeLabel = theme === 'light' ? '浅色模式' : theme === 'dark' ? '深色模式' : '跟随系统';
-  const ThemeIcon = theme === 'light' ? Sun : theme === 'dark' ? Moon : Monitor;
 
   const goPrev = () => {
     const d = new Date(currentDate);
@@ -125,34 +119,76 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="h-px bg-gray-100 dark:bg-gray-700 mx-3 my-1" />
-                {userId !== 'cyan' && (
-                  <button
-                    onClick={() => { setShowMenu(false); navigate('/cyan/home'); }}
-                    className="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
-                  >
-                    <span className="flex items-center gap-2.5"><img src="/avatar-cyan.jpg" alt="彤彤" className="w-5 h-5 rounded-full object-cover" />切换到 彤彤</span>
-                  </button>
-                )}
-                {userId !== 'ryan' && (
-                  <button
-                    onClick={() => { setShowMenu(false); navigate('/ryan/home'); }}
-                    className="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
-                  >
-                    <span className="flex items-center gap-2.5"><img src="/avatar-ryan.jpg" alt="可可" className="w-5 h-5 rounded-full object-cover" />切换到 可可</span>
-                  </button>
-                )}
+                {/* Switch user group */}
                 <button
-                  onClick={() => { setShowMenu(false); navigate('/parent'); }}
+                  onClick={() => setExpandedSection(expandedSection === 'user' ? null : 'user')}
                   className="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
                 >
-                  <span className="flex items-center gap-2.5"><img src="/avatar-parent.jpg" alt="家长" className="w-5 h-5 rounded-full object-cover" />切换到 家长</span>
+                  <span className="flex items-center gap-2.5">
+                    <Users className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+                    切换用户
+                    <ChevronDown className={`w-3.5 h-3.5 text-gray-400 ml-auto transition-transform ${expandedSection === 'user' ? 'rotate-180' : ''}`} />
+                  </span>
                 </button>
+                {expandedSection === 'user' && (
+                  <div className="pl-4">
+                    {userId !== 'cyan' && (
+                      <button
+                        onClick={() => { setShowMenu(false); setExpandedSection(null); navigate('/cyan/home'); }}
+                        className="w-full text-left px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                      >
+                        <span className="flex items-center gap-2.5"><img src="/avatar-cyan.jpg" alt="彤彤" className="w-5 h-5 rounded-full object-cover" />彤彤</span>
+                      </button>
+                    )}
+                    {userId !== 'ryan' && (
+                      <button
+                        onClick={() => { setShowMenu(false); setExpandedSection(null); navigate('/ryan/home'); }}
+                        className="w-full text-left px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                      >
+                        <span className="flex items-center gap-2.5"><img src="/avatar-ryan.jpg" alt="可可" className="w-5 h-5 rounded-full object-cover" />可可</span>
+                      </button>
+                    )}
+                    <button
+                      onClick={() => { setShowMenu(false); setExpandedSection(null); navigate('/parent'); }}
+                      className="w-full text-left px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                    >
+                      <span className="flex items-center gap-2.5"><img src="/avatar-parent.jpg" alt="家长" className="w-5 h-5 rounded-full object-cover" />家长</span>
+                    </button>
+                  </div>
+                )}
+                {/* Theme group */}
                 <button
-                  onClick={cycleTheme}
+                  onClick={() => setExpandedSection(expandedSection === 'theme' ? null : 'theme')}
                   className="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
                 >
-                  <span className="flex items-center gap-2.5"><ThemeIcon className="w-4 h-4 text-gray-400 dark:text-gray-500" />{themeLabel}</span>
+                  <span className="flex items-center gap-2.5">
+                    <Palette className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+                    主题
+                    <ChevronDown className={`w-3.5 h-3.5 text-gray-400 ml-auto transition-transform ${expandedSection === 'theme' ? 'rotate-180' : ''}`} />
+                  </span>
                 </button>
+                {expandedSection === 'theme' && (
+                  <div className="pl-4">
+                    <button
+                      onClick={() => { setTheme('light'); setStoredTheme('light'); }}
+                      className="w-full text-left px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                    >
+                      <span className="flex items-center gap-2.5"><Sun className="w-4 h-4" />浅色{theme === 'light' && <Check className="w-3.5 h-3.5 text-blue-500 ml-auto" />}</span>
+                    </button>
+                    <button
+                      onClick={() => { setTheme('dark'); setStoredTheme('dark'); }}
+                      className="w-full text-left px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                    >
+                      <span className="flex items-center gap-2.5"><Moon className="w-4 h-4" />深色{theme === 'dark' && <Check className="w-3.5 h-3.5 text-blue-500 ml-auto" />}</span>
+                    </button>
+                    <button
+                      onClick={() => { setTheme('system'); setStoredTheme('system'); }}
+                      className="w-full text-left px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                    >
+                      <span className="flex items-center gap-2.5"><Monitor className="w-4 h-4" />自动{theme === 'system' && <Check className="w-3.5 h-3.5 text-blue-500 ml-auto" />}</span>
+                    </button>
+                  </div>
+                )}
                 <div className="h-px bg-gray-100 dark:bg-gray-700 mx-3 my-1" />
                 <button
                   onClick={() => { logout(); navigate('/'); }}

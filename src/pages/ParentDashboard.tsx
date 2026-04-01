@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LogOut, Sun, Moon, Monitor, CheckCircle, Target, BookOpen } from 'lucide-react';
+import { LogOut, Sun, Moon, Monitor, CheckCircle, Target, BookOpen, Users, Palette, Check, ChevronDown } from 'lucide-react';
 import { getStoredTheme, setStoredTheme } from '../lib/theme';
 import { logout } from '../lib/api';
 
@@ -90,6 +90,7 @@ export default function ParentDashboard() {
   const [range, setRange] = useState<'week' | 'month'>('week');
   const [showMenu, setShowMenu] = useState(false);
   const [theme, setTheme] = useState(getStoredTheme);
+  const [expandedSection, setExpandedSection] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
 
@@ -121,14 +122,7 @@ export default function ParentDashboard() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [showMenu]);
 
-  const cycleTheme = () => {
-    const next = theme === 'system' ? 'light' : theme === 'light' ? 'dark' : 'system';
-    setTheme(next);
-    setStoredTheme(next);
-  };
 
-  const themeLabel = theme === 'light' ? '浅色模式' : theme === 'dark' ? '深色模式' : '跟随系统';
-  const ThemeIcon = theme === 'light' ? Sun : theme === 'dark' ? Moon : Monitor;
 
   const rateColor = (rate: number) => {
     if (rate >= 0.8) return 'text-green-600 dark:text-green-400';
@@ -173,22 +167,63 @@ export default function ParentDashboard() {
                   </div>
                 </div>
                 <div className="h-px bg-gray-100 dark:bg-gray-700 mx-3 my-1" />
-                {children.map((child) => (
-                  <button
-                    key={child.id}
-                    onClick={() => { setShowMenu(false); navigate(`/${child.id}/home`); }}
-                    className="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
-                  >
-                    <span className="flex items-center gap-2.5"><img src={child.avatar} alt={child.name} className="w-5 h-5 rounded-full object-cover" />切换到 {child.name}</span>
-                  </button>
-                ))}
-                <div className="h-px bg-gray-100 dark:bg-gray-700 mx-3 my-1" />
+                {/* Switch user group */}
                 <button
-                  onClick={cycleTheme}
+                  onClick={() => setExpandedSection(expandedSection === 'user' ? null : 'user')}
                   className="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
                 >
-                  <span className="flex items-center gap-2.5"><ThemeIcon className="w-4 h-4 text-gray-400 dark:text-gray-500" />{themeLabel}</span>
+                  <span className="flex items-center gap-2.5">
+                    <Users className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+                    切换用户
+                    <ChevronDown className={`w-3.5 h-3.5 text-gray-400 ml-auto transition-transform ${expandedSection === 'user' ? 'rotate-180' : ''}`} />
+                  </span>
                 </button>
+                {expandedSection === 'user' && (
+                  <div className="pl-4">
+                    {children.map((child) => (
+                      <button
+                        key={child.id}
+                        onClick={() => { setShowMenu(false); setExpandedSection(null); navigate(`/${child.id}/home`); }}
+                        className="w-full text-left px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                      >
+                        <span className="flex items-center gap-2.5"><img src={child.avatar} alt={child.name} className="w-5 h-5 rounded-full object-cover" />{child.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {/* Theme group */}
+                <button
+                  onClick={() => setExpandedSection(expandedSection === 'theme' ? null : 'theme')}
+                  className="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                >
+                  <span className="flex items-center gap-2.5">
+                    <Palette className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+                    主题
+                    <ChevronDown className={`w-3.5 h-3.5 text-gray-400 ml-auto transition-transform ${expandedSection === 'theme' ? 'rotate-180' : ''}`} />
+                  </span>
+                </button>
+                {expandedSection === 'theme' && (
+                  <div className="pl-4">
+                    <button
+                      onClick={() => { setTheme('light'); setStoredTheme('light'); }}
+                      className="w-full text-left px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                    >
+                      <span className="flex items-center gap-2.5"><Sun className="w-4 h-4" />浅色{theme === 'light' && <Check className="w-3.5 h-3.5 text-blue-500 ml-auto" />}</span>
+                    </button>
+                    <button
+                      onClick={() => { setTheme('dark'); setStoredTheme('dark'); }}
+                      className="w-full text-left px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                    >
+                      <span className="flex items-center gap-2.5"><Moon className="w-4 h-4" />深色{theme === 'dark' && <Check className="w-3.5 h-3.5 text-blue-500 ml-auto" />}</span>
+                    </button>
+                    <button
+                      onClick={() => { setTheme('system'); setStoredTheme('system'); }}
+                      className="w-full text-left px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                    >
+                      <span className="flex items-center gap-2.5"><Monitor className="w-4 h-4" />自动{theme === 'system' && <Check className="w-3.5 h-3.5 text-blue-500 ml-auto" />}</span>
+                    </button>
+                  </div>
+                )}
                 <div className="h-px bg-gray-100 dark:bg-gray-700 mx-3 my-1" />
                 <button
                   onClick={() => { logout(); navigate('/'); }}
