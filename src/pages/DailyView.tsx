@@ -1,5 +1,5 @@
 import { getSlug } from '../lib/tags';
-import { LogOut, ChevronLeft, ChevronRight, ChevronDown, BookOpen, Languages, PenLine, Clock, Sun, Moon, Monitor, Users, Palette, Check } from 'lucide-react';
+import { LogOut, CheckCircle, ChevronLeft, ChevronRight, ChevronDown, BookOpen, Languages, PenLine, Clock, Sun, Moon, Monitor, Users, Palette, Check } from 'lucide-react';
 import { getStoredTheme, setStoredTheme } from '../lib/theme';
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -44,6 +44,7 @@ export default function DailyView() {
   const menuRef = useRef<HTMLDivElement>(null);
   const [theme, setTheme] = useState(getStoredTheme);
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
+  const [quizStatus, setQuizStatus] = useState<Record<string, { completed: boolean; answered: number; total: number; correct: number; accuracy: number | null }>>({});
 
   const userName = userId === 'cyan' ? '彤彤' : userId === 'ryan' ? '可可' : userId;
   const avatarSrc = userId === 'cyan' ? '/avatar-cyan.jpg' : '/avatar-ryan.jpg';
@@ -53,9 +54,26 @@ export default function DailyView() {
       setLoading(true);
       try {
         const dateStr = toDateStr(currentDate);
-        const res = await fetch(`/api/quiz?userId=${userId}&date=${dateStr}`);
-        const data = await res.json();
+        const [quizRes, statusRes] = await Promise.all([
+          fetch(`/api/quiz?userId=${userId}&date=${dateStr}`),
+          fetch(`/api/status?userId=${userId}&date=${dateStr}`),
+        ]);
+        const data = await quizRes.json();
         setQuizzes(data.quizzes || []);
+        try {
+          const statusData = await statusRes.json();
+          const statusMap: Record<string, any> = {};
+          for (const q of (statusData.quizzes || [])) {
+            statusMap[q.quizId] = {
+              completed: q.completed,
+              answered: q.answered,
+              total: q.totalQuestions,
+              correct: q.correct,
+              accuracy: q.accuracy,
+            };
+          }
+          setQuizStatus(statusMap);
+        } catch {}
       } catch (e) {
         console.error('Failed to fetch quizzes:', e);
       } finally {
@@ -266,7 +284,17 @@ export default function DailyView() {
                     <div className="text-sm text-gray-500 dark:text-gray-400">{quiz.questions?.length || 0} 题</div>
                   </div>
                 </div>
-                <div className="flex items-center gap-1 text-sm text-amber-500 dark:text-amber-400 font-medium"><Clock className="w-3.5 h-3.5" />未完成</div>
+                {quizStatus[quiz.id]?.completed ? (
+                  <div className="flex items-center gap-1 text-sm text-green-500 dark:text-green-400 font-medium">
+                    <CheckCircle className="w-3.5 h-3.5" />
+                    {quizStatus[quiz.id]?.accuracy != null ? `${quizStatus[quiz.id].accuracy}%` : '已完成'}
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1 text-sm text-amber-500 dark:text-amber-400 font-medium">
+                    <Clock className="w-3.5 h-3.5" />
+                    {quizStatus[quiz.id]?.answered > 0 ? `${quizStatus[quiz.id].answered}/${quizStatus[quiz.id].total}` : '未完成'}
+                  </div>
+                )}
               </button>
             ))}
           </div>
