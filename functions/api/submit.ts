@@ -1,7 +1,7 @@
 interface Env {
   DB: D1Database;
-  WEBHOOK_URL: string;    // https://hooks.visionclaw.online/hooks/agent
-  WEBHOOK_TOKEN: string;  // OpenClaw hooks token
+  WEBHOOK_URL: string;
+  WEBHOOK_TOKEN: string;
 }
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
