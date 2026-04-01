@@ -28,7 +28,7 @@ function isToday(d: Date) {
   return toDateStr(d) === toDateStr(new Date());
 }
 
-export default function Home() {
+export default function DailyView() {
   const { userId, date: dateParam } = useParams<{ userId: string; date?: string }>();
   const navigate = useNavigate();
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
