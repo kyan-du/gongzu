@@ -1,5 +1,5 @@
 import { getSlug } from '../lib/tags';
-import { Users, LogOut, ChevronLeft, ChevronRight, BookOpen, Languages, PenLine, Clock, Sun, Moon, Monitor } from 'lucide-react';
+import { LogOut, ChevronLeft, ChevronRight, BookOpen, Languages, PenLine, Clock, Sun, Moon, Monitor } from 'lucide-react';
 import { getStoredTheme, setStoredTheme } from '../lib/theme';
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -125,11 +125,27 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="h-px bg-gray-100 dark:bg-gray-700 mx-3 my-1" />
+                {userId !== 'cyan' && (
+                  <button
+                    onClick={() => { setShowMenu(false); navigate('/cyan/home'); }}
+                    className="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                  >
+                    <span className="flex items-center gap-2.5"><img src="/avatar-cyan.jpg" alt="彤彤" className="w-5 h-5 rounded-full object-cover" />切换到 彤彤</span>
+                  </button>
+                )}
+                {userId !== 'ryan' && (
+                  <button
+                    onClick={() => { setShowMenu(false); navigate('/ryan/home'); }}
+                    className="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                  >
+                    <span className="flex items-center gap-2.5"><img src="/avatar-ryan.jpg" alt="可可" className="w-5 h-5 rounded-full object-cover" />切换到 可可</span>
+                  </button>
+                )}
                 <button
-                  onClick={() => { setShowMenu(false); navigate('/login/select'); }}
+                  onClick={() => { setShowMenu(false); navigate('/parent'); }}
                   className="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
                 >
-                  <span className="flex items-center gap-2.5"><Users className="w-4 h-4 text-gray-400 dark:text-gray-500" />切换用户</span>
+                  <span className="flex items-center gap-2.5"><img src="/avatar-parent.jpg" alt="家长" className="w-5 h-5 rounded-full object-cover" />切换到 家长</span>
                 </button>
                 <button
                   onClick={cycleTheme}

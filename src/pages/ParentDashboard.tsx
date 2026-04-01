@@ -173,19 +173,15 @@ export default function ParentDashboard() {
                   </div>
                 </div>
                 <div className="h-px bg-gray-100 dark:bg-gray-700 mx-3 my-1" />
-                <div className="px-4 py-1.5">
-                  <p className="text-xs text-gray-400 dark:text-gray-500 font-medium mb-1">切换到孩子</p>
-                  {children.map((child) => (
-                    <button
-                      key={child.id}
-                      onClick={() => { setShowMenu(false); navigate(`/${child.id}/home`); }}
-                      className="w-full text-left px-2 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition rounded-lg flex items-center gap-2.5"
-                    >
-                      <img src={child.avatar} alt={child.name} className="w-6 h-6 rounded-full object-cover" />
-                      {child.name}
-                    </button>
-                  ))}
-                </div>
+                {children.map((child) => (
+                  <button
+                    key={child.id}
+                    onClick={() => { setShowMenu(false); navigate(`/${child.id}/home`); }}
+                    className="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                  >
+                    <span className="flex items-center gap-2.5"><img src={child.avatar} alt={child.name} className="w-5 h-5 rounded-full object-cover" />切换到 {child.name}</span>
+                  </button>
+                ))}
                 <div className="h-px bg-gray-100 dark:bg-gray-700 mx-3 my-1" />
                 <button
                   onClick={cycleTheme}
