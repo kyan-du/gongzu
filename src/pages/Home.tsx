@@ -114,14 +114,14 @@ export default function Home() {
                   onClick={() => { setShowMenu(false); navigate('/login/select'); }}
                   className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition"
                 >
-                  切换用户
+                  <span className="flex items-center gap-2">👤 切换用户</span>
                 </button>
                 <div className="h-px bg-gray-100 mx-3 my-1" />
                 <button
                   onClick={() => { logout(); navigate('/'); }}
                   className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition"
                 >
-                  退出登录
+                  <span className="flex items-center gap-2">🚪 退出登录</span>
                 </button>
               </div>
             )}
