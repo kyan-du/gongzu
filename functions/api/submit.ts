@@ -1,5 +1,7 @@
 interface Env {
   DB: D1Database;
+  WEBHOOK_URL: string;    // https://hooks.visionclaw.online/hooks/agent
+  WEBHOOK_TOKEN: string;  // OpenClaw hooks token
 }
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
@@ -62,6 +64,38 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
         correctAnswer,
         explanation: question.explanation,
       });
+    }
+
+    // Fire webhook notification (best-effort, don't block response)
+    const webhookUrl = context.env.WEBHOOK_URL;
+    const webhookToken = context.env.WEBHOOK_TOKEN;
+    if (webhookUrl && webhookToken) {
+      // Fetch quiz tag for notification
+      const quizRow = await context.env.DB.prepare(
+        'SELECT tag FROM daily_quizzes WHERE id = ?'
+      ).bind(quizId).first();
+      const tag = (quizRow?.tag as string) || quizId;
+      const accuracy = Math.round((correctCount / answers.length) * 100);
+
+      const nameMap: Record<string, string> = { cyan: '彤彤', ryan: '可可' };
+      const displayName = nameMap[userId] || userId;
+
+      context.waitUntil(
+        fetch(webhookUrl, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${webhookToken}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            message: `拱卒提交通知：${displayName}完成了「${tag}」练习，正确率 ${accuracy}%（${correctCount}/${answers.length}）。请把这条消息转发到微信群「日拱一卒功不唐捐」(34438530917@chatroom)，用自然语言鼓励一下孩子，不要照搬原文。`,
+            name: 'GongZu',
+            deliver: true,
+            channel: 'telegram',
+            to: '7958430491',
+          }),
+        }).catch(() => {})  // silently ignore webhook errors
+      );
     }
 
     return new Response(JSON.stringify({
