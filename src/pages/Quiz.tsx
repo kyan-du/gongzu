@@ -64,15 +64,15 @@ export default function Quiz() {
   };
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center text-gray-400">加载中...</div>;
+    return <div className="min-h-screen flex items-center justify-center text-gray-400 dark:text-gray-500 dark:bg-gray-900">加载中...</div>;
   }
 
   if (!quiz) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center dark:bg-gray-900">
         <div className="text-center">
-          <p className="text-gray-500">找不到这份作业</p>
-          <button onClick={() => navigate(`/${userId}/home`)} className="mt-4 text-blue-600 hover:underline">返回首页</button>
+          <p className="text-gray-500 dark:text-gray-400">找不到这份作业</p>
+          <button onClick={() => navigate(`/${userId}/home`)} className="mt-4 text-blue-600 dark:text-blue-400 hover:underline">返回首页</button>
         </div>
       </div>
     );
@@ -82,24 +82,24 @@ export default function Quiz() {
   const totalCount = quiz.questions?.length || 0;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-white shadow-sm sticky top-0 z-10">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
+      <div className="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-10">
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
-          <button onClick={() => navigate(`/${userId}/home`)} className="text-blue-600 font-medium">
+          <button onClick={() => navigate(`/${userId}/home`)} className="text-blue-600 dark:text-blue-400 font-medium">
             ← 返回
           </button>
-          <span className="font-bold text-gray-900">{quiz.tag}</span>
-          <span className="text-sm text-gray-500">{answeredCount}/{totalCount}</span>
+          <span className="font-bold text-gray-900 dark:text-gray-100">{quiz.tag}</span>
+          <span className="text-sm text-gray-500 dark:text-gray-400">{answeredCount}/{totalCount}</span>
         </div>
       </div>
 
       {submitted && (
-        <div className="bg-white mx-4 mt-4 rounded-xl shadow-sm p-6 text-center">
+        <div className="bg-white dark:bg-gray-800 mx-4 mt-4 rounded-xl shadow-sm p-6 text-center max-w-2xl lg:mx-auto">
           <div className="text-4xl font-bold mb-2">
             {score.correct === score.total ? '🎉' : score.correct >= score.total * 0.8 ? '👍' : '💪'}
           </div>
-          <div className="text-3xl font-bold text-gray-900">{score.correct} / {score.total}</div>
-          <div className="text-sm text-gray-500 mt-1">正确率 {Math.round((score.correct / score.total) * 100)}%</div>
+          <div className="text-3xl font-bold text-gray-900 dark:text-gray-100">{score.correct} / {score.total}</div>
+          <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">正确率 {Math.round((score.correct / score.total) * 100)}%</div>
         </div>
       )}
 
@@ -135,14 +135,14 @@ export default function Quiz() {
         {!submitted ? (
           <button
             onClick={handleSubmit}
-            className="w-full bg-blue-600 text-white py-4 px-6 rounded-xl font-bold text-lg hover:bg-blue-700 transition shadow-md mt-6 mb-8"
+            className="w-full bg-blue-600 dark:bg-blue-500 text-white py-4 px-6 rounded-xl font-bold text-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition shadow-md mt-6 mb-8"
           >
             📤 交卷（{answeredCount}/{totalCount}）
           </button>
         ) : (
           <button
             onClick={() => navigate(`/${userId}/home`)}
-            className="w-full bg-gray-600 text-white py-4 px-6 rounded-xl font-bold text-lg hover:bg-gray-700 transition shadow-md mt-6 mb-8"
+            className="w-full bg-gray-600 dark:bg-gray-500 text-white py-4 px-6 rounded-xl font-bold text-lg hover:bg-gray-700 dark:hover:bg-gray-600 transition shadow-md mt-6 mb-8"
           >
             🏠 返回首页
           </button>

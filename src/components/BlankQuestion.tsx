@@ -19,14 +19,13 @@ export default function BlankQuestion({ question, index, onAnswer, submitted, re
     onAnswer(v);
   };
 
-  // Split stem by _____ to insert inline input
   const parts = stem.split(/_____+/);
 
   return (
-    <div className="mb-6 p-4 bg-white rounded-xl shadow-sm">
+    <div className="mb-6 p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm">
       <div className="flex items-start gap-2 mb-1">
-        <span className="text-sm font-bold text-gray-400 mt-1">{index + 1}.</span>
-        <div className="flex-1 text-base leading-relaxed flex flex-wrap items-center gap-y-1">
+        <span className="text-sm font-bold text-gray-400 dark:text-gray-500 mt-1">{index + 1}.</span>
+        <div className="flex-1 text-base leading-relaxed flex flex-wrap items-center gap-y-1 text-gray-900 dark:text-gray-100">
           {parts.map((part: string, i: number) => (
             <span key={i} className="inline-flex items-center flex-wrap">
               <span>{part}</span>
@@ -34,8 +33,8 @@ export default function BlankQuestion({ question, index, onAnswer, submitted, re
                 submitted ? (
                   <span className={`inline-block mx-1 px-2 py-0.5 rounded font-medium ${
                     result?.correct
-                      ? 'bg-green-100 text-green-700'
-                      : 'bg-red-100 text-red-700 line-through'
+                      ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
+                      : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 line-through'
                   }`}>
                     {value || '—'}
                   </span>
@@ -44,7 +43,7 @@ export default function BlankQuestion({ question, index, onAnswer, submitted, re
                     type="text"
                     value={value}
                     onChange={(e) => handleChange(e.target.value)}
-                    className="inline-block mx-1 w-28 border-b-2 border-blue-400 bg-transparent text-center text-blue-700 font-medium focus:outline-none focus:border-blue-600"
+                    className="inline-block mx-1 w-28 border-b-2 border-blue-400 dark:border-blue-500 bg-transparent text-center text-blue-700 dark:text-blue-300 font-medium focus:outline-none focus:border-blue-600 dark:focus:border-blue-400"
                     placeholder={hint ? `(${hint})` : '___'}
                     autoComplete="off"
                     autoCapitalize="off"
@@ -58,9 +57,9 @@ export default function BlankQuestion({ question, index, onAnswer, submitted, re
 
       {submitted && !result?.correct && (
         <div className="mt-2 ml-6 text-sm">
-          <span className="text-green-700 font-medium">✅ {result?.correctAnswer}</span>
+          <span className="text-green-700 dark:text-green-300 font-medium">✅ {result?.correctAnswer}</span>
           {question.explanation && (
-            <p className="text-gray-500 mt-1">💡 {question.explanation}</p>
+            <p className="text-gray-500 dark:text-gray-400 mt-1">💡 {question.explanation}</p>
           )}
         </div>
       )}

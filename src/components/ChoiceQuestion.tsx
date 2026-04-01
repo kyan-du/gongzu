@@ -19,10 +19,10 @@ export default function ChoiceQuestion({ question, index, onAnswer, submitted, r
   };
 
   return (
-    <div className="mb-6 p-4 bg-white rounded-xl shadow-sm">
+    <div className="mb-6 p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm">
       <div className="flex items-start gap-2 mb-4">
-        <span className="text-sm font-bold text-gray-400 mt-0.5">{index + 1}.</span>
-        <p className="text-base text-gray-900 leading-relaxed">{content.stem}</p>
+        <span className="text-sm font-bold text-gray-400 dark:text-gray-500 mt-0.5">{index + 1}.</span>
+        <p className="text-base text-gray-900 dark:text-gray-100 leading-relaxed">{content.stem}</p>
       </div>
 
       <div className="space-y-2 ml-5">
@@ -31,13 +31,13 @@ export default function ChoiceQuestion({ question, index, onAnswer, submitted, r
           const isCorrect = result?.correctAnswer === opt.label;
           const isWrong = submitted && isSelected && !result?.correct;
 
-          let style = 'border-gray-200 bg-gray-50 text-gray-700';
+          let style = 'border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300';
           if (submitted) {
-            if (isCorrect) style = 'border-green-400 bg-green-50 text-green-800';
-            else if (isWrong) style = 'border-red-400 bg-red-50 text-red-800';
-            else style = 'border-gray-100 bg-gray-50 text-gray-400';
+            if (isCorrect) style = 'border-green-400 dark:border-green-500 bg-green-50 dark:bg-green-900/30 text-green-800 dark:text-green-300';
+            else if (isWrong) style = 'border-red-400 dark:border-red-500 bg-red-50 dark:bg-red-900/30 text-red-800 dark:text-red-300';
+            else style = 'border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-400 dark:text-gray-500';
           } else if (isSelected) {
-            style = 'border-blue-500 bg-blue-50 text-blue-800';
+            style = 'border-blue-500 dark:border-blue-400 bg-blue-50 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300';
           }
 
           return (
@@ -57,7 +57,7 @@ export default function ChoiceQuestion({ question, index, onAnswer, submitted, r
       </div>
 
       {submitted && !result?.correct && question.explanation && (
-        <div className="mt-3 ml-5 text-sm text-gray-500">
+        <div className="mt-3 ml-5 text-sm text-gray-500 dark:text-gray-400">
           💡 {question.explanation}
         </div>
       )}
