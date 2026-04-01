@@ -17,10 +17,11 @@ function App() {
         <Route path="/cyan" element={<Login />} />
         <Route path="/ryan" element={<Login />} />
         <Route path="/:userId/home" element={<Home />} />
-        <Route path="/:userId/quiz/:quizId" element={<Quiz />} />
-        <Route path="/:userId/result/:quizId" element={<Result />} />
-        {/* 永久链接：/cyan/2026-04-01 */}
+        {/* 日期+标签的答题链接 */}
+        <Route path="/:userId/:date/:tag" element={<Quiz />} />
+        {/* 日期永久链接（列出当天所有作业） */}
         <Route path="/:userId/:date" element={<DailyQuiz />} />
+        <Route path="/:userId/result/:quizId" element={<Result />} />
       </Routes>
     </BrowserRouter>
   );

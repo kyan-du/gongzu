@@ -4,7 +4,7 @@ import ChoiceQuestion from '../components/ChoiceQuestion';
 import BlankQuestion from '../components/BlankQuestion';
 
 export default function Quiz() {
-  const { userId, quizId } = useParams<{ userId: string; quizId: string }>();
+  const { userId, date, tag } = useParams<{ userId: string; date: string; tag: string }>();
   const navigate = useNavigate();
   const [quiz, setQuiz] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -16,10 +16,9 @@ export default function Quiz() {
   useEffect(() => {
     const fetchQuiz = async () => {
       try {
-        const today = new Date().toISOString().split('T')[0];
-        const res = await fetch(`/api/quiz?userId=${userId}&date=${today}`);
+        const res = await fetch(`/api/quiz?userId=${userId}&date=${date}`);
         const data = await res.json();
-        const found = data.quizzes?.find((q: any) => q.id === quizId);
+        const found = data.quizzes?.find((q: any) => q.tag === decodeURIComponent(tag || ''));
         setQuiz(found || null);
       } catch (e) {
         console.error(e);
@@ -28,7 +27,7 @@ export default function Quiz() {
       }
     };
     fetchQuiz();
-  }, [userId, quizId]);
+  }, [userId, date, tag]);
 
   const handleAnswer = (questionId: string, answer: string) => {
     setAnswers((prev) => ({ ...prev, [questionId]: answer }));
@@ -45,7 +44,7 @@ export default function Quiz() {
       const res = await fetch('/api/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, quizId, answers: answerList }),
+        body: JSON.stringify({ userId, quizId: quiz.id, answers: answerList }),
       });
 
       const data = await res.json();
@@ -83,7 +82,6 @@ export default function Quiz() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* 顶部 */}
       <div className="bg-white shadow-sm px-4 py-3 flex items-center justify-between sticky top-0 z-10">
         <button onClick={() => navigate(`/${userId}/home`)} className="text-blue-600 font-medium">
           ← 返回
@@ -92,7 +90,6 @@ export default function Quiz() {
         <span className="text-sm text-gray-500">{answeredCount}/{totalCount}</span>
       </div>
 
-      {/* 成绩概览（交卷后） */}
       {submitted && (
         <div className="bg-white mx-4 mt-4 rounded-xl shadow-sm p-6 text-center">
           <div className="text-4xl font-bold mb-2">
@@ -103,7 +100,6 @@ export default function Quiz() {
         </div>
       )}
 
-      {/* 题目列表 */}
       <div className="max-w-md mx-auto px-4 py-4">
         {quiz.questions?.map((q: any, i: number) => {
           if (q.type === 'choice') {
@@ -133,7 +129,6 @@ export default function Quiz() {
           return null;
         })}
 
-        {/* 交卷按钮 */}
         {!submitted ? (
           <button
             onClick={handleSubmit}

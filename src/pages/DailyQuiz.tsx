@@ -107,7 +107,7 @@ export default function DailyQuiz() {
 
   // If only one quiz, go directly to it
   if (quizzes.length === 1) {
-    navigate(`/${userId}/quiz/${quizzes[0].id}`, { replace: true });
+    navigate(`/${userId}/${date}/${encodeURIComponent(quizzes[0].tag)}`, { replace: true });
     return null;
   }
 
@@ -124,7 +124,7 @@ export default function DailyQuiz() {
           {quizzes.map((quiz: any) => (
             <button
               key={quiz.id}
-              onClick={() => navigate(`/${userId}/quiz/${quiz.id}`)}
+              onClick={() => navigate(`/${userId}/${date}/${encodeURIComponent(quiz.tag)}`)}
               className="w-full bg-white rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition"
             >
               <div className="flex items-center gap-3">
