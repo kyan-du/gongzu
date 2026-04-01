@@ -6,22 +6,8 @@ export default function Landing() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [muted, setMuted] = useState(true);
 
-  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const xPct = ((e.clientX - rect.left) / rect.width) * 100;
-    const yPct = ((e.clientY - rect.top) / rect.height) * 100;
-
-    // Portrait mode (tall screen): tap anywhere to enter
-    const isPortrait = rect.height > rect.width;
-    if (isPortrait) {
-      navigate('/login');
-      return;
-    }
-
-    // Landscape / desktop: tap the laptop screen area
-    if (xPct >= 12 && xPct <= 45 && yPct >= 15 && yPct <= 58) {
-      navigate('/login');
-    }
+  const handleClick = () => {
+    navigate('/login');
   };
 
   const toggleSound = (e: React.MouseEvent) => {
@@ -49,9 +35,8 @@ export default function Landing() {
         <source src="/bg-video.mp4" type="video/mp4" />
       </video>
 
-      {/* Portrait hint - only on tall screens */}
-      <div className="relative z-10 text-center md:hidden">
-        <p className="text-white/60 text-sm drop-shadow-md animate-pulse">轻触进入</p>
+      <div className="relative z-10 text-center">
+        <p className="text-white/50 text-sm drop-shadow-md animate-pulse">轻触进入</p>
       </div>
 
       <button
