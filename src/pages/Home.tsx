@@ -131,19 +131,18 @@ export default function Home() {
                 >
                   <span className="flex items-center gap-2.5"><Users className="w-4 h-4 text-gray-400 dark:text-gray-500" />切换用户</span>
                 </button>
+                <button
+                  onClick={cycleTheme}
+                  className="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                >
+                  <span className="flex items-center gap-2.5"><ThemeIcon className="w-4 h-4 text-gray-400 dark:text-gray-500" />{themeLabel}</span>
+                </button>
                 <div className="h-px bg-gray-100 dark:bg-gray-700 mx-3 my-1" />
                 <button
                   onClick={() => { logout(); navigate('/'); }}
                   className="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
                 >
                   <span className="flex items-center gap-2.5"><LogOut className="w-4 h-4 text-gray-400 dark:text-gray-500" />退出登录</span>
-                </button>
-                <div className="h-px bg-gray-100 dark:bg-gray-700 mx-3 my-1" />
-                <button
-                  onClick={cycleTheme}
-                  className="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
-                >
-                  <span className="flex items-center gap-2.5"><ThemeIcon className="w-4 h-4 text-gray-400 dark:text-gray-500" />{themeLabel}</span>
                 </button>
               </div>
             )}
