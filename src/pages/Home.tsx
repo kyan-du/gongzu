@@ -1,5 +1,5 @@
 import { getSlug } from '../lib/tags';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { logout } from '../lib/api';
 
@@ -16,7 +16,8 @@ export default function Home() {
   const navigate = useNavigate();
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showSettings, setShowSettings] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   const userName = userId === 'cyan' ? '彤彤' : userId === 'ryan' ? '可可' : userId;
   const avatarSrc = userId === 'cyan' ? '/avatar-cyan.jpg' : '/avatar-ryan.jpg';
@@ -37,6 +38,19 @@ export default function Home() {
     fetchQuizzes();
   }, [userId]);
 
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setShowMenu(false);
+      }
+    };
+    if (showMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showMenu]);
+
   const today = new Date();
   const dateStr = `${today.getMonth() + 1}月${today.getDate()}日`;
   const weekDays = ['日', '一', '二', '三', '四', '五', '六'];
@@ -50,37 +64,37 @@ export default function Home() {
             <img src="/logo-64.png" alt="拱卒" className="w-8 h-8 rounded" />
             <span className="text-lg font-bold text-gray-900">拱卒</span>
           </div>
-          <div className="flex items-center gap-3">
-            <img src={avatarSrc} alt={userName} className="w-8 h-8 rounded-full object-cover" />
-            <span className="text-sm font-medium text-gray-700">{userName}</span>
+          <div className="relative" ref={menuRef}>
             <button
-              onClick={() => setShowSettings(!showSettings)}
-              className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 transition"
+              onClick={() => setShowMenu(!showMenu)}
+              className="flex items-center gap-2 hover:opacity-80 transition"
             >
-              ⚙️
+              <span className="text-sm font-medium text-gray-700">{userName}</span>
+              <img src={avatarSrc} alt={userName} className="w-8 h-8 rounded-full object-cover ring-2 ring-transparent hover:ring-blue-200 transition" />
             </button>
+            {showMenu && (
+              <div className="absolute right-0 mt-2 w-44 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-50 animate-fade-in">
+                <div className="px-4 py-2 border-b border-gray-100">
+                  <p className="text-sm font-medium text-gray-900">{userName}</p>
+                  <p className="text-xs text-gray-400">{userId}</p>
+                </div>
+                <button
+                  onClick={() => { setShowMenu(false); navigate('/login/select'); }}
+                  className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                >
+                  🔄 切换用户
+                </button>
+                <button
+                  onClick={() => { logout(); navigate('/'); }}
+                  className="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                >
+                  🚪 退出登录
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
-
-      {showSettings && (
-        <div className="bg-white border-b shadow-sm">
-          <div className="max-w-2xl mx-auto px-4 py-3">
-            <button
-              onClick={() => navigate('/login/select')}
-              className="w-full text-left py-2 px-3 text-sm text-gray-700 hover:bg-gray-50 rounded"
-            >
-              🔄 切换用户
-            </button>
-            <button
-              onClick={() => { logout(); navigate('/'); }}
-              className="w-full text-left py-2 px-3 text-sm text-red-600 hover:bg-red-50 rounded"
-            >
-              🚪 退出登录
-            </button>
-          </div>
-        </div>
-      )}
 
       <div className="max-w-2xl mx-auto px-4 py-6">
         <div className="mb-6">
