@@ -1,4 +1,5 @@
 import { getSlug } from '../lib/tags';
+import { Users, LogOut, ChevronLeft, ChevronRight, BookOpen, Languages, PenLine, Clock } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { logout } from '../lib/api';
@@ -114,14 +115,14 @@ export default function Home() {
                   onClick={() => { setShowMenu(false); navigate('/login/select'); }}
                   className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition"
                 >
-                  <span className="flex items-center gap-2">👤 切换用户</span>
+                  <span className="flex items-center gap-2.5"><Users className="w-4 h-4 text-gray-400" />切换用户</span>
                 </button>
                 <div className="h-px bg-gray-100 mx-3 my-1" />
                 <button
                   onClick={() => { logout(); navigate('/'); }}
                   className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition"
                 >
-                  <span className="flex items-center gap-2">🚪 退出登录</span>
+                  <span className="flex items-center gap-2.5"><LogOut className="w-4 h-4 text-gray-400" />退出登录</span>
                 </button>
               </div>
             )}
@@ -133,11 +134,11 @@ export default function Home() {
       <div className="max-w-2xl mx-auto px-4 pt-6 pb-2">
         <div className="flex items-center justify-between">
           <button onClick={goPrev} className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-200 transition text-gray-500 text-lg">
-            ‹
+            <ChevronLeft className="w-5 h-5" />
           </button>
           <div className="flex items-center gap-2">
             <h2 className="text-xl font-bold text-gray-900">
-              {isToday(currentDate) ? '📅 今天' : '📅'} {formatDate(currentDate)}
+              {isToday(currentDate) ? '今天' : ''} {formatDate(currentDate)}
             </h2>
             {!isToday(currentDate) && (
               <button onClick={goToday} className="text-xs text-blue-600 hover:text-blue-800 font-medium ml-1">
@@ -150,7 +151,7 @@ export default function Home() {
             disabled={isToday(currentDate)}
             className={`w-9 h-9 flex items-center justify-center rounded-full transition text-lg ${isToday(currentDate) ? 'text-gray-300 cursor-not-allowed' : 'text-gray-500 hover:bg-gray-200'}`}
           >
-            ›
+            <ChevronRight className="w-5 h-5" />
           </button>
         </div>
       </div>
@@ -174,15 +175,15 @@ export default function Home() {
                 className="w-full bg-white rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition active:scale-[0.98]"
               >
                 <div className="flex items-center gap-3">
-                  <div className="text-2xl">
-                    {quiz.tag.includes('英语') ? '🔤' : quiz.tag.includes('西游') ? '🐒' : quiz.tag.includes('单词') ? '📖' : '📝'}
+                  <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
+                    {quiz.tag.includes('英语') ? <Languages className="w-5 h-5 text-blue-500" /> : quiz.tag.includes('西游') ? <BookOpen className="w-5 h-5 text-amber-500" /> : <PenLine className="w-5 h-5 text-gray-500" />}
                   </div>
                   <div className="text-left">
                     <div className="font-medium text-gray-900">{quiz.tag}</div>
                     <div className="text-sm text-gray-500">{quiz.questions?.length || 0} 题</div>
                   </div>
                 </div>
-                <div className="text-sm text-amber-500 font-medium">⏳ 未完成</div>
+                <div className="flex items-center gap-1 text-sm text-amber-500 font-medium"><Clock className="w-3.5 h-3.5" />未完成</div>
               </button>
             ))}
           </div>
