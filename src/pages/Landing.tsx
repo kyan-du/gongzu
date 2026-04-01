@@ -7,12 +7,18 @@ export default function Landing() {
   const [muted, setMuted] = useState(true);
 
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    // 计算点击位置相对于视频的百分比
     const rect = e.currentTarget.getBoundingClientRect();
     const xPct = ((e.clientX - rect.left) / rect.width) * 100;
     const yPct = ((e.clientY - rect.top) / rect.height) * 100;
 
-    // 笔记本屏幕的热区：大约 x 12%-45%, y 15%-58%
+    // Portrait mode (tall screen): tap anywhere to enter
+    const isPortrait = rect.height > rect.width;
+    if (isPortrait) {
+      navigate('/login');
+      return;
+    }
+
+    // Landscape / desktop: tap the laptop screen area
     if (xPct >= 12 && xPct <= 45 && yPct >= 15 && yPct <= 58) {
       navigate('/login');
     }
@@ -28,10 +34,9 @@ export default function Landing() {
 
   return (
     <div
-      className="relative min-h-screen flex items-center justify-center overflow-hidden"
+      className="relative min-h-screen flex items-center justify-center overflow-hidden cursor-pointer"
       onClick={handleClick}
     >
-      {/* 背景视频 */}
       <video
         ref={videoRef}
         autoPlay
@@ -44,7 +49,11 @@ export default function Landing() {
         <source src="/bg-video.mp4" type="video/mp4" />
       </video>
 
-      {/* 声音按钮 - 右上角 */}
+      {/* Portrait hint - only on tall screens */}
+      <div className="relative z-10 text-center md:hidden">
+        <p className="text-white/60 text-sm drop-shadow-md animate-pulse">轻触进入</p>
+      </div>
+
       <button
         onClick={toggleSound}
         className="absolute top-4 right-4 z-20 w-10 h-10 flex items-center justify-center rounded-full bg-black/30 backdrop-blur-sm text-white hover:bg-black/50 transition"
