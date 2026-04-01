@@ -1,5 +1,4 @@
 import { useNavigate } from 'react-router-dom';
-import { Users } from 'lucide-react';
 
 export default function SelectUser() {
   const navigate = useNavigate();
@@ -53,7 +52,7 @@ export default function SelectUser() {
           onClick={() => navigate('/parent')}
           className="w-full bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-4 hover:bg-white/90 transition active:scale-95 flex items-center justify-center gap-2"
         >
-          <Users className="w-5 h-5 text-gray-600" />
+          <img src="/avatar-parent.jpg" alt="家长" className="w-8 h-8 rounded-full object-cover" />
           <span className="text-lg font-semibold text-gray-700">家长入口</span>
         </button>
       </div>

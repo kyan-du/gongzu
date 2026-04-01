@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Users, LogOut, Sun, Moon, Monitor, CheckCircle, Target, BookOpen } from 'lucide-react';
+import { LogOut, Sun, Moon, Monitor, CheckCircle, Target, BookOpen } from 'lucide-react';
 import { getStoredTheme, setStoredTheme } from '../lib/theme';
 import { logout } from '../lib/api';
 
@@ -161,16 +161,12 @@ export default function ParentDashboard() {
               className="flex items-center gap-2 hover:opacity-80 transition"
             >
               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">家长</span>
-              <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center">
-                <Users className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-              </div>
+              <img src="/avatar-parent.jpg" alt="家长" className="w-8 h-8 rounded-full object-cover" />
             </button>
             {showMenu && (
               <div className="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200/60 dark:border-gray-700/60 py-2 z-50 origin-top-right animate-[dropdown_0.15s_ease-out]">
                 <div className="px-4 py-3 flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center">
-                    <Users className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-                  </div>
+                  <img src="/avatar-parent.jpg" alt="家长" className="w-10 h-10 rounded-full object-cover" />
                   <div>
                     <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">家长</p>
                     <p className="text-xs text-gray-400 dark:text-gray-500">parent</p>
