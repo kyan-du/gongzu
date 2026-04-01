@@ -29,12 +29,18 @@ function isToday(d: Date) {
 }
 
 export default function Home() {
-  const { userId } = useParams<{ userId: string }>();
+  const { userId, date: dateParam } = useParams<{ userId: string; date?: string }>();
   const navigate = useNavigate();
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
   const [loading, setLoading] = useState(true);
   const [showMenu, setShowMenu] = useState(false);
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const [currentDate, setCurrentDate] = useState(() => {
+    if (dateParam && dateParam !== 'today' && dateParam !== 'home') {
+      const parsed = new Date(dateParam + 'T00:00:00');
+      if (!isNaN(parsed.getTime())) return parsed;
+    }
+    return new Date();
+  });
   const menuRef = useRef<HTMLDivElement>(null);
   const [theme, setTheme] = useState(getStoredTheme);
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
@@ -134,7 +140,7 @@ export default function Home() {
                   <div className="pl-4">
                     {userId !== 'cyan' && (
                       <button
-                        onClick={() => { setShowMenu(false); setExpandedSection(null); navigate('/cyan/home'); }}
+                        onClick={() => { setShowMenu(false); setExpandedSection(null); navigate('/cyan/today'); }}
                         className="w-full text-left px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
                       >
                         <span className="flex items-center gap-2.5"><img src="/avatar-cyan.jpg" alt="彤彤" className="w-5 h-5 rounded-full object-cover" />彤彤</span>
@@ -142,7 +148,7 @@ export default function Home() {
                     )}
                     {userId !== 'ryan' && (
                       <button
-                        onClick={() => { setShowMenu(false); setExpandedSection(null); navigate('/ryan/home'); }}
+                        onClick={() => { setShowMenu(false); setExpandedSection(null); navigate('/ryan/today'); }}
                         className="w-full text-left px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
                       >
                         <span className="flex items-center gap-2.5"><img src="/avatar-ryan.jpg" alt="可可" className="w-5 h-5 rounded-full object-cover" />可可</span>

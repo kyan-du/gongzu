@@ -183,7 +183,7 @@ export default function ParentDashboard() {
                     {children.map((child) => (
                       <button
                         key={child.id}
-                        onClick={() => { setShowMenu(false); setExpandedSection(null); navigate(`/${child.id}/home`); }}
+                        onClick={() => { setShowMenu(false); setExpandedSection(null); navigate(`/${child.id}/today`); }}
                         className="w-full text-left px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
                       >
                         <span className="flex items-center gap-2.5"><img src={child.avatar} alt={child.name} className="w-5 h-5 rounded-full object-cover" />{child.name}</span>

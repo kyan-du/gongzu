@@ -12,7 +12,7 @@ export default function Landing() {
     if (isLoggedIn()) {
       const user = getUser();
       if (user) {
-        navigate(`/${user}/home`);
+        navigate(`/${user}/today`);
         return;
       }
       navigate('/login/select');

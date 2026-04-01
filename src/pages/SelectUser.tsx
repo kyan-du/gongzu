@@ -24,7 +24,7 @@ export default function SelectUser() {
 
         <div className="grid grid-cols-3 gap-4">
           <button
-            onClick={() => navigate('/cyan/home')}
+            onClick={() => navigate('/cyan/today')}
             className="flex flex-col items-center bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-5 hover:bg-white/90 transition active:scale-95"
           >
             <img
@@ -36,7 +36,7 @@ export default function SelectUser() {
           </button>
 
           <button
-            onClick={() => navigate('/ryan/home')}
+            onClick={() => navigate('/ryan/today')}
             className="flex flex-col items-center bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-5 hover:bg-white/90 transition active:scale-95"
           >
             <img
