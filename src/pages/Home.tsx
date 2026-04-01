@@ -91,7 +91,10 @@ export default function Home() {
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <img src="/logo-day-64.png" alt="拱卒" className="w-8 h-8" />
-            <span className="text-lg font-bold text-gray-900">拱卒</span>
+            <div>
+              <span className="text-lg font-bold text-gray-900">拱卒</span>
+              <p className="text-xs text-gray-400 -mt-0.5">日拱一卒，功不唐捐</p>
+            </div>
           </div>
           <div className="relative" ref={menuRef}>
             <button
