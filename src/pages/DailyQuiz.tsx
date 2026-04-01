@@ -50,35 +50,42 @@ export default function DailyQuiz() {
 
   if (needsAuth) {
     return (
-      <div className="relative h-dvh flex items-center justify-center p-4 overflow-hidden">
-        <video autoPlay muted loop playsInline poster="/bg-poster.jpg" className="absolute inset-0 w-full h-full object-cover">
-          <source src="/bg-video.mp4" type="video/mp4" />
-        </video>
-        <div className="absolute inset-0 bg-white/40 backdrop-blur-sm" />
-        <div className="relative z-10 w-full max-w-md animate-fade-in">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
+        {/* Unified header */}
+        <div className="bg-white dark:bg-gray-800 shadow-sm">
+          <div className="max-w-2xl mx-auto px-4 py-3 flex items-center gap-3">
+            <img src="/logo-night-64.png" alt="拱卒" className="w-8 h-8 rounded-full object-cover dark:hidden" />
+            <img src="/logo-day-64.png" alt="拱卒" className="w-8 h-8 rounded-full object-cover hidden dark:block" />
+            <div>
+              <span className="text-lg font-bold text-gray-900 dark:text-gray-100">拱卒</span>
+              <p className="text-xs text-gray-400 dark:text-gray-500 -mt-0.5">日拱一卒，功不唐捐</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="max-w-sm mx-auto px-4 mt-16">
           <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-gray-900 mb-2 drop-shadow-sm">拱卒</h1>
-            <p className="text-lg text-gray-700">
+            <p className="text-lg text-gray-600 dark:text-gray-400">
               {userName}，{date} 的练习
             </p>
           </div>
-          <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-8">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
             <form onSubmit={handleLogin}>
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">请输入密码</label>
+              <div className="mb-5">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">请输入密码</label>
                 <input
                   type="password"
                   inputMode="numeric"
                   value={passphrase}
                   onChange={(e) => setPassphrase(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white/90"
+                  className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                   placeholder="密码"
                   autoFocus
                   required
                 />
               </div>
-              {error && <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-lg text-sm">{error}</div>}
-              <button type="submit" className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 transition shadow-md">
+              {error && <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 rounded-lg text-sm">{error}</div>}
+              <button type="submit" className="w-full bg-blue-600 text-white py-3 px-6 rounded-xl font-medium hover:bg-blue-700 transition shadow-sm">
                 进入
               </button>
             </form>
@@ -89,18 +96,30 @@ export default function DailyQuiz() {
   }
 
   if (loading) {
-    return <div className="h-dvh flex items-center justify-center text-gray-400">加载中...</div>;
+    return <div className="h-dvh flex items-center justify-center text-gray-400 dark:text-gray-500 dark:bg-gray-900">加载中...</div>;
   }
 
   if (quizzes.length === 0) {
     return (
-      <div className="h-dvh flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-4xl mb-4">📝</div>
-          <p className="text-gray-500">{date} 还没有作业</p>
-          <button onClick={() => navigate(`/${userId}/home`)} className="mt-4 text-blue-600 hover:underline">
-            返回首页
-          </button>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
+        <div className="bg-white dark:bg-gray-800 shadow-sm">
+          <div className="max-w-2xl mx-auto px-4 py-3 flex items-center gap-3">
+            <img src="/logo-night-64.png" alt="拱卒" className="w-8 h-8 rounded-full object-cover dark:hidden" />
+            <img src="/logo-day-64.png" alt="拱卒" className="w-8 h-8 rounded-full object-cover hidden dark:block" />
+            <div>
+              <span className="text-lg font-bold text-gray-900 dark:text-gray-100">拱卒</span>
+              <p className="text-xs text-gray-400 dark:text-gray-500 -mt-0.5">日拱一卒，功不唐捐</p>
+            </div>
+          </div>
+        </div>
+        <div className="flex items-center justify-center" style={{ minHeight: 'calc(100vh - 60px)' }}>
+          <div className="text-center">
+            <div className="text-4xl mb-4">📝</div>
+            <p className="text-gray-500 dark:text-gray-400">{date} 还没有作业</p>
+            <button onClick={() => navigate(`/${userId}/home`)} className="mt-4 text-blue-600 dark:text-blue-400 hover:underline">
+              返回首页
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -112,32 +131,38 @@ export default function DailyQuiz() {
     return null;
   }
 
-  // Multiple quizzes: show list
+  // Multiple quizzes: show list (same style as Home)
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-white shadow-sm px-4 py-3 flex items-center gap-3">
-        <img src="/logo-64.png" alt="拱卒" className="w-8 h-8 rounded" />
-        <span className="text-lg font-bold text-gray-900">拱卒</span>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
+      <div className="bg-white dark:bg-gray-800 shadow-sm">
+        <div className="max-w-2xl mx-auto px-4 py-3 flex items-center gap-3">
+          <img src="/logo-night-64.png" alt="拱卒" className="w-8 h-8 rounded-full object-cover dark:hidden" />
+          <img src="/logo-day-64.png" alt="拱卒" className="w-8 h-8 rounded-full object-cover hidden dark:block" />
+          <div>
+            <span className="text-lg font-bold text-gray-900 dark:text-gray-100">拱卒</span>
+            <p className="text-xs text-gray-400 dark:text-gray-500 -mt-0.5">日拱一卒，功不唐捐</p>
+          </div>
+        </div>
       </div>
       <div className="max-w-2xl mx-auto px-4 py-6">
-        <h2 className="text-xl font-bold text-gray-900 mb-4">📅 {date} 的作业</h2>
+        <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">📅 {date} 的作业</h2>
         <div className="space-y-3">
           {quizzes.map((quiz: any) => (
             <button
               key={quiz.id}
               onClick={() => navigate(`/${userId}/${date}/${getSlug(quiz.tag)}`)}
-              className="w-full bg-white rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition"
+              className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition active:scale-[0.98]"
             >
               <div className="flex items-center gap-3">
                 <div className="text-2xl">
-                  {quiz.tag.includes('英语') ? '🔤' : quiz.tag.includes('西游') ? '🐒' : '📝'}
+                  {quiz.tag.includes('阅读') ? '📖' : quiz.tag.includes('英语') ? '🔤' : quiz.tag.includes('西游') ? '🐒' : '📝'}
                 </div>
                 <div className="text-left">
-                  <div className="font-medium text-gray-900">{quiz.tag}</div>
-                  <div className="text-sm text-gray-500">{quiz.questions?.length || 0} 题</div>
+                  <div className="font-medium text-gray-900 dark:text-gray-100">{quiz.title || quiz.tag}</div>
+                  <div className="text-sm text-gray-500 dark:text-gray-400">{quiz.questions?.length || 0} 题</div>
                 </div>
               </div>
-              <span className="text-blue-600">→</span>
+              <span className="text-gray-300 dark:text-gray-600">›</span>
             </button>
           ))}
         </div>
