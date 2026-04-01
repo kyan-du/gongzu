@@ -127,7 +127,7 @@ export default function Home() {
                     <div className="text-sm text-gray-500">{quiz.questions?.length || 0} 题</div>
                   </div>
                 </div>
-                <div className="text-red-500 text-sm font-medium">🔴 未完成</div>
+                <div className="text-sm text-amber-500 font-medium">⏳ 未完成</div>
               </button>
             ))}
           </div>
