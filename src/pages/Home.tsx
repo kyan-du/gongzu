@@ -1,3 +1,4 @@
+import { getSlug } from '../lib/tags';
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { logout } from '../lib/api';
@@ -96,7 +97,7 @@ export default function Home() {
             {quizzes.map((quiz) => (
               <button
                 key={quiz.id}
-                onClick={() => navigate(`/${userId}/${quiz.date}/${encodeURIComponent(quiz.tag)}`)}
+                onClick={() => navigate(`/${userId}/${quiz.date}/${getSlug(quiz.tag)}`)}
                 className="w-full bg-white rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition active:scale-95"
               >
                 <div className="flex items-center gap-3">
