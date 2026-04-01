@@ -113,7 +113,7 @@ export default function Quiz() {
           if (q.type === 'choice') {
             return (
               <ChoiceQuestion
-                key={q.id}
+                key={`${q.id}-${submitted}`}
                 question={q}
                 index={i}
                 onAnswer={(answer: string) => handleAnswer(q.id, answer)}
@@ -126,7 +126,7 @@ export default function Quiz() {
           if (q.type === 'blank') {
             return (
               <BlankQuestion
-                key={q.id}
+                key={`${q.id}-${submitted}`}
                 question={q}
                 index={i}
                 onAnswer={(answer: string) => handleAnswer(q.id, answer)}
@@ -139,7 +139,7 @@ export default function Quiz() {
           if (q.type === 'reading') {
             return (
               <ReadingQuestion
-                key={q.id}
+                key={`${q.id}-${submitted}`}
                 question={q}
                 index={i}
                 onAnswer={(answer: string) => handleAnswer(q.id, answer)}
