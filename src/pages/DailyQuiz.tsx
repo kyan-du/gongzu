@@ -119,7 +119,7 @@ export default function DailyQuiz() {
         <img src="/logo-64.png" alt="拱卒" className="w-8 h-8 rounded" />
         <span className="text-lg font-bold text-gray-900">拱卒</span>
       </div>
-      <div className="max-w-md mx-auto px-4 py-6">
+      <div className="max-w-2xl mx-auto px-4 py-6">
         <h2 className="text-xl font-bold text-gray-900 mb-4">📅 {date} 的作业</h2>
         <div className="space-y-3">
           {quizzes.map((quiz: any) => (

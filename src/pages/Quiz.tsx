@@ -84,7 +84,7 @@ export default function Quiz() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="bg-white shadow-sm sticky top-0 z-10">
-        <div className="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
+        <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
           <button onClick={() => navigate(`/${userId}/home`)} className="text-blue-600 font-medium">
             ← 返回
           </button>
@@ -103,7 +103,7 @@ export default function Quiz() {
         </div>
       )}
 
-      <div className="max-w-md mx-auto px-4 py-4">
+      <div className="max-w-2xl mx-auto px-4 py-4">
         {quiz.questions?.map((q: any, i: number) => {
           if (q.type === 'choice') {
             return (

@@ -45,7 +45,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="bg-white shadow-sm">
-        <div className="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
+        <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <img src="/logo-64.png" alt="拱卒" className="w-8 h-8 rounded" />
             <span className="text-lg font-bold text-gray-900">拱卒</span>
@@ -65,7 +65,7 @@ export default function Home() {
 
       {showSettings && (
         <div className="bg-white border-b shadow-sm">
-          <div className="max-w-md mx-auto px-4 py-3">
+          <div className="max-w-2xl mx-auto px-4 py-3">
             <button
               onClick={() => navigate('/login/select')}
               className="w-full text-left py-2 px-3 text-sm text-gray-700 hover:bg-gray-50 rounded"
@@ -82,7 +82,7 @@ export default function Home() {
         </div>
       )}
 
-      <div className="max-w-md mx-auto px-4 py-6">
+      <div className="max-w-2xl mx-auto px-4 py-6">
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-gray-900">📅 今天 {dateStr}</h2>
           <p className="text-sm text-gray-500">{dayStr}</p>
