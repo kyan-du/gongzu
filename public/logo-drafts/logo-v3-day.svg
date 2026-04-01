@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <circle cx="32" cy="32" r="30" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1"/>
+  <g transform="translate(32.2,33.7)">
+    <path d="M-10 -12l10-9 10 9" stroke="#D97706" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <text x="0" y="16" text-anchor="middle" font-size="32" font-weight="800" fill="#111827" font-family="system-ui, -apple-system, sans-serif">卒</text>
+  </g>
+</svg>

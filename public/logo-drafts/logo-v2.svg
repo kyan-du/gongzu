@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Chinese chess piece shape -->
+  <path d="M20 54h24a2 2 0 002-2v-4a2 2 0 00-2-2H20a2 2 0 00-2 2v4a2 2 0 002 2z" fill="#111827"/>
+  <path d="M24 46V38a8 8 0 018-8v0a8 8 0 018 8v8" fill="#111827"/>
+  <circle cx="32" cy="24" r="10" fill="#111827" stroke="#111827" stroke-width="2"/>
+  <text x="32" y="28.5" text-anchor="middle" font-size="13" font-weight="bold" fill="white" font-family="system-ui">卒</text>
+  <!-- Upward arrow indicating progress -->
+  <path d="M32 4l6 8h-4v4h-4v-4h-4l6-8z" fill="#F59E0B"/>
+</svg>
