@@ -6,6 +6,7 @@ import Home from './pages/Home';
 import Quiz from './pages/Quiz';
 import DailyQuiz from './pages/DailyQuiz';
 import Result from './pages/Result';
+import ParentDashboard from './pages/ParentDashboard';
 
 function App() {
   return (
@@ -22,6 +23,8 @@ function App() {
         {/* 日期永久链接（列出当天所有作业） */}
         <Route path="/:userId/:date" element={<DailyQuiz />} />
         <Route path="/:userId/result/:quizId" element={<Result />} />
+        {/* 家长仪表盘 */}
+        <Route path="/parent" element={<ParentDashboard />} />
       </Routes>
     </BrowserRouter>
   );

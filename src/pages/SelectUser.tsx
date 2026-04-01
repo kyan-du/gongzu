@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { Users } from 'lucide-react';
 
 export default function SelectUser() {
   const navigate = useNavigate();
@@ -22,7 +23,7 @@ export default function SelectUser() {
           <h1 className="text-3xl font-bold text-gray-900 drop-shadow-sm">你是谁？</h1>
         </div>
 
-        <div className="flex gap-6 justify-center">
+        <div className="flex gap-6 justify-center mb-6">
           <button
             onClick={() => navigate('/cyan/home')}
             className="flex flex-col items-center bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-6 hover:bg-white/90 transition active:scale-95 w-36"
@@ -47,6 +48,14 @@ export default function SelectUser() {
             <span className="text-xl font-bold text-green-600">可可</span>
           </button>
         </div>
+
+        <button
+          onClick={() => navigate('/parent')}
+          className="w-full bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-4 hover:bg-white/90 transition active:scale-95 flex items-center justify-center gap-2"
+        >
+          <Users className="w-5 h-5 text-gray-600" />
+          <span className="text-lg font-semibold text-gray-700">家长入口</span>
+        </button>
       </div>
     </div>
   );
