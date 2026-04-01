@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import RichPassage from './RichPassage';
 
 interface ReadingQuestionProps {
   question: any;
@@ -48,8 +49,8 @@ export default function ReadingQuestion({ question, index, onAnswer, submitted, 
           </button>
         </div>
         {!collapsed && (
-          <div className="ml-5 text-sm leading-relaxed text-gray-700 dark:text-gray-300 whitespace-pre-line border-l-2 border-blue-200 dark:border-blue-700 pl-4">
-            {passage}
+          <div className="ml-5 text-gray-700 dark:text-gray-300 border-l-2 border-blue-200 dark:border-blue-700 pl-4">
+            <RichPassage passage={passage} />
           </div>
         )}
       </div>
