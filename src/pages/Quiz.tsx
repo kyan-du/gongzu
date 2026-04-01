@@ -119,7 +119,7 @@ export default function Quiz() {
                 onAnswer={(answer: string) => handleAnswer(q.id, answer)}
                 submitted={submitted}
                 result={getResult(q.id)}
-                initialAnswer={answers[q.id]}
+                initialAnswer={answers[String(q.id)]}
               />
             );
           }
@@ -132,7 +132,7 @@ export default function Quiz() {
                 onAnswer={(answer: string) => handleAnswer(q.id, answer)}
                 submitted={submitted}
                 result={getResult(q.id)}
-                initialAnswer={answers[q.id]}
+                initialAnswer={answers[String(q.id)]}
               />
             );
           }
@@ -145,7 +145,7 @@ export default function Quiz() {
                 onAnswer={(answer: string) => handleAnswer(q.id, answer)}
                 submitted={submitted}
                 result={getResult(q.id)}
-                initialAnswer={answers[q.id]}
+                initialAnswer={answers[String(q.id)]}
               />
             );
           }
