@@ -44,37 +44,41 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="bg-white shadow-sm px-4 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <img src="/logo-64.png" alt="拱卒" className="w-8 h-8 rounded" />
-          <span className="text-lg font-bold text-gray-900">拱卒</span>
-        </div>
-        <div className="flex items-center gap-3">
-          <img src={avatarSrc} alt={userName} className="w-8 h-8 rounded-full object-cover" />
-          <span className="text-sm font-medium text-gray-700">{userName}</span>
-          <button
-            onClick={() => setShowSettings(!showSettings)}
-            className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 transition"
-          >
-            ⚙️
-          </button>
+      <div className="bg-white shadow-sm">
+        <div className="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <img src="/logo-64.png" alt="拱卒" className="w-8 h-8 rounded" />
+            <span className="text-lg font-bold text-gray-900">拱卒</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <img src={avatarSrc} alt={userName} className="w-8 h-8 rounded-full object-cover" />
+            <span className="text-sm font-medium text-gray-700">{userName}</span>
+            <button
+              onClick={() => setShowSettings(!showSettings)}
+              className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 transition"
+            >
+              ⚙️
+            </button>
+          </div>
         </div>
       </div>
 
       {showSettings && (
-        <div className="bg-white border-b px-4 py-3 shadow-sm">
-          <button
-            onClick={() => navigate('/login/select')}
-            className="w-full text-left py-2 px-3 text-sm text-gray-700 hover:bg-gray-50 rounded"
-          >
-            🔄 切换用户
-          </button>
-          <button
-            onClick={() => { logout(); navigate('/'); }}
-            className="w-full text-left py-2 px-3 text-sm text-red-600 hover:bg-red-50 rounded"
-          >
-            🚪 退出登录
-          </button>
+        <div className="bg-white border-b shadow-sm">
+          <div className="max-w-md mx-auto px-4 py-3">
+            <button
+              onClick={() => navigate('/login/select')}
+              className="w-full text-left py-2 px-3 text-sm text-gray-700 hover:bg-gray-50 rounded"
+            >
+              🔄 切换用户
+            </button>
+            <button
+              onClick={() => { logout(); navigate('/'); }}
+              className="w-full text-left py-2 px-3 text-sm text-red-600 hover:bg-red-50 rounded"
+            >
+              🚪 退出登录
+            </button>
+          </div>
         </div>
       )}
 

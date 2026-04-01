@@ -83,12 +83,14 @@ export default function Quiz() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="bg-white shadow-sm px-4 py-3 flex items-center justify-between sticky top-0 z-10">
-        <button onClick={() => navigate(`/${userId}/home`)} className="text-blue-600 font-medium">
-          ← 返回
-        </button>
-        <span className="font-bold text-gray-900">{quiz.tag}</span>
-        <span className="text-sm text-gray-500">{answeredCount}/{totalCount}</span>
+      <div className="bg-white shadow-sm sticky top-0 z-10">
+        <div className="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
+          <button onClick={() => navigate(`/${userId}/home`)} className="text-blue-600 font-medium">
+            ← 返回
+          </button>
+          <span className="font-bold text-gray-900">{quiz.tag}</span>
+          <span className="text-sm text-gray-500">{answeredCount}/{totalCount}</span>
+        </div>
       </div>
 
       {submitted && (
