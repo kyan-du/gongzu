@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import ChoiceQuestion from '../components/ChoiceQuestion';
 import BlankQuestion from '../components/BlankQuestion';
+import ReadingQuestion from '../components/ReadingQuestion';
 
 export default function Quiz() {
   const { userId, date, tag } = useParams<{ userId: string; date: string; tag: string }>();
@@ -120,6 +121,18 @@ export default function Quiz() {
           if (q.type === 'blank') {
             return (
               <BlankQuestion
+                key={q.id}
+                question={q}
+                index={i}
+                onAnswer={(answer: string) => handleAnswer(q.id, answer)}
+                submitted={submitted}
+                result={getResult(q.id)}
+              />
+            );
+          }
+          if (q.type === 'reading') {
+            return (
+              <ReadingQuestion
                 key={q.id}
                 question={q}
                 index={i}

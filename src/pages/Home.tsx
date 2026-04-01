@@ -248,7 +248,7 @@ export default function Home() {
               >
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center">
-                    {quiz.tag.includes('英语') ? <Languages className="w-5 h-5 text-blue-500 dark:text-blue-400" /> : quiz.tag.includes('西游') ? <BookOpen className="w-5 h-5 text-amber-500 dark:text-amber-400" /> : <PenLine className="w-5 h-5 text-gray-500 dark:text-gray-400" />}
+                    {quiz.tag.includes('英语') ? <Languages className="w-5 h-5 text-blue-500 dark:text-blue-400" /> : quiz.tag.includes('阅读') ? <BookOpen className="w-5 h-5 text-emerald-500 dark:text-emerald-400" /> : quiz.tag.includes('西游') ? <BookOpen className="w-5 h-5 text-amber-500 dark:text-amber-400" /> : <PenLine className="w-5 h-5 text-gray-500 dark:text-gray-400" />}
                   </div>
                   <div className="text-left">
                     <div className="font-medium text-gray-900 dark:text-gray-100">{quiz.tag}</div>

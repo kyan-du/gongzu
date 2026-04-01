@@ -28,12 +28,24 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       const qContent = JSON.parse(question.content as string);
       let correct = false;
 
+      let correctAnswer = '';
+
       if (question.type === 'choice') {
         correct = ans.answer?.toUpperCase() === qAnswer.answer?.toUpperCase();
+        correctAnswer = qAnswer.answer || '';
       } else if (question.type === 'blank') {
         const userAns = (ans.answer || '').trim().toLowerCase();
         const accepts = qContent.blanks?.[0]?.accepts || [qAnswer.answers?.[0]];
         correct = accepts.some((a: string) => a.toLowerCase() === userAns);
+        correctAnswer = qAnswer.answers?.[0] || '';
+      } else if (question.type === 'reading') {
+        // answer is array like ["B", "A", "C"], user submits comma-separated "B,A,C"
+        const userAnswers = (ans.answer || '').split(',').map((a: string) => a.trim().toUpperCase());
+        const expectedAnswers = Array.isArray(qAnswer) ? qAnswer : (qAnswer.answers || []);
+        correct = expectedAnswers.length > 0 && expectedAnswers.every((exp: string, i: number) => 
+          userAnswers[i]?.toUpperCase() === exp.toUpperCase()
+        );
+        correctAnswer = expectedAnswers.join(',');
       }
 
       if (correct) correctCount++;
@@ -47,7 +59,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
         questionId: ans.questionId,
         correct,
         userAnswer: ans.answer,
-        correctAnswer: question.type === 'choice' ? qAnswer.answer : (qAnswer.answers?.[0] || ''),
+        correctAnswer,
         explanation: question.explanation,
       });
     }
