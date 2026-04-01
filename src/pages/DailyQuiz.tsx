@@ -11,6 +11,7 @@ export default function DailyQuiz() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [quizzes, setQuizzes] = useState<any[]>([]);
+  const avatarSrc = userId === 'cyan' ? '/avatar-cyan.jpg' : userId === 'ryan' ? '/avatar-ryan.jpg' : '/avatar-parent.jpg';
 
   useEffect(() => {
     if (!isLoggedIn()) {
@@ -53,12 +54,18 @@ export default function DailyQuiz() {
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
         {/* Unified header */}
         <div className="bg-white dark:bg-gray-800 shadow-sm">
-          <div className="max-w-2xl mx-auto px-4 py-3 flex items-center gap-3">
-            <img src="/logo-night-64.png" alt="拱卒" className="w-8 h-8 rounded-full object-cover dark:hidden" />
-            <img src="/logo-day-64.png" alt="拱卒" className="w-8 h-8 rounded-full object-cover hidden dark:block" />
-            <div>
-              <span className="text-lg font-bold text-gray-900 dark:text-gray-100">拱卒</span>
-              <p className="text-xs text-gray-400 dark:text-gray-500 -mt-0.5">日拱一卒，功不唐捐</p>
+          <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <img src="/logo-night-64.png" alt="拱卒" className="w-8 h-8 rounded-full object-cover dark:hidden" />
+              <img src="/logo-day-64.png" alt="拱卒" className="w-8 h-8 rounded-full object-cover hidden dark:block" />
+              <div>
+                <span className="text-lg font-bold text-gray-900 dark:text-gray-100">拱卒</span>
+                <p className="text-xs text-gray-400 dark:text-gray-500 -mt-0.5">日拱一卒，功不唐捐</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{userName}</span>
+              <img src={avatarSrc} alt={userName} className="w-8 h-8 rounded-full object-cover" />
             </div>
           </div>
         </div>
@@ -103,12 +110,18 @@ export default function DailyQuiz() {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
         <div className="bg-white dark:bg-gray-800 shadow-sm">
-          <div className="max-w-2xl mx-auto px-4 py-3 flex items-center gap-3">
-            <img src="/logo-night-64.png" alt="拱卒" className="w-8 h-8 rounded-full object-cover dark:hidden" />
-            <img src="/logo-day-64.png" alt="拱卒" className="w-8 h-8 rounded-full object-cover hidden dark:block" />
-            <div>
-              <span className="text-lg font-bold text-gray-900 dark:text-gray-100">拱卒</span>
-              <p className="text-xs text-gray-400 dark:text-gray-500 -mt-0.5">日拱一卒，功不唐捐</p>
+          <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <img src="/logo-night-64.png" alt="拱卒" className="w-8 h-8 rounded-full object-cover dark:hidden" />
+              <img src="/logo-day-64.png" alt="拱卒" className="w-8 h-8 rounded-full object-cover hidden dark:block" />
+              <div>
+                <span className="text-lg font-bold text-gray-900 dark:text-gray-100">拱卒</span>
+                <p className="text-xs text-gray-400 dark:text-gray-500 -mt-0.5">日拱一卒，功不唐捐</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{userName}</span>
+              <img src={avatarSrc} alt={userName} className="w-8 h-8 rounded-full object-cover" />
             </div>
           </div>
         </div>
