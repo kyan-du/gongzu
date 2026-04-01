@@ -90,7 +90,7 @@ export default function Home() {
       <div className="bg-white shadow-sm">
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <img src="/logo-64.png" alt="拱卒" className="w-8 h-8 rounded-full object-cover" />
+            <div className="w-8 h-8 rounded-lg bg-gray-900 flex items-center justify-center text-white text-sm font-bold">卒</div>
             <span className="text-lg font-bold text-gray-900">拱卒</span>
           </div>
           <div className="relative" ref={menuRef}>
