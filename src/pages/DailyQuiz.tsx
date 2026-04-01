@@ -1,5 +1,4 @@
 import { getSlug } from '../lib/tags';
-import { getSlug } from '../lib/tags';
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { isLoggedIn, login } from '../lib/api';
