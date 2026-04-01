@@ -5,6 +5,8 @@ const tagToSlug: Record<string, string> = {
   '西游记': 'journey-to-the-west',
   '数学': 'math',
   '语文': 'chinese',
+  '阅读理解·名人故事': 'reading-stories',
+  '阅读理解': 'reading',
 };
 
 const slugToTag: Record<string, string> = Object.fromEntries(
