@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { logout } from '../lib/api';
 import { useNavigate, useParams } from 'react-router-dom';
+import { logout } from '../lib/api';
 
 interface Quiz {
   id: string;
@@ -43,7 +43,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* 顶部导航 */}
       <div className="bg-white shadow-sm px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <img src="/logo-64.png" alt="拱卒" className="w-8 h-8 rounded" />
@@ -61,7 +60,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* 设置面板 */}
       {showSettings && (
         <div className="bg-white border-b px-4 py-3 shadow-sm">
           <button
@@ -71,7 +69,7 @@ export default function Home() {
             🔄 切换用户
           </button>
           <button
-            onClick={() => logout(); navigate('/')}
+            onClick={() => { logout(); navigate('/'); }}
             className="w-full text-left py-2 px-3 text-sm text-red-600 hover:bg-red-50 rounded"
           >
             🚪 退出登录
@@ -79,15 +77,12 @@ export default function Home() {
         </div>
       )}
 
-      {/* 内容区 */}
       <div className="max-w-md mx-auto px-4 py-6">
-        {/* 日期 */}
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-gray-900">📅 今天 {dateStr}</h2>
           <p className="text-sm text-gray-500">{dayStr}</p>
         </div>
 
-        {/* 作业列表 */}
         {loading ? (
           <div className="text-center text-gray-400 py-12">加载中...</div>
         ) : quizzes.length === 0 ? (
@@ -102,7 +97,7 @@ export default function Home() {
               <button
                 key={quiz.id}
                 onClick={() => navigate(`/${userId}/quiz/${quiz.id}`)}
-                className="w-full bg-white rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition active:scale-98"
+                className="w-full bg-white rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition active:scale-95"
               >
                 <div className="flex items-center gap-3">
                   <div className="text-2xl">
