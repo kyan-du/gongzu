@@ -73,7 +73,7 @@ export default function Quiz() {
       <div className="min-h-screen flex items-center justify-center dark:bg-gray-900">
         <div className="text-center">
           <p className="text-gray-500 dark:text-gray-400">找不到这份作业</p>
-          <button onClick={() => navigate(`/${userId}/today`)} className="mt-4 text-blue-600 dark:text-blue-400 hover:underline">返回首页</button>
+          <button onClick={() => navigate(`/${userId}/today`)} className="mt-4 text-blue-600 dark:text-blue-400 hover:underline">返回</button>
         </div>
       </div>
     );
@@ -154,14 +154,14 @@ export default function Quiz() {
             onClick={handleSubmit}
             className="w-full bg-blue-600 dark:bg-blue-500 text-white py-4 px-6 rounded-xl font-bold text-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition shadow-md mt-6 mb-8"
           >
-            📤 交卷（{answeredCount}/{totalCount}）
+            交卷（{answeredCount}/{totalCount}）
           </button>
         ) : (
           <button
             onClick={() => navigate(`/${userId}/today`)}
             className="w-full bg-gray-600 dark:bg-gray-500 text-white py-4 px-6 rounded-xl font-bold text-lg hover:bg-gray-700 dark:hover:bg-gray-600 transition shadow-md mt-6 mb-8"
           >
-            🏠 返回首页
+            返回
           </button>
         )}
       </div>

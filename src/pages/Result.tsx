@@ -12,7 +12,7 @@ export default function Result() {
           onClick={() => navigate(`/${userId}/today`)}
           className="mt-4 text-blue-600 hover:underline"
         >
-          返回首页
+          返回
         </button>
       </div>
     </div>

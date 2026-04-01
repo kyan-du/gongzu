@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
+import { Check, X } from 'lucide-react';
 
 interface ChoiceQuestionProps {
   question: any;
@@ -18,6 +19,12 @@ export default function ChoiceQuestion({ question, index, onAnswer, submitted, r
     onAnswer(label);
   };
 
+  // Use 2-column layout if all options are short (≤12 chars)
+  const useGrid = useMemo(() => {
+    const options = content.options || [];
+    return options.length >= 2 && options.every((opt: any) => opt.text.length <= 12);
+  }, [content.options]);
+
   return (
     <div className="mb-6 p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm">
       <div className="flex items-start gap-2 mb-4">
@@ -25,7 +32,7 @@ export default function ChoiceQuestion({ question, index, onAnswer, submitted, r
         <p className="text-base text-gray-900 dark:text-gray-100 leading-relaxed">{content.stem}</p>
       </div>
 
-      <div className="space-y-2 ml-5">
+      <div className={`ml-5 ${useGrid ? 'grid grid-cols-2 gap-2' : 'space-y-2'}`}>
         {content.options?.map((opt: any) => {
           const isSelected = selected === opt.label;
           const isCorrect = result?.correctAnswer === opt.label;
@@ -45,12 +52,12 @@ export default function ChoiceQuestion({ question, index, onAnswer, submitted, r
               key={opt.label}
               onClick={() => handleSelect(opt.label)}
               disabled={submitted}
-              className={`w-full text-left px-4 py-3 rounded-lg border-2 transition ${style}`}
+              className={`w-full text-left px-3 py-2.5 rounded-lg border-2 transition text-sm ${style}`}
             >
-              <span className="font-medium mr-2">{opt.label}.</span>
+              <span className="font-medium mr-1.5">{opt.label}.</span>
               <span>{opt.text}</span>
-              {submitted && isCorrect && <span className="float-right">✅</span>}
-              {submitted && isWrong && <span className="float-right">❌</span>}
+              {submitted && isCorrect && <Check className="inline w-4 h-4 text-green-500 float-right mt-0.5" />}
+              {submitted && isWrong && <X className="inline w-4 h-4 text-red-500 float-right mt-0.5" />}
             </button>
           );
         })}

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Check, X } from 'lucide-react';
 import RichPassage from './RichPassage';
 
 interface ReadingQuestionProps {
@@ -68,7 +69,7 @@ export default function ReadingQuestion({ question, index, onAnswer, submitted, 
               </span>
               <p className="text-sm text-gray-900 dark:text-gray-100 leading-relaxed">{sq.stem}</p>
             </div>
-            <div className="space-y-2 ml-5">
+            <div className={`ml-5 ${sq.options?.length >= 2 && sq.options.every((o: any) => o.text.length <= 12) ? 'grid grid-cols-2 gap-2' : 'space-y-2'}`}>
               {sq.options?.map((opt: any) => {
                 const isSelected = selected[qIdx] === opt.label;
                 const isCorrectOpt = submitted && correctAnswer === opt.label;
@@ -90,10 +91,10 @@ export default function ReadingQuestion({ question, index, onAnswer, submitted, 
                     disabled={submitted}
                     className={`w-full text-left px-3 py-2.5 rounded-lg border-2 transition text-sm ${style}`}
                   >
-                    <span className="font-medium mr-2">{opt.label}.</span>
+                    <span className="font-medium mr-1.5">{opt.label}.</span>
                     <span>{opt.text}</span>
-                    {submitted && isCorrectOpt && <span className="float-right">✅</span>}
-                    {submitted && isWrong && <span className="float-right">❌</span>}
+                    {submitted && isCorrectOpt && <Check className="inline w-4 h-4 text-green-500 float-right mt-0.5" />}
+                    {submitted && isWrong && <X className="inline w-4 h-4 text-red-500 float-right mt-0.5" />}
                   </button>
                 );
               })}
