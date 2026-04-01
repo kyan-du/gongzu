@@ -86,11 +86,15 @@ export default function Quiz() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
       <div className="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-10">
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
-          <button onClick={() => navigate(`/${userId}/home`)} className="text-blue-600 dark:text-blue-400 font-medium">
-            ← 返回
-          </button>
-          <span className="font-bold text-gray-900 dark:text-gray-100">{quiz.tag}</span>
-          <span className="text-sm text-gray-500 dark:text-gray-400">{answeredCount}/{totalCount}</span>
+          <div className="flex items-center gap-3">
+            <button onClick={() => navigate(`/${userId}/home`)} className="text-gray-400 dark:text-gray-500 hover:text-blue-500 dark:hover:text-blue-400 transition">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+            </button>
+            <img src="/logo-night-64.png" alt="拱卒" className="w-7 h-7 rounded-full object-cover dark:hidden" />
+            <img src="/logo-day-64.png" alt="拱卒" className="w-7 h-7 rounded-full object-cover hidden dark:block" />
+            <span className="font-bold text-gray-900 dark:text-gray-100">{quiz.tag}</span>
+          </div>
+          <span className="text-sm font-medium text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full">{answeredCount}/{totalCount}</span>
         </div>
       </div>
 
