@@ -1,183 +1,154 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getQuizzes, submitAnswers, type DailyQuiz, type SubmitAnswer } from '../lib/api';
 import ChoiceQuestion from '../components/ChoiceQuestion';
 import BlankQuestion from '../components/BlankQuestion';
 
 export default function Quiz() {
   const { userId, quizId } = useParams<{ userId: string; quizId: string }>();
   const navigate = useNavigate();
-  const [quiz, setQuiz] = useState<DailyQuiz | null>(null);
-  const [answers, setAnswers] = useState<Record<string, any>>({});
+  const [quiz, setQuiz] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState('');
+  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [submitted, setSubmitted] = useState(false);
+  const [results, setResults] = useState<any[]>([]);
+  const [score, setScore] = useState({ correct: 0, total: 0 });
 
   useEffect(() => {
-    loadQuiz();
-  }, [quizId]);
-
-  const loadQuiz = async () => {
-    try {
-      const quizzes = await getQuizzes(userId);
-      const foundQuiz = quizzes.find((q) => q.id === quizId);
-      if (!foundQuiz) {
-        throw new Error('Quiz not found');
+    const fetchQuiz = async () => {
+      try {
+        const today = new Date().toISOString().split('T')[0];
+        const res = await fetch(`/api/quiz?userId=${userId}&date=${today}`);
+        const data = await res.json();
+        const found = data.quizzes?.find((q: any) => q.id === quizId);
+        setQuiz(found || null);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoading(false);
       }
-      setQuiz(foundQuiz);
-    } catch (err: any) {
-      if (err.message.includes('Unauthorized')) {
-        navigate(`/${userId}/login`);
-      } else {
-        setError(err.message);
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
+    fetchQuiz();
+  }, [userId, quizId]);
 
-  const handleAnswerChange = (questionId: string, answer: any) => {
+  const handleAnswer = (questionId: string, answer: string) => {
     setAnswers((prev) => ({ ...prev, [questionId]: answer }));
   };
 
   const handleSubmit = async () => {
     if (!quiz) return;
-
-    // 检查是否所有题目都已作答
-    const unanswered = quiz.questions.filter((q) => {
-      const answer = answers[q.id];
-      if (q.type === 'choice') {
-        return !answer;
-      }
-      if (q.type === 'blank') {
-        return !answer || answer.some((a: string) => !a.trim());
-      }
-      return false;
-    });
-
-    if (unanswered.length > 0) {
-      alert(`还有 ${unanswered.length} 题未作答，请完成后再提交`);
-      return;
-    }
-
-    setSubmitting(true);
-    setError('');
-
     try {
-      const submitData: SubmitAnswer[] = quiz.questions.map((q) => ({
+      const answerList = quiz.questions.map((q: any) => ({
         questionId: q.id,
-        answer: answers[q.id],
+        answer: answers[q.id] || '',
       }));
 
-      const result = await submitAnswers(quiz.id, submitData);
-      // 跳转到结果页
-      navigate(`/${userId}/result/${quiz.id}`, { state: { result, quiz } });
-    } catch (err: any) {
-      setError(err.message);
-      alert(err.message);
-    } finally {
-      setSubmitting(false);
+      const res = await fetch('/api/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, quizId, answers: answerList }),
+      });
+
+      const data = await res.json();
+      setResults(data.results || []);
+      setScore({ correct: data.score || 0, total: data.total || 0 });
+      setSubmitted(true);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (e) {
+      console.error(e);
+      alert('提交失败，请重试');
     }
   };
 
+  const getResult = (questionId: string) => {
+    return results.find((r) => r.questionId === questionId);
+  };
+
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-gray-600">加载中...</div>
-      </div>
-    );
+    return <div className="min-h-screen flex items-center justify-center text-gray-400">加载中...</div>;
   }
 
   if (!quiz) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-red-600">找不到作业</div>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-500">找不到这份作业</p>
+          <button onClick={() => navigate(`/${userId}/home`)} className="mt-4 text-blue-600 hover:underline">返回首页</button>
+        </div>
       </div>
     );
   }
 
-  const answeredCount = Object.keys(answers).filter((qid) => {
-    const answer = answers[qid];
-    if (Array.isArray(answer)) {
-      return answer.some((a) => a && a.trim());
-    }
-    return answer && answer.trim && answer.trim();
-  }).length;
+  const answeredCount = Object.keys(answers).length;
+  const totalCount = quiz.questions?.length || 0;
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-24">
-      {/* 顶部导航 */}
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
-        <div className="mobile-container flex items-center justify-between py-4">
-          <button
-            onClick={() => navigate(`/${userId}/home`)}
-            className="text-gray-600 hover:text-gray-900"
-          >
-            ← 返回
-          </button>
-          <div className="text-center">
-            <div className="font-semibold text-gray-900">{quiz.title || quiz.tag}</div>
-            <div className="text-xs text-gray-500 mt-1">
-              {answeredCount}/{quiz.questions.length}
-            </div>
-          </div>
-          <div className="w-12" />
-        </div>
+    <div className="min-h-screen bg-gray-50">
+      {/* 顶部 */}
+      <div className="bg-white shadow-sm px-4 py-3 flex items-center justify-between sticky top-0 z-10">
+        <button onClick={() => navigate(`/${userId}/home`)} className="text-blue-600 font-medium">
+          ← 返回
+        </button>
+        <span className="font-bold text-gray-900">{quiz.tag}</span>
+        <span className="text-sm text-gray-500">{answeredCount}/{totalCount}</span>
       </div>
 
-      <div className="mobile-container mt-6 space-y-4">
-        {error && (
-          <div className="p-4 bg-red-50 text-red-700 rounded-lg">
-            {error}
+      {/* 成绩概览（交卷后） */}
+      {submitted && (
+        <div className="bg-white mx-4 mt-4 rounded-xl shadow-sm p-6 text-center">
+          <div className="text-4xl font-bold mb-2">
+            {score.correct === score.total ? '🎉' : score.correct >= score.total * 0.8 ? '👍' : '💪'}
           </div>
-        )}
+          <div className="text-3xl font-bold text-gray-900">{score.correct} / {score.total}</div>
+          <div className="text-sm text-gray-500 mt-1">正确率 {Math.round((score.correct / score.total) * 100)}%</div>
+        </div>
+      )}
 
-        {quiz.questions.map((question, index) => {
-          if (question.type === 'choice') {
+      {/* 题目列表 */}
+      <div className="max-w-md mx-auto px-4 py-4">
+        {quiz.questions?.map((q: any, i: number) => {
+          if (q.type === 'choice') {
             return (
               <ChoiceQuestion
-                key={question.id}
-                question={question}
-                index={index}
-                value={answers[question.id] || null}
-                onChange={(answer) => handleAnswerChange(question.id, answer)}
+                key={q.id}
+                question={q}
+                index={i}
+                onAnswer={(answer: string) => handleAnswer(q.id, answer)}
+                submitted={submitted}
+                result={getResult(q.id)}
               />
             );
           }
-
-          if (question.type === 'blank') {
+          if (q.type === 'blank') {
             return (
               <BlankQuestion
-                key={question.id}
-                question={question}
-                index={index}
-                value={answers[question.id] || null}
-                onChange={(answer) => handleAnswerChange(question.id, answer)}
+                key={q.id}
+                question={q}
+                index={i}
+                onAnswer={(answer: string) => handleAnswer(q.id, answer)}
+                submitted={submitted}
+                result={getResult(q.id)}
               />
             );
           }
-
-          return (
-            <div key={question.id} className="bg-white rounded-xl p-6 shadow-sm">
-              <div className="text-sm text-gray-500">
-                题型 "{question.type}" 暂未实现
-              </div>
-            </div>
-          );
+          return null;
         })}
-      </div>
 
-      {/* 底部提交按钮 */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
-        <div className="mobile-container">
+        {/* 交卷按钮 */}
+        {!submitted ? (
           <button
             onClick={handleSubmit}
-            disabled={submitting || answeredCount < quiz.questions.length}
-            className="w-full bg-blue-600 text-white py-4 px-6 rounded-xl font-medium hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition flex items-center justify-center gap-2"
+            className="w-full bg-blue-600 text-white py-4 px-6 rounded-xl font-bold text-lg hover:bg-blue-700 transition shadow-md mt-6 mb-8"
           >
-            {submitting ? '提交中...' : '📤 交卷'}
+            📤 交卷（{answeredCount}/{totalCount}）
           </button>
-        </div>
+        ) : (
+          <button
+            onClick={() => navigate(`/${userId}/home`)}
+            className="w-full bg-gray-600 text-white py-4 px-6 rounded-xl font-bold text-lg hover:bg-gray-700 transition shadow-md mt-6 mb-8"
+          >
+            🏠 返回首页
+          </button>
+        )}
       </div>
     </div>
   );
