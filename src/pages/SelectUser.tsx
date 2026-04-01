@@ -22,39 +22,43 @@ export default function SelectUser() {
           <h1 className="text-3xl font-bold text-gray-900 drop-shadow-sm">你是谁？</h1>
         </div>
 
-        <div className="flex gap-6 justify-center mb-6">
+        <div className="grid grid-cols-3 gap-4">
           <button
             onClick={() => navigate('/cyan/home')}
-            className="flex flex-col items-center bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-6 hover:bg-white/90 transition active:scale-95 w-36"
+            className="flex flex-col items-center bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-5 hover:bg-white/90 transition active:scale-95"
           >
             <img
               src="/avatar-cyan.jpg"
               alt="彤彤"
-              className="w-24 h-24 rounded-full object-cover shadow-md mb-3"
+              className="w-20 h-20 rounded-full object-cover shadow-md mb-3"
             />
-            <span className="text-xl font-bold text-blue-600">彤彤</span>
+            <span className="text-lg font-bold text-blue-600">彤彤</span>
           </button>
 
           <button
             onClick={() => navigate('/ryan/home')}
-            className="flex flex-col items-center bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-6 hover:bg-white/90 transition active:scale-95 w-36"
+            className="flex flex-col items-center bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-5 hover:bg-white/90 transition active:scale-95"
           >
             <img
               src="/avatar-ryan.jpg"
               alt="可可"
-              className="w-24 h-24 rounded-full object-cover shadow-md mb-3"
+              className="w-20 h-20 rounded-full object-cover shadow-md mb-3"
             />
-            <span className="text-xl font-bold text-green-600">可可</span>
+            <span className="text-lg font-bold text-green-600">可可</span>
+          </button>
+
+          <button
+            onClick={() => navigate('/parent')}
+            className="flex flex-col items-center bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-5 hover:bg-white/90 transition active:scale-95"
+          >
+            <img
+              src="/avatar-parent.jpg"
+              alt="家长"
+              className="w-20 h-20 rounded-full object-cover shadow-md mb-3"
+            />
+            <span className="text-lg font-bold text-purple-600">家长</span>
           </button>
         </div>
-
-        <button
-          onClick={() => navigate('/parent')}
-          className="w-full bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-4 hover:bg-white/90 transition active:scale-95 flex items-center justify-center gap-2"
-        >
-          <img src="/avatar-parent.jpg" alt="家长" className="w-8 h-8 rounded-full object-cover" />
-          <span className="text-lg font-semibold text-gray-700">家长入口</span>
-        </button>
       </div>
     </div>
   );
