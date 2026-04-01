@@ -1,5 +1,6 @@
 import { getSlug } from '../lib/tags';
-import { Users, LogOut, ChevronLeft, ChevronRight, BookOpen, Languages, PenLine, Clock } from 'lucide-react';
+import { Users, LogOut, ChevronLeft, ChevronRight, BookOpen, Languages, PenLine, Clock, Sun, Moon, Monitor } from 'lucide-react';
+import { getStoredTheme, setStoredTheme } from '../lib/theme';
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { logout } from '../lib/api';
@@ -35,6 +36,7 @@ export default function Home() {
   const [showMenu, setShowMenu] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date());
   const menuRef = useRef<HTMLDivElement>(null);
+  const [theme, setTheme] = useState(getStoredTheme);
 
   const userName = userId === 'cyan' ? '彤彤' : userId === 'ryan' ? '可可' : userId;
   const avatarSrc = userId === 'cyan' ? '/avatar-cyan.jpg' : '/avatar-ryan.jpg';
@@ -67,6 +69,15 @@ export default function Home() {
     }
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [showMenu]);
+
+  const cycleTheme = () => {
+    const next = theme === 'system' ? 'light' : theme === 'light' ? 'dark' : 'system';
+    setTheme(next);
+    setStoredTheme(next);
+  };
+
+  const themeLabel = theme === 'light' ? '浅色模式' : theme === 'dark' ? '深色模式' : '跟随系统';
+  const ThemeIcon = theme === 'light' ? Sun : theme === 'dark' ? Moon : Monitor;
 
   const goPrev = () => {
     const d = new Date(currentDate);
@@ -126,6 +137,13 @@ export default function Home() {
                   className="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
                 >
                   <span className="flex items-center gap-2.5"><LogOut className="w-4 h-4 text-gray-400 dark:text-gray-500" />退出登录</span>
+                </button>
+                <div className="h-px bg-gray-100 dark:bg-gray-700 mx-3 my-1" />
+                <button
+                  onClick={cycleTheme}
+                  className="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                >
+                  <span className="flex items-center gap-2.5"><ThemeIcon className="w-4 h-4 text-gray-400 dark:text-gray-500" />{themeLabel}</span>
                 </button>
               </div>
             )}
