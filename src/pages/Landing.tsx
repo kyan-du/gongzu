@@ -20,7 +20,7 @@ export default function Landing() {
 
   return (
     <div
-      className="relative min-h-screen flex items-center justify-center overflow-hidden cursor-pointer"
+      className="relative h-dvh flex items-center justify-center overflow-hidden cursor-pointer"
       onClick={handleClick}
     >
       <video

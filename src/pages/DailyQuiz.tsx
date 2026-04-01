@@ -49,7 +49,7 @@ export default function DailyQuiz() {
 
   if (needsAuth) {
     return (
-      <div className="relative min-h-screen flex items-center justify-center p-4 overflow-hidden">
+      <div className="relative h-dvh flex items-center justify-center p-4 overflow-hidden">
         <video autoPlay muted loop playsInline poster="/bg-poster.jpg" className="absolute inset-0 w-full h-full object-cover">
           <source src="/bg-video.mp4" type="video/mp4" />
         </video>
@@ -88,12 +88,12 @@ export default function DailyQuiz() {
   }
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center text-gray-400">加载中...</div>;
+    return <div className="h-dvh flex items-center justify-center text-gray-400">加载中...</div>;
   }
 
   if (quizzes.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="h-dvh flex items-center justify-center">
         <div className="text-center">
           <div className="text-4xl mb-4">📝</div>
           <p className="text-gray-500">{date} 还没有作业</p>

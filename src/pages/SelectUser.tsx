@@ -4,7 +4,7 @@ export default function SelectUser() {
   const navigate = useNavigate();
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center p-4 overflow-hidden">
+    <div className="relative h-dvh flex items-center justify-center p-4 overflow-hidden">
       <video
         autoPlay
         muted
