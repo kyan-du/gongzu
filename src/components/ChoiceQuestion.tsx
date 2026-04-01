@@ -7,10 +7,11 @@ interface ChoiceQuestionProps {
   onAnswer: (answer: string) => void;
   submitted?: boolean;
   result?: any;
+  initialAnswer?: string;
 }
 
-export default function ChoiceQuestion({ question, index, onAnswer, submitted, result }: ChoiceQuestionProps) {
-  const [selected, setSelected] = useState('');
+export default function ChoiceQuestion({ question, index, onAnswer, submitted, result, initialAnswer }: ChoiceQuestionProps) {
+  const [selected, setSelected] = useState(initialAnswer || '');
   const content = question.content;
 
   const handleSelect = (label: string) => {

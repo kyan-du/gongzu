@@ -79,3 +79,85 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     });
   }
 };
+
+
+// GET /api/submit?userId=cyan&quizId=xxx - check existing submissions
+export const onRequestGet: PagesFunction<Env> = async (context) => {
+  try {
+    const url = new URL(context.request.url);
+    const userId = url.searchParams.get('userId');
+    const quizId = url.searchParams.get('quizId');
+
+    if (!userId || !quizId) {
+      return new Response(JSON.stringify({ error: 'userId and quizId required' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    const submissions = await context.env.DB.prepare(
+      'SELECT question_id, answer, correct FROM submissions WHERE user_id = ? AND quiz_id = ?'
+    ).bind(userId, quizId).all();
+
+    if (submissions.results.length === 0) {
+      return new Response(JSON.stringify({ submitted: false, results: [] }), {
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Also fetch questions to build full results
+    const quiz = await context.env.DB.prepare(
+      'SELECT * FROM daily_quizzes WHERE id = ?'
+    ).bind(quizId).first();
+
+    if (!quiz) {
+      return new Response(JSON.stringify({ submitted: false, results: [] }), {
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    const questionIds = JSON.parse(quiz.question_ids as string);
+    const results = [];
+
+    for (const sub of submissions.results) {
+      const question = await context.env.DB.prepare(
+        'SELECT * FROM questions WHERE id = ?'
+      ).bind(sub.question_id).first();
+
+      if (question) {
+        const qAnswer = JSON.parse(question.answer as string);
+        let correctAnswer = '';
+        if (question.type === 'choice') {
+          correctAnswer = qAnswer.answer || '';
+        } else if (question.type === 'blank') {
+          correctAnswer = qAnswer.answers?.[0] || '';
+        } else if (question.type === 'reading') {
+          correctAnswer = Array.isArray(qAnswer) ? qAnswer.join(',') : (qAnswer.answers || []).join(',');
+        }
+
+        results.push({
+          questionId: sub.question_id,
+          answer: sub.answer,
+          correct: sub.correct === 1,
+          correctAnswer,
+        });
+      }
+    }
+
+    const correctCount = results.filter(r => r.correct).length;
+
+    return new Response(JSON.stringify({
+      submitted: true,
+      total: questionIds.length,
+      correct: correctCount,
+      results,
+    }), {
+      headers: { 'Content-Type': 'application/json' },
+    });
+  } catch (e: any) {
+    return new Response(JSON.stringify({ error: e.message }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+};

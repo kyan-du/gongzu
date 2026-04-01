@@ -8,15 +8,22 @@ interface ReadingQuestionProps {
   onAnswer: (answer: string) => void;
   submitted?: boolean;
   result?: any;
+  initialAnswer?: string;
 }
 
-export default function ReadingQuestion({ question, index, onAnswer, submitted, result }: ReadingQuestionProps) {
+export default function ReadingQuestion({ question, index, onAnswer, submitted, result, initialAnswer }: ReadingQuestionProps) {
   const content = question.content;
   const passage = content.passage || '';
   const title = content.title || '';
   const subQuestions = content.questions || [];
   const answers: string[] = Array.isArray(question.answer) ? question.answer : [];
-  const [selected, setSelected] = useState<Record<number, string>>({});
+  const [selected, setSelected] = useState<Record<number, string>>(() => {
+    if (!initialAnswer) return {};
+    const parts = initialAnswer.split(',');
+    const init: Record<number, string> = {};
+    parts.forEach((p, i) => { if (p) init[i] = p; });
+    return init;
+  });
   const [collapsed, setCollapsed] = useState(false);
 
   const handleSelect = (qIdx: number, label: string) => {

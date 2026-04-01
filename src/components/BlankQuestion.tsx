@@ -6,14 +6,15 @@ interface BlankQuestionProps {
   onAnswer: (answer: string) => void;
   submitted?: boolean;
   result?: any;
+  initialAnswer?: string;
 }
 
 function escapeRegex(s: string) {
   return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-export default function BlankQuestion({ question, index, onAnswer, submitted, result }: BlankQuestionProps) {
-  const [value, setValue] = useState('');
+export default function BlankQuestion({ question, index, onAnswer, submitted, result, initialAnswer }: BlankQuestionProps) {
+  const [value, setValue] = useState(initialAnswer || '');
   const content = question.content;
   const stem = content.stem || '';
   const hint = content.blanks?.[0]?.hint || '';
