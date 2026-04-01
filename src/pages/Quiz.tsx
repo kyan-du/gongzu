@@ -1,3 +1,4 @@
+import { getTag } from '../lib/tags';
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import ChoiceQuestion from '../components/ChoiceQuestion';
@@ -18,7 +19,7 @@ export default function Quiz() {
       try {
         const res = await fetch(`/api/quiz?userId=${userId}&date=${date}`);
         const data = await res.json();
-        const found = data.quizzes?.find((q: any) => q.tag === decodeURIComponent(tag || ''));
+        const found = data.quizzes?.find((q: any) => q.tag === getTag(tag || ''));
         setQuiz(found || null);
       } catch (e) {
         console.error(e);
