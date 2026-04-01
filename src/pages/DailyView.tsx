@@ -1,4 +1,5 @@
 import { getSlug } from '../lib/tags';
+import { normalizeQuiz } from '../lib/types';
 import { LogOut, CheckCircle, ChevronLeft, ChevronRight, ChevronDown, BookOpen, Languages, PenLine, Clock, Sun, Moon, Monitor, Users, Palette, Check } from 'lucide-react';
 import { getStoredTheme, setStoredTheme } from '../lib/theme';
 import { useState, useEffect, useRef } from 'react';
@@ -59,12 +60,12 @@ export default function DailyView() {
           fetch(`/api/status?userId=${userId}&date=${dateStr}`),
         ]);
         const data = await quizRes.json();
-        setQuizzes(data.quizzes || []);
+        setQuizzes((data.quizzes || []).map(normalizeQuiz));
         try {
           const statusData = await statusRes.json();
           const statusMap: Record<string, any> = {};
           for (const q of (statusData.quizzes || [])) {
-            statusMap[q.quizId] = {
+            statusMap[String(q.quizId)] = {
               completed: q.completed,
               answered: q.answered,
               total: q.totalQuestions,

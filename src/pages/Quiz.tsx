@@ -4,15 +4,17 @@ import { useParams, useNavigate } from 'react-router-dom';
 import ChoiceQuestion from '../components/ChoiceQuestion';
 import BlankQuestion from '../components/BlankQuestion';
 import ReadingQuestion from '../components/ReadingQuestion';
+import type { Quiz as QuizType, SubmissionResult } from '../lib/types';
+import { normalizeQuiz, normalizeSubmissionResults } from '../lib/types';
 
 export default function Quiz() {
   const { userId, date, tag } = useParams<{ userId: string; date: string; tag: string }>();
   const navigate = useNavigate();
-  const [quiz, setQuiz] = useState<any>(null);
+  const [quiz, setQuiz] = useState<QuizType | null>(null);
   const [loading, setLoading] = useState(true);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
-  const [results, setResults] = useState<any[]>([]);
+  const [results, setResults] = useState<SubmissionResult[]>([]);
   const [score, setScore] = useState({ correct: 0, total: 0 });
 
   useEffect(() => {
@@ -21,7 +23,28 @@ export default function Quiz() {
         const res = await fetch(`/api/quiz?userId=${userId}&date=${date}`);
         const data = await res.json();
         const found = data.quizzes?.find((q: any) => q.tag === getTag(tag || ''));
-        setQuiz(found || null);
+        if (!found) {
+          setQuiz(null);
+          setLoading(false);
+          return;
+        }
+        const normalized = normalizeQuiz(found);
+        setQuiz(normalized);
+
+        // Check if already submitted — restore answers and results
+        const subRes = await fetch(`/api/submit?userId=${userId}&quizId=${normalized.id}`);
+        const subData = await subRes.json();
+        if (subData.submitted) {
+          const normalizedResults = normalizeSubmissionResults(subData.results || []);
+          setResults(normalizedResults);
+          setScore({ correct: subData.correct || 0, total: subData.total || 0 });
+          const restoredAnswers: Record<string, string> = {};
+          for (const r of normalizedResults) {
+            restoredAnswers[r.questionId] = r.answer;
+          }
+          setAnswers(restoredAnswers);
+          setSubmitted(true);
+        }
       } catch (e) {
         console.error(e);
       } finally {
@@ -50,7 +73,7 @@ export default function Quiz() {
       });
 
       const data = await res.json();
-      setResults(data.results || []);
+      setResults(normalizeSubmissionResults(data.results || []));
       setScore({ correct: data.score || 0, total: data.total || 0 });
       setSubmitted(true);
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -119,7 +142,7 @@ export default function Quiz() {
                 onAnswer={(answer: string) => handleAnswer(q.id, answer)}
                 submitted={submitted}
                 result={getResult(q.id)}
-                initialAnswer={answers[String(q.id)]}
+                initialAnswer={answers[q.id]}
               />
             );
           }
@@ -132,7 +155,7 @@ export default function Quiz() {
                 onAnswer={(answer: string) => handleAnswer(q.id, answer)}
                 submitted={submitted}
                 result={getResult(q.id)}
-                initialAnswer={answers[String(q.id)]}
+                initialAnswer={answers[q.id]}
               />
             );
           }
@@ -145,7 +168,7 @@ export default function Quiz() {
                 onAnswer={(answer: string) => handleAnswer(q.id, answer)}
                 submitted={submitted}
                 result={getResult(q.id)}
-                initialAnswer={answers[String(q.id)]}
+                initialAnswer={answers[q.id]}
               />
             );
           }
