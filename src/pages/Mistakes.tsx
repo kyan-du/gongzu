@@ -30,9 +30,9 @@ export default function Mistakes() {
   const [points, setPoints] = useState<KnowledgePoint[]>([]);
   const [masteredPoints, setMasteredPoints] = useState<KnowledgePoint[]>([]);
   const [loading, setLoading] = useState(true);
-  const [expandedPoint, setExpandedPoint] = useState<string | null>(null);
-  const [mistakes, setMistakes] = useState<MistakeDetail[]>([]);
-  const [loadingMistakes, setLoadingMistakes] = useState(false);
+  const [expandedPoints, setExpandedPoints] = useState<Set<string>>(new Set());
+  const [mistakesMap, setMistakesMap] = useState<Record<string, MistakeDetail[]>>({});
+  
   const [showMastered, setShowMastered] = useState(false);
 
   useEffect(() => {
@@ -54,24 +54,23 @@ export default function Mistakes() {
   };
 
   const fetchMistakesForPoint = async (point: string) => {
-    setLoadingMistakes(true);
+    
     try {
       const res = await fetch(`/api/mistakes?userId=${userId}&point=${encodeURIComponent(point)}`);
       const data = await res.json();
-      setMistakes(data.mistakes || []);
+      setMistakesMap(prev => ({ ...prev, [point]: data.mistakes || [] }));
     } catch (e) {
       console.error('Failed to fetch mistakes:', e);
     } finally {
-      setLoadingMistakes(false);
+      
     }
   };
 
   const togglePoint = async (point: KnowledgePoint) => {
-    if (expandedPoint === point.id) {
-      setExpandedPoint(null);
-      setMistakes([]);
+    if (expandedPoints.has(point.id)) {
+      setExpandedPoints(prev => { const next = new Set(prev); next.delete(point.id); return next; });
     } else {
-      setExpandedPoint(point.id);
+      setExpandedPoints(prev => new Set(prev).add(point.id));
       await fetchMistakesForPoint(point.knowledgePoint);
     }
   };
@@ -89,8 +88,7 @@ export default function Mistakes() {
       });
       // 重新加载知识点列表
       await fetchPoints();
-      setExpandedPoint(null);
-      setMistakes([]);
+      setExpandedPoints(prev => { const next = new Set(prev); next.delete(pointId); return next; });
     } catch (e) {
       console.error('Failed to update mastery:', e);
     }
@@ -174,26 +172,26 @@ export default function Mistakes() {
                           </button>
                           <ChevronRight
                             className={`w-5 h-5 text-gray-400 transition-transform ${
-                              expandedPoint === point.id ? 'rotate-90' : ''
+                              expandedPoints.has(point.id) ? 'rotate-90' : ''
                             }`}
                           />
                         </div>
                       </button>
 
                       {/* 展开的错题列表 */}
-                      {expandedPoint === point.id && (
+                      {expandedPoints.has(point.id) && (
                         <div className="border-t border-gray-100 dark:border-gray-700">
-                          {loadingMistakes ? (
+                          {!mistakesMap[point.knowledgePoint] ? (
                             <div className="px-4 py-6 text-center text-sm text-gray-400 dark:text-gray-500">
                               加载中...
                             </div>
-                          ) : mistakes.length === 0 ? (
+                          ) : mistakesMap[point.knowledgePoint].length === 0 ? (
                             <div className="px-4 py-6 text-center text-sm text-gray-400 dark:text-gray-500">
                               没有错题记录
                             </div>
                           ) : (
                             <div className="divide-y divide-gray-100 dark:divide-gray-700">
-                              {mistakes.map((mistake, idx) => (
+                              {(mistakesMap[point.knowledgePoint] || []).map((mistake, idx) => (
                                 <div key={idx} className="px-4 py-3 space-y-2">
                                   <div className="text-xs text-gray-400 dark:text-gray-500">
                                     {mistake.date}
