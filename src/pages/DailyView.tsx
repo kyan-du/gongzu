@@ -1,6 +1,6 @@
 import { getSlug } from '../lib/tags';
 import { normalizeQuiz } from '../lib/types';
-import { LogOut, CheckCircle, ChevronLeft, ChevronRight, ChevronDown, BookOpen, Languages, PenLine, Clock, Sun, Moon, Monitor, Users, Palette, Check } from 'lucide-react';
+import { LogOut, CheckCircle, ChevronLeft, ChevronRight, ChevronDown, BookOpen, Languages, PenLine, Clock, Sun, Moon, Monitor, Users, Palette, Check, BookX } from 'lucide-react';
 import { getStoredTheme, setStoredTheme } from '../lib/theme';
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -152,6 +152,16 @@ export default function DailyView() {
                   </div>
                 </div>
                 <div className="h-px bg-gray-100 dark:bg-gray-700 mx-3 my-1" />
+                {/* Mistakes book */}
+                <button
+                  onClick={() => { setShowMenu(false); navigate(`/${userId}/mistakes`); }}
+                  className="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                >
+                  <span className="flex items-center gap-2.5">
+                    <BookX className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+                    错题本
+                  </span>
+                </button>
                 {/* Switch user group */}
                 <button
                   onClick={() => setExpandedSection(expandedSection === 'user' ? null : 'user')}

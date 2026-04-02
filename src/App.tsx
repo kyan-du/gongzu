@@ -6,6 +6,7 @@ import DailyView from './pages/DailyView';
 import Quiz from './pages/Quiz';
 import Result from './pages/Result';
 import ParentDashboard from './pages/ParentDashboard';
+import Mistakes from './pages/Mistakes';
 
 function App() {
   return (
@@ -19,6 +20,8 @@ function App() {
         {/* Main view: today or specific date */}
         <Route path="/:userId/today" element={<DailyView />} />
         <Route path="/:userId/home" element={<DailyView />} />
+        {/* Mistakes book */}
+        <Route path="/:userId/mistakes" element={<Mistakes />} />
         {/* Quiz by date + tag */}
         <Route path="/:userId/:date/:tag" element={<Quiz />} />
         {/* Date view (same as home but with date anchor) */}
