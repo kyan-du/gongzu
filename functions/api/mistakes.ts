@@ -74,6 +74,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
         const correctAnswerRaw = JSON.parse(row.correct_answer_raw as string);
 
         let stem = '';
+        let userAnswer = '';
         let correctAnswer = '';
 
         if (row.type === 'choice') {
@@ -83,10 +84,32 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
           stem = content.stem || '';
           correctAnswer = correctAnswerRaw.answers?.[0] || '';
         } else if (row.type === 'reading') {
-          stem = content.passage || '';
-          correctAnswer = Array.isArray(correctAnswerRaw) 
-            ? correctAnswerRaw.join(',') 
-            : (correctAnswerRaw.answers || []).join(',');
+          // For reading type, show the title + sub-questions that were wrong
+          const title = content.title || '阅读理解';
+          const subQuestions = content.questions || [];
+          const userAnswers = (row.user_answer as string).split(',');
+          const correctAnswers = Array.isArray(correctAnswerRaw) ? correctAnswerRaw : (correctAnswerRaw.answers || []);
+          
+          // Build a summary showing only the wrong sub-questions
+          const wrongParts: string[] = [];
+          for (let i = 0; i < subQuestions.length; i++) {
+            if (userAnswers[i] && correctAnswers[i] && userAnswers[i].trim() !== correctAnswers[i].trim()) {
+              wrongParts.push(`第${i + 1}题: ${subQuestions[i].stem || ''}`);
+            }
+          }
+          stem = title + (wrongParts.length > 0 ? ' — ' + wrongParts.join('; ') : '');
+          
+          // Show only wrong answers
+          const wrongUser: string[] = [];
+          const wrongCorrect: string[] = [];
+          for (let i = 0; i < subQuestions.length; i++) {
+            if (userAnswers[i] && correctAnswers[i] && userAnswers[i].trim() !== correctAnswers[i].trim()) {
+              wrongUser.push(`第${i + 1}题: ${userAnswers[i].trim()}`);
+              wrongCorrect.push(`第${i + 1}题: ${correctAnswers[i].trim()}`);
+            }
+          }
+          userAnswer = wrongUser.join(', ') || (row.user_answer as string);
+          correctAnswer = wrongCorrect.join(', ') || correctAnswers.join(',');
         }
 
         // 截断过长的 stem
@@ -100,9 +123,9 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
         mistakes.push({
           date,
           stem,
-          userAnswer: row.user_answer as string,
+          userAnswer: (row.type === 'reading') ? userAnswer : (row.user_answer as string),
           correctAnswer,
-          explanation: row.explanation as string || '',
+          explanation: (row.explanation as string) || '',
         });
       }
 
