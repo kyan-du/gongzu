@@ -78,10 +78,18 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
         let correctAnswer = '';
 
         if (row.type === 'choice') {
-          stem = content.stem || '';
-          correctAnswer = correctAnswerRaw.answer || '';
+          const options = content.options || [];
+          const optText = options.map((o: any) => \`\${o.label}. \${o.text}\`).join('  ');
+          stem = (content.stem || '') + '\n' + optText;
+          const ua = row.user_answer as string;
+          const ca = correctAnswerRaw.answer || '';
+          const userOpt = options.find((o: any) => o.label === ua);
+          const correctOpt = options.find((o: any) => o.label === ca);
+          userAnswer = userOpt ? \`\${ua}. \${userOpt.text}\` : ua;
+          correctAnswer = correctOpt ? \`\${ca}. \${correctOpt.text}\` : ca;
         } else if (row.type === 'blank') {
           stem = content.stem || '';
+          userAnswer = row.user_answer as string;
           correctAnswer = correctAnswerRaw.answers?.[0] || '';
         } else if (row.type === 'reading') {
           // For reading type, show each wrong sub-question with full stem + options
@@ -127,7 +135,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
         mistakes.push({
           date,
           stem,
-          userAnswer: (row.type === 'reading') ? userAnswer : (row.user_answer as string),
+          userAnswer: userAnswer || (row.user_answer as string),
           correctAnswer,
           explanation: (row.explanation as string) || '',
         });
