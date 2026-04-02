@@ -4,6 +4,20 @@ interface Env {
   WEBHOOK_TOKEN: string;
 }
 
+// 获取今天的日期（CST）
+function todayCST(): string {
+  const now = new Date();
+  const cst = new Date(now.getTime() + 8 * 60 * 60 * 1000);
+  return cst.toISOString().split('T')[0];
+}
+
+// 增加天数
+function addDays(dateStr: string, days: number): string {
+  const d = new Date(dateStr + 'T00:00:00Z');
+  d.setUTCDate(d.getUTCDate() + days);
+  return d.toISOString().split('T')[0];
+}
+
 export const onRequestPost: PagesFunction<Env> = async (context) => {
   try {
     const body = await context.request.json() as any;
@@ -18,6 +32,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
     const results = [];
     let correctCount = 0;
+    const today = todayCST();
 
     for (const ans of answers) {
       const question = await context.env.DB.prepare(
@@ -64,6 +79,67 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
         correctAnswer,
         explanation: question.explanation,
       });
+
+      // 更新知识点掌握记录
+      const tags = question.tags ? JSON.parse(question.tags as string) : [];
+      if (tags.length > 0) {
+        const knowledgePoint = tags[tags.length - 1]; // 最细粒度 tag
+        const category = tags[0]; // 顶级分类
+
+        if (!correct) {
+          // 错题：更新或插入 mastery 记录
+          const existing = await context.env.DB.prepare(
+            'SELECT * FROM knowledge_mastery WHERE user_id = ? AND knowledge_point = ?'
+          ).bind(userId, knowledgePoint).first();
+
+          if (!existing) {
+            // 新知识点，第一次错
+            const masteryId = crypto.randomUUID();
+            const tomorrow = addDays(today, 1);
+            await context.env.DB.prepare(
+              'INSERT INTO knowledge_mastery (id, user_id, knowledge_point, category, error_count, correct_streak, interval_days, next_review_at, last_error_at, last_review_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+            ).bind(masteryId, userId, knowledgePoint, category, 1, 0, 1, tomorrow, today, today, Math.floor(Date.now() / 1000)).run();
+          } else {
+            // 已存在，增加错误计数
+            const tomorrow = addDays(today, 1);
+            if (existing.mastered === 1) {
+              // 之前标记了"我会了"但又错了，重置为未掌握
+              await context.env.DB.prepare(
+                'UPDATE knowledge_mastery SET mastered = 0, mastered_reason = NULL, error_count = error_count + 1, correct_streak = 0, interval_days = 1, next_review_at = ?, last_error_at = ?, last_review_at = ? WHERE user_id = ? AND knowledge_point = ?'
+              ).bind(tomorrow, today, today, userId, knowledgePoint).run();
+            } else {
+              // 未掌握状态，继续累计错误
+              await context.env.DB.prepare(
+                'UPDATE knowledge_mastery SET error_count = error_count + 1, correct_streak = 0, interval_days = 1, next_review_at = ?, last_error_at = ?, last_review_at = ? WHERE user_id = ? AND knowledge_point = ?'
+              ).bind(tomorrow, today, today, userId, knowledgePoint).run();
+            }
+          }
+        } else {
+          // 答对了，检查是否有 mastery 记录
+          const existing = await context.env.DB.prepare(
+            'SELECT * FROM knowledge_mastery WHERE user_id = ? AND knowledge_point = ?'
+          ).bind(userId, knowledgePoint).first();
+
+          if (existing) {
+            const newStreak = (existing.correct_streak as number) + 1;
+            const currentInterval = existing.interval_days as number;
+
+            if (newStreak >= 3 && currentInterval >= 14) {
+              // 连对 3 次且间隔 >= 14 天，自动标记为已掌握
+              await context.env.DB.prepare(
+                'UPDATE knowledge_mastery SET correct_streak = ?, mastered = 1, mastered_reason = ?, last_review_at = ? WHERE user_id = ? AND knowledge_point = ?'
+              ).bind(newStreak, 'auto', today, userId, knowledgePoint).run();
+            } else {
+              // 增加间隔（最多 30 天）
+              const newInterval = Math.min(currentInterval * 2, 30);
+              const nextReview = addDays(today, newInterval);
+              await context.env.DB.prepare(
+                'UPDATE knowledge_mastery SET correct_streak = ?, interval_days = ?, next_review_at = ?, last_review_at = ? WHERE user_id = ? AND knowledge_point = ?'
+              ).bind(newStreak, newInterval, nextReview, today, userId, knowledgePoint).run();
+            }
+          }
+        }
+      }
     }
 
     // Fire webhook notification (best-effort, don't block response)

@@ -1,96 +1,129 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ChevronLeft, ChevronDown, ChevronUp, RefreshCw } from 'lucide-react';
+import { ChevronLeft, ChevronDown, ChevronRight } from 'lucide-react';
 
-interface MistakeItem {
-  questionId: string;
-  submittedAt: number;
+interface KnowledgePoint {
+  id: string;
+  knowledgePoint: string;
+  category: string | null;
+  errorCount: number;
+  correctStreak: number;
+  intervalDays: number;
+  nextReviewAt: string | null;
+  mastered: boolean;
+  masteredReason: string | null;
+  lastErrorAt: string | null;
+}
+
+interface MistakeDetail {
+  date: string;
   stem: string;
   userAnswer: string;
   correctAnswer: string;
   explanation: string;
-  tags: string[];
-}
-
-interface MistakeGroup {
-  tag: string;
-  count: number;
-  mistakes: MistakeItem[];
 }
 
 export default function Mistakes() {
   const { userId } = useParams<{ userId: string }>();
   const navigate = useNavigate();
-  const [groups, setGroups] = useState<MistakeGroup[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [expandedTag, setExpandedTag] = useState<string | null>(null);
-  const [selectedTag, setSelectedTag] = useState<string>('all');
 
+  const [points, setPoints] = useState<KnowledgePoint[]>([]);
+  const [masteredPoints, setMasteredPoints] = useState<KnowledgePoint[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [expandedPoint, setExpandedPoint] = useState<string | null>(null);
+  const [mistakes, setMistakes] = useState<MistakeDetail[]>([]);
+  const [loadingMistakes, setLoadingMistakes] = useState(false);
+  const [showMastered, setShowMastered] = useState(false);
 
   useEffect(() => {
-    const fetchMistakes = async () => {
-      setLoading(true);
-      try {
-        const url = selectedTag === 'all' 
-          ? `/api/mistakes?userId=${userId}`
-          : `/api/mistakes?userId=${userId}&tag=${encodeURIComponent(selectedTag)}`;
-        const res = await fetch(url);
-        const data = await res.json();
-        setGroups(data.groups || []);
-      } catch (e) {
-        console.error('Failed to fetch mistakes:', e);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchMistakes();
-  }, [userId, selectedTag]);
+    fetchPoints();
+  }, [userId]);
 
-  const formatDate = (timestamp: number) => {
-    const d = new Date(timestamp);
-    const m = d.getMonth() + 1;
-    const day = d.getDate();
-    return `${m}/${day}`;
+  const fetchPoints = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/mistakes?userId=${userId}`);
+      const data = await res.json();
+      setPoints(data.points || []);
+      setMasteredPoints(data.masteredPoints || []);
+    } catch (e) {
+      console.error('Failed to fetch knowledge points:', e);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const toggleTag = (tag: string) => {
-    setExpandedTag(expandedTag === tag ? null : tag);
+  const fetchMistakesForPoint = async (point: string) => {
+    setLoadingMistakes(true);
+    try {
+      const res = await fetch(`/api/mistakes?userId=${userId}&point=${encodeURIComponent(point)}`);
+      const data = await res.json();
+      setMistakes(data.mistakes || []);
+    } catch (e) {
+      console.error('Failed to fetch mistakes:', e);
+    } finally {
+      setLoadingMistakes(false);
+    }
   };
 
-  const handleRetry = () => {
-    // TODO: 生成临时 quiz 并导航
-    alert('重做错题功能即将推出');
+  const togglePoint = async (point: KnowledgePoint) => {
+    if (expandedPoint === point.id) {
+      setExpandedPoint(null);
+      setMistakes([]);
+    } else {
+      setExpandedPoint(point.id);
+      await fetchMistakesForPoint(point.knowledgePoint);
+    }
   };
 
-  // 收集所有标签
-  const allTags = Array.from(new Set(groups.flatMap(g => [g.tag])));
+  const handleMastery = async (pointId: string, action: 'master' | 'unmaster') => {
+    try {
+      await fetch('/api/mistakes/mastery', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId,
+          masteryId: pointId,
+          action,
+        }),
+      });
+      // 重新加载知识点列表
+      await fetchPoints();
+      setExpandedPoint(null);
+      setMistakes([]);
+    } catch (e) {
+      console.error('Failed to update mastery:', e);
+    }
+  };
+
+  const formatReviewDate = (date: string | null) => {
+    if (!date) return '';
+    const d = new Date(date);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const reviewDate = new Date(d);
+    reviewDate.setHours(0, 0, 0, 0);
+    const diffDays = Math.floor((reviewDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 0) return '今天';
+    if (diffDays === 1) return '明天';
+    if (diffDays === -1) return '昨天';
+    if (diffDays < 0) return `${Math.abs(diffDays)}天前`;
+    return `${d.getMonth() + 1}/${d.getDate()}`;
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
       {/* Header */}
       <div className="bg-white dark:bg-gray-800 shadow-sm">
-        <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => navigate(`/${userId}/today`)}
-              className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition"
-            >
-              <ChevronLeft className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-            </button>
-            <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">错题本</h1>
-          </div>
-          <div>
-            <select
-              value={selectedTag}
-              onChange={(e) => setSelectedTag(e.target.value)}
-              className="px-3 py-1.5 text-sm rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="all">全部标签</option>
-              {allTags.map(tag => (
-                <option key={tag} value={tag}>{tag}</option>
-              ))}
-            </select>
-          </div>
+        <div className="max-w-2xl mx-auto px-4 py-3 flex items-center gap-3">
+          <button
+            onClick={() => navigate(`/${userId}/today`)}
+            className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+          >
+            <ChevronLeft className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+          </button>
+          <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">错题本</h1>
         </div>
       </div>
 
@@ -98,85 +131,160 @@ export default function Mistakes() {
       <div className="max-w-2xl mx-auto px-4 py-6">
         {loading ? (
           <div className="text-center text-gray-400 dark:text-gray-500 py-12">加载中...</div>
-        ) : groups.length === 0 ? (
-          <div className="text-center py-12">
-            <div className="text-4xl mb-4">🎉</div>
-            <p className="text-gray-500 dark:text-gray-400">太棒了！没有错题</p>
-            <p className="text-sm text-gray-400 dark:text-gray-500 mt-2">继续保持！</p>
-          </div>
         ) : (
-          <div className="space-y-4">
-            {groups.map((group) => (
-              <div key={group.tag} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
-                {/* 标签头部 */}
-                <button
-                  onClick={() => toggleTag(group.tag)}
-                  className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition"
-                >
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium text-gray-900 dark:text-gray-100">{group.tag}</span>
-                    <span className="text-sm text-red-500 dark:text-red-400">（{group.count}次错误）</span>
-                  </div>
-                  {expandedTag === group.tag ? (
-                    <ChevronUp className="w-4 h-4 text-gray-400" />
-                  ) : (
-                    <ChevronDown className="w-4 h-4 text-gray-400" />
-                  )}
-                </button>
+          <>
+            {/* 需要复习的知识点 */}
+            {points.length > 0 && (
+              <div className="mb-6">
+                <h2 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3 px-1">
+                  需要复习（{points.length}）
+                </h2>
+                <div className="space-y-3">
+                  {points.map((point) => (
+                    <div key={point.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
+                      {/* 知识点卡片头部 */}
+                      <button
+                        onClick={() => togglePoint(point)}
+                        className="w-full px-4 py-3 flex items-start justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition text-left"
+                      >
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="font-medium text-gray-900 dark:text-gray-100">
+                              {point.knowledgePoint}
+                            </span>
+                            {point.category && (
+                              <span className="text-xs text-gray-400 dark:text-gray-500">
+                                {point.category}
+                              </span>
+                            )}
+                          </div>
+                          <div className="text-sm text-gray-500 dark:text-gray-400">
+                            错 {point.errorCount} 次 · 下次复习 {formatReviewDate(point.nextReviewAt)}
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleMastery(point.id, 'master');
+                            }}
+                            className="px-3 py-1 text-xs font-medium text-green-600 dark:text-green-400 border border-green-600 dark:border-green-400 rounded-full hover:bg-green-50 dark:hover:bg-green-900/20 transition"
+                          >
+                            我会了
+                          </button>
+                          <ChevronRight
+                            className={`w-5 h-5 text-gray-400 transition-transform ${
+                              expandedPoint === point.id ? 'rotate-90' : ''
+                            }`}
+                          />
+                        </div>
+                      </button>
 
-                {/* 展开的错题列表 */}
-                {expandedTag === group.tag && (
-                  <div className="border-t border-gray-100 dark:border-gray-700 divide-y divide-gray-100 dark:divide-gray-700">
-                    {group.mistakes.map((mistake, idx) => (
-                      <div key={`${mistake.questionId}-${idx}`} className="px-4 py-3 space-y-2">
-                        {/* 日期 */}
-                        <div className="text-xs text-gray-400 dark:text-gray-500">
-                          {formatDate(mistake.submittedAt)}
+                      {/* 展开的错题列表 */}
+                      {expandedPoint === point.id && (
+                        <div className="border-t border-gray-100 dark:border-gray-700">
+                          {loadingMistakes ? (
+                            <div className="px-4 py-6 text-center text-sm text-gray-400 dark:text-gray-500">
+                              加载中...
+                            </div>
+                          ) : mistakes.length === 0 ? (
+                            <div className="px-4 py-6 text-center text-sm text-gray-400 dark:text-gray-500">
+                              没有错题记录
+                            </div>
+                          ) : (
+                            <div className="divide-y divide-gray-100 dark:divide-gray-700">
+                              {mistakes.map((mistake, idx) => (
+                                <div key={idx} className="px-4 py-3 space-y-2">
+                                  <div className="text-xs text-gray-400 dark:text-gray-500">
+                                    {mistake.date}
+                                  </div>
+                                  <div className="text-sm text-gray-700 dark:text-gray-300">
+                                    {mistake.stem}
+                                  </div>
+                                  <div className="flex items-center gap-2 text-sm">
+                                    <span className="text-red-500 dark:text-red-400 font-medium">
+                                      {mistake.userAnswer || '(未作答)'}
+                                    </span>
+                                    <span className="text-gray-400 dark:text-gray-500">→</span>
+                                    <span className="text-green-600 dark:text-green-400 font-medium">
+                                      {mistake.correctAnswer}
+                                    </span>
+                                  </div>
+                                  {mistake.explanation && (
+                                    <div className="text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900 rounded-lg p-2 mt-2">
+                                      {mistake.explanation}
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          )}
                         </div>
-                        {/* 题目 */}
-                        <div className="text-sm text-gray-700 dark:text-gray-300">
-                          {mistake.stem.length > 100 
-                            ? `${mistake.stem.substring(0, 100)}...` 
-                            : mistake.stem}
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* 已掌握的知识点（折叠） */}
+            {masteredPoints.length > 0 && (
+              <div className="mb-6">
+                <button
+                  onClick={() => setShowMastered(!showMastered)}
+                  className="w-full flex items-center justify-between text-sm font-medium text-gray-500 dark:text-gray-400 mb-3 px-1 hover:text-gray-700 dark:hover:text-gray-300 transition"
+                >
+                  <span>已掌握（{masteredPoints.length}）</span>
+                  <ChevronDown
+                    className={`w-4 h-4 transition-transform ${showMastered ? 'rotate-180' : ''}`}
+                  />
+                </button>
+                {showMastered && (
+                  <div className="space-y-3">
+                    {masteredPoints.map((point) => (
+                      <div
+                        key={point.id}
+                        className="bg-white dark:bg-gray-800 rounded-xl shadow-sm px-4 py-3"
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="font-medium text-gray-900 dark:text-gray-100">
+                                {point.knowledgePoint}
+                              </span>
+                              {point.category && (
+                                <span className="text-xs text-gray-400 dark:text-gray-500">
+                                  {point.category}
+                                </span>
+                              )}
+                            </div>
+                            <div className="text-sm text-gray-500 dark:text-gray-400">
+                              已掌握 {point.masteredReason === 'auto' ? '(自动)' : '(手动标记)'}
+                            </div>
+                          </div>
+                          <button
+                            onClick={() => handleMastery(point.id, 'unmaster')}
+                            className="px-3 py-1 text-xs font-medium text-blue-600 dark:text-blue-400 border border-blue-600 dark:border-blue-400 rounded-full hover:bg-blue-50 dark:hover:bg-blue-900/20 transition"
+                          >
+                            再练练
+                          </button>
                         </div>
-                        {/* 答案对比 */}
-                        <div className="text-sm space-y-1">
-                          <div className="flex items-center gap-2">
-                            <span className="text-gray-500 dark:text-gray-400">你的答案:</span>
-                            <span className="font-medium text-red-500 dark:text-red-400">
-                              {mistake.userAnswer || '(未作答)'}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-gray-500 dark:text-gray-400">正确答案:</span>
-                            <span className="font-medium text-green-600 dark:text-green-400">
-                              {mistake.correctAnswer}
-                            </span>
-                          </div>
-                        </div>
-                        {/* 解析 */}
-                        {mistake.explanation && (
-                          <div className="text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900 rounded-lg p-2 mt-2">
-                            <span className="font-medium">解析: </span>
-                            {mistake.explanation}
-                          </div>
-                        )}
                       </div>
                     ))}
                   </div>
                 )}
               </div>
-            ))}
+            )}
 
-            {/* 重做错题按钮 */}
-            <button
-              onClick={handleRetry}
-              className="w-full mt-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-xl flex items-center justify-center gap-2 transition active:scale-[0.98]"
-            >
-              <RefreshCw className="w-4 h-4" />
-              重做错题
-            </button>
-          </div>
+            {/* 空状态 */}
+            {points.length === 0 && masteredPoints.length === 0 && (
+              <div className="text-center py-12">
+                <div className="text-4xl mb-4">🎉</div>
+                <p className="text-gray-500 dark:text-gray-400">太棒了！没有错题</p>
+                <p className="text-sm text-gray-400 dark:text-gray-500 mt-2">继续保持！</p>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

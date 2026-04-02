@@ -84,3 +84,25 @@ INSERT OR IGNORE INTO users (id, name, avatar, created_at) VALUES
   ('cyan', '彤彤', null, unixepoch()),
   ('ryan', '可可', null, unixepoch()),
   ('parent', '家长', null, unixepoch());
+
+-- 知识点掌握记录表（间隔重复 + 手动标记）
+CREATE TABLE IF NOT EXISTS knowledge_mastery (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  knowledge_point TEXT NOT NULL,
+  category TEXT,
+  error_count INTEGER DEFAULT 0,
+  correct_streak INTEGER DEFAULT 0,
+  interval_days INTEGER DEFAULT 1,
+  next_review_at TEXT,
+  mastered INTEGER DEFAULT 0,
+  mastered_reason TEXT,
+  last_error_at TEXT,
+  last_review_at TEXT,
+  created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+CREATE INDEX IF NOT EXISTS idx_mastery_review
+  ON knowledge_mastery(user_id, mastered, next_review_at);
+CREATE INDEX IF NOT EXISTS idx_mastery_point
+  ON knowledge_mastery(user_id, knowledge_point);

@@ -2,29 +2,34 @@ interface Env {
   DB: D1Database;
 }
 
-interface MistakeItem {
-  questionId: string;
-  submittedAt: number;
+interface KnowledgePoint {
+  id: string;
+  knowledgePoint: string;
+  category: string | null;
+  errorCount: number;
+  correctStreak: number;
+  intervalDays: number;
+  nextReviewAt: string | null;
+  mastered: boolean;
+  masteredReason: string | null;
+  lastErrorAt: string | null;
+}
+
+interface MistakeDetail {
+  date: string;
   stem: string;
   userAnswer: string;
   correctAnswer: string;
   explanation: string;
-  tags: string[];
 }
 
-interface MistakeGroup {
-  tag: string;
-  count: number;
-  mistakes: MistakeItem[];
-}
-
-// GET /api/mistakes?userId=cyan
-// GET /api/mistakes?userId=cyan&tag=英语语法
+// GET /api/mistakes?userId=cyan - 知识点卡片列表
+// GET /api/mistakes?userId=cyan&point=序数词 - 某知识点的具体错题
 export const onRequestGet: PagesFunction<Env> = async (context) => {
   try {
     const url = new URL(context.request.url);
     const userId = url.searchParams.get('userId');
-    const tagFilter = url.searchParams.get('tag');
+    const point = url.searchParams.get('point');
 
     if (!userId) {
       return new Response(JSON.stringify({ error: 'userId required' }), {
@@ -33,97 +38,112 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       });
     }
 
-    // 查询所有错题：correct = 0
-    // JOIN questions 表获取题目内容、答案、解析、标签
-    const query = `
-      SELECT 
-        s.question_id,
-        s.submitted_at,
-        s.answer as user_answer,
-        q.type,
-        q.content,
-        q.answer as correct_answer_raw,
-        q.explanation,
-        q.tags
-      FROM submissions s
-      INNER JOIN questions q ON s.question_id = q.id
-      WHERE s.user_id = ? AND s.correct = 0
-      ORDER BY s.submitted_at DESC
-    `;
+    if (point) {
+      // 查询某知识点下的具体错题列表
+      const query = `
+        SELECT 
+          s.submitted_at,
+          s.answer as user_answer,
+          q.type,
+          q.content,
+          q.answer as correct_answer_raw,
+          q.explanation,
+          q.tags
+        FROM submissions s
+        INNER JOIN questions q ON s.question_id = q.id
+        WHERE s.user_id = ? AND s.correct = 0
+        ORDER BY s.submitted_at DESC
+      `;
 
-    const result = await context.env.DB.prepare(query).bind(userId).all();
+      const result = await context.env.DB.prepare(query).bind(userId).all();
+      const mistakes: MistakeDetail[] = [];
 
-    if (!result.results || result.results.length === 0) {
-      return new Response(JSON.stringify({ mistakes: [] }), {
+      for (const row of result.results) {
+        const tags = row.tags ? JSON.parse(row.tags as string) : [];
+        // 只包含这个知识点的题
+        if (!tags.includes(point)) continue;
+
+        const content = JSON.parse(row.content as string);
+        const correctAnswerRaw = JSON.parse(row.correct_answer_raw as string);
+
+        let stem = '';
+        let correctAnswer = '';
+
+        if (row.type === 'choice') {
+          stem = content.stem || '';
+          correctAnswer = correctAnswerRaw.answer || '';
+        } else if (row.type === 'blank') {
+          stem = content.stem || '';
+          correctAnswer = correctAnswerRaw.answers?.[0] || '';
+        } else if (row.type === 'reading') {
+          stem = content.passage || '';
+          correctAnswer = Array.isArray(correctAnswerRaw) 
+            ? correctAnswerRaw.join(',') 
+            : (correctAnswerRaw.answers || []).join(',');
+        }
+
+        // 截断过长的 stem
+        if (stem.length > 100) {
+          stem = stem.substring(0, 100) + '...';
+        }
+
+        const submittedAt = row.submitted_at as number;
+        const date = new Date(submittedAt).toISOString().split('T')[0];
+
+        mistakes.push({
+          date,
+          stem,
+          userAnswer: row.user_answer as string,
+          correctAnswer,
+          explanation: row.explanation as string || '',
+        });
+      }
+
+      return new Response(JSON.stringify({
+        knowledgePoint: point,
+        mistakes,
+      }), {
+        headers: { 'Content-Type': 'application/json' },
+      });
+    } else {
+      // 查询知识点卡片列表
+      const masteryQuery = `
+        SELECT * FROM knowledge_mastery WHERE user_id = ? ORDER BY mastered ASC, next_review_at ASC
+      `;
+
+      const result = await context.env.DB.prepare(masteryQuery).bind(userId).all();
+
+      const points: KnowledgePoint[] = [];
+      const masteredPoints: KnowledgePoint[] = [];
+
+      for (const row of result.results) {
+        const point: KnowledgePoint = {
+          id: String(row.id),
+          knowledgePoint: String(row.knowledge_point),
+          category: row.category ? String(row.category) : null,
+          errorCount: row.error_count as number,
+          correctStreak: row.correct_streak as number,
+          intervalDays: row.interval_days as number,
+          nextReviewAt: row.next_review_at ? String(row.next_review_at) : null,
+          mastered: row.mastered === 1,
+          masteredReason: row.mastered_reason ? String(row.mastered_reason) : null,
+          lastErrorAt: row.last_error_at ? String(row.last_error_at) : null,
+        };
+
+        if (point.mastered) {
+          masteredPoints.push(point);
+        } else {
+          points.push(point);
+        }
+      }
+
+      return new Response(JSON.stringify({
+        points,
+        masteredPoints,
+      }), {
         headers: { 'Content-Type': 'application/json' },
       });
     }
-
-    // 处理每条错题
-    const mistakes: MistakeItem[] = [];
-    for (const row of result.results) {
-      const content = JSON.parse(row.content as string);
-      const correctAnswerRaw = JSON.parse(row.correct_answer_raw as string);
-      const tags = row.tags ? JSON.parse(row.tags as string) : [];
-
-      // 如果有标签筛选，跳过不匹配的
-      if (tagFilter && !tags.includes(tagFilter)) {
-        continue;
-      }
-
-      let stem = '';
-      let correctAnswer = '';
-
-      if (row.type === 'choice') {
-        stem = content.stem || '';
-        correctAnswer = correctAnswerRaw.answer || '';
-      } else if (row.type === 'blank') {
-        stem = content.stem || '';
-        correctAnswer = correctAnswerRaw.answers?.[0] || '';
-      } else if (row.type === 'reading') {
-        stem = content.passage || '';
-        correctAnswer = Array.isArray(correctAnswerRaw) 
-          ? correctAnswerRaw.join(',') 
-          : (correctAnswerRaw.answers || []).join(',');
-      }
-
-      mistakes.push({
-        questionId: String(row.question_id),
-        submittedAt: row.submitted_at as number,
-        stem,
-        userAnswer: row.user_answer as string,
-        correctAnswer,
-        explanation: row.explanation as string || '',
-        tags,
-      });
-    }
-
-    // 按标签分组
-    const groupMap = new Map<string, MistakeItem[]>();
-    for (const mistake of mistakes) {
-      for (const tag of mistake.tags) {
-        if (!groupMap.has(tag)) {
-          groupMap.set(tag, []);
-        }
-        groupMap.get(tag)!.push(mistake);
-      }
-    }
-
-    const groups: MistakeGroup[] = [];
-    for (const [tag, items] of groupMap) {
-      groups.push({
-        tag,
-        count: items.length,
-        mistakes: items,
-      });
-    }
-
-    // 按错误次数降序
-    groups.sort((a, b) => b.count - a.count);
-
-    return new Response(JSON.stringify({ groups }), {
-      headers: { 'Content-Type': 'application/json' },
-    });
   } catch (e: any) {
     return new Response(JSON.stringify({ error: e.message }), {
       status: 500,
