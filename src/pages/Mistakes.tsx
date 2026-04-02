@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ChevronLeft, ChevronDown, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronDown, ChevronRight, RotateCcw } from 'lucide-react';
 
 interface KnowledgePoint {
   id: string;
@@ -91,6 +91,26 @@ export default function Mistakes() {
       setExpandedPoints(prev => { const next = new Set(prev); next.delete(pointId); return next; });
     } catch (e) {
       console.error('Failed to update mastery:', e);
+    }
+  };
+
+  const handleRedoMistakes = async () => {
+    try {
+      const res = await fetch('/api/mistakes/redo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, count: 5 }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        const dateStr = data.date;
+        navigate(`/${userId}/${dateStr}/mistakes-redo`);
+      } else {
+        alert(data.error || '生成错题失败');
+      }
+    } catch (e) {
+      console.error('Failed to redo mistakes:', e);
+      alert('生成错题失败');
     }
   };
 
@@ -285,6 +305,19 @@ export default function Mistakes() {
           </>
         )}
       </div>
+
+      {/* 重做错题按钮 */}
+      {points.length > 0 && (
+        <div className="fixed bottom-6 left-0 right-0 flex justify-center px-4">
+          <button
+            onClick={handleRedoMistakes}
+            className="flex items-center gap-2 px-6 py-3 bg-blue-600 dark:bg-blue-500 text-white font-medium rounded-full shadow-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition"
+          >
+            <RotateCcw size={18} />
+            <span>重做错题</span>
+          </button>
+        </div>
+      )}
     </div>
   );
 }

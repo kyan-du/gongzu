@@ -49,6 +49,7 @@ export default function DailyView() {
   const [theme, setTheme] = useState(getStoredTheme);
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
   const [quizStatus, setQuizStatus] = useState<Record<string, { completed: boolean; answered: number; total: number; correct: number; accuracy: number | null }>>({});
+  const [mistakesCount, setMistakesCount] = useState<number>(0);
 
   const userName = userId === 'cyan' ? '彤彤' : userId === 'ryan' ? '可可' : userId;
   const avatarSrc = userId === 'cyan' ? '/avatar-cyan.jpg' : '/avatar-ryan.jpg';
@@ -86,6 +87,19 @@ export default function DailyView() {
     };
     fetchQuizzes();
   }, [userId, currentDate]);
+
+  useEffect(() => {
+    const fetchMistakesCount = async () => {
+      try {
+        const res = await fetch(`/api/review?userId=${userId}`);
+        const data = await res.json();
+        setMistakesCount((data.points || []).length);
+      } catch (e) {
+        console.error("Failed to fetch mistakes count:", e);
+      }
+    };
+    fetchMistakesCount();
+  }, [userId]);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -311,7 +325,27 @@ export default function DailyView() {
                 )}
               </button>
             ))}
+
+            {/* 错题本入口 */}
+            {mistakesCount > 0 && (
+              <button
+                onClick={() => navigate(`/${userId}/mistakes`)}
+                className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition active:scale-[0.98]"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-red-50 dark:bg-red-900/30 flex items-center justify-center">
+                    <BookX className="w-5 h-5 text-red-500 dark:text-red-400" />
+                  </div>
+                  <div className="text-left">
+                    <div className="font-medium text-gray-900 dark:text-gray-100">错题本</div>
+                    <div className="text-sm text-gray-400 dark:text-gray-500">{mistakesCount}个知识点待复习</div>
+                  </div>
+                </div>
+                <ChevronRight size={20} className="text-gray-400 dark:text-gray-500" />
+              </button>
+            )}
           </div>
+
         )}
       </div>
     </div>
