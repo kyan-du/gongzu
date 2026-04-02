@@ -67,7 +67,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       for (const row of result.results) {
         const tags = row.tags ? JSON.parse(row.tags as string) : [];
         // Match: exact knowledge_point in tags, OR fallback to category match
-        const matches = tags.includes(point) || (category && tags.includes(category));
+        const matches = tags.includes(point) || (category && (tags.includes(category) || tags.some((t: string) => category.includes(t))));
         if (!matches) continue;
 
         const content = JSON.parse(row.content as string);
