@@ -1,1 +1,9 @@
-npx lint-staged
+#!/bin/sh
+
+# Always run full frontend TS check before commit
+npx tsc --noEmit -p tsconfig.app.json || exit 1
+
+# Also verify build works
+npm run build > /dev/null 2>&1 || exit 1
+
+echo "✅ Pre-commit checks passed"

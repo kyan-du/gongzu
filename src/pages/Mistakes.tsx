@@ -34,6 +34,30 @@ export default function Mistakes() {
   const [mistakesMap, setMistakesMap] = useState<Record<string, MistakeDetail[]>>({});
   
   const [showMastered, setShowMastered] = useState(false);
+  const [redoLoading, setRedoLoading] = useState(false);
+
+  const handleRedoMistakes = async () => {
+    if (redoLoading) return;
+    setRedoLoading(true);
+    try {
+      const res = await fetch('/api/mistakes/redo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, count: 5 }),
+      });
+      if (res.ok) {
+        await res.json();
+        navigate(`/${userId}/today`);
+      } else {
+        const err = await res.json().catch(() => ({}));
+        alert(err.error || '重做失败');
+      }
+    } catch (e) {
+      console.error('Redo failed:', e);
+    } finally {
+      setRedoLoading(false);
+    }
+  };
 
   useEffect(() => {
     fetchPoints();
@@ -94,25 +118,6 @@ export default function Mistakes() {
     }
   };
 
-  const handleRedoMistakes = async () => {
-    try {
-      const res = await fetch('/api/mistakes/redo', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, count: 5 }),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        const dateStr = data.date;
-        navigate(`/${userId}/${dateStr}/mistakes-redo`);
-      } else {
-        alert(data.error || '生成错题失败');
-      }
-    } catch (e) {
-      console.error('Failed to redo mistakes:', e);
-      alert('生成错题失败');
-    }
-  };
 
   const formatReviewDate = (date: string | null) => {
     if (!date) return '';

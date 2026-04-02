@@ -1,6 +1,6 @@
 import { getSlug } from '../lib/tags';
 import { normalizeQuiz } from '../lib/types';
-import { LogOut, CheckCircle, ChevronLeft, ChevronRight, ChevronDown, BookOpen, Languages, PenLine, Clock, Sun, Moon, Monitor, Users, Palette, Check, BookX } from 'lucide-react';
+import { LogOut, CheckCircle, ChevronLeft, ChevronRight, ChevronDown, BookOpen, Languages, PenLine, Clock, Sun, Moon, Monitor, Users, Palette, Check, BookX, RotateCcw } from 'lucide-react';
 import { getStoredTheme, setStoredTheme } from '../lib/theme';
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -50,6 +50,8 @@ export default function DailyView() {
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
   const [quizStatus, setQuizStatus] = useState<Record<string, { completed: boolean; answered: number; total: number; correct: number; accuracy: number | null }>>({});
   const [mistakesCount, setMistakesCount] = useState<number>(0);
+  const [redoLoading, setRedoLoading] = useState(false);
+  const [hasRedoToday, setHasRedoToday] = useState(false);
 
   const userName = userId === 'cyan' ? '彤彤' : userId === 'ryan' ? '可可' : userId;
   const avatarSrc = userId === 'cyan' ? '/avatar-cyan.jpg' : '/avatar-ryan.jpg';
@@ -64,7 +66,9 @@ export default function DailyView() {
           fetch(`/api/status?userId=${userId}&date=${dateStr}`),
         ]);
         const data = await quizRes.json();
-        setQuizzes((data.quizzes || []).map(normalizeQuiz));
+        const allQuizzes = (data.quizzes || []).map(normalizeQuiz);
+        setQuizzes(allQuizzes);
+        setHasRedoToday(allQuizzes.some((q: Quiz) => q.tag.includes('错题重做')));
         try {
           const statusData = await statusRes.json();
           const statusMap: Record<string, any> = {};
@@ -328,11 +332,11 @@ export default function DailyView() {
 
             {/* 错题本入口 */}
             {mistakesCount > 0 && (
-              <button
-                onClick={() => navigate(`/${userId}/mistakes`)}
-                className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition active:scale-[0.98]"
-              >
-                <div className="flex items-center gap-3">
+              <div className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition">
+                <button
+                  onClick={() => navigate(`/${userId}/mistakes`)}
+                  className="flex items-center gap-3 flex-1 active:scale-[0.98] transition"
+                >
                   <div className="w-10 h-10 rounded-xl bg-red-50 dark:bg-red-900/30 flex items-center justify-center">
                     <BookX className="w-5 h-5 text-red-500 dark:text-red-400" />
                   </div>
@@ -340,9 +344,47 @@ export default function DailyView() {
                     <div className="font-medium text-gray-900 dark:text-gray-100">错题本</div>
                     <div className="text-sm text-gray-400 dark:text-gray-500">{mistakesCount}个知识点待复习</div>
                   </div>
+                </button>
+                <div className="flex items-center gap-2">
+                  {isToday(currentDate) && !hasRedoToday && (
+                    <button
+                      onClick={async (e) => {
+                        e.stopPropagation();
+                        if (redoLoading) return;
+                        setRedoLoading(true);
+                        try {
+                          const res = await fetch('/api/mistakes/redo', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ userId, count: 5 }),
+                          });
+                          if (res.ok) {
+                            // Refresh quiz list
+                            const dateStr = toDateStr(currentDate);
+                            const quizRes = await fetch(`/api/quiz?userId=${userId}&date=${dateStr}`);
+                            const data = await quizRes.json();
+                            const allQuizzes = (data.quizzes || []).map(normalizeQuiz);
+                            setQuizzes(allQuizzes);
+                            setHasRedoToday(true);
+                          }
+                        } catch (err) {
+                          console.error('Redo failed:', err);
+                        } finally {
+                          setRedoLoading(false);
+                        }
+                      }}
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 rounded-lg hover:bg-amber-100 dark:hover:bg-amber-900/50 transition active:scale-95"
+                    >
+                      <RotateCcw className={`w-3.5 h-3.5 ${redoLoading ? 'animate-spin' : ''}`} />
+                      {redoLoading ? '生成中...' : '错题重做'}
+                    </button>
+                  )}
+                  {hasRedoToday && isToday(currentDate) && (
+                    <span className="text-xs text-gray-400 dark:text-gray-500">今日已重做</span>
+                  )}
+                  <ChevronRight size={20} className="text-gray-400 dark:text-gray-500" />
                 </div>
-                <ChevronRight size={20} className="text-gray-400 dark:text-gray-500" />
-              </button>
+              </div>
             )}
           </div>
 

@@ -21,6 +21,18 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       });
     }
 
+    // 0. 每日上限检查：最多1个错题重做
+    const date = todayCST();
+    const existingRedo = await context.env.DB.prepare(
+      "SELECT COUNT(*) as cnt FROM daily_quizzes WHERE user_id = ? AND date = ? AND tag LIKE '错题重做%'"
+    ).bind(userId, date).first();
+    if ((existingRedo?.cnt as number) > 0) {
+      return new Response(JSON.stringify({ error: '今日已有错题重做，每天最多重做一次' }), {
+        status: 409,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
     // 1. 从 knowledge_mastery 查 mastered=0 的知识点，按 error_count DESC 排序
     const masteryQuery = `
       SELECT id, knowledge_point, category
@@ -91,7 +103,6 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     }
 
     // 3. 创建一个临时 quiz 结构，同时写入 daily_quizzes + questions 表
-    const date = todayCST();
     const quizId = crypto.randomUUID();
     const tag = '错题重做';
     const title = `错题重做 (${selectedQuestions.length}题)`;

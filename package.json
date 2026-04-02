@@ -8,7 +8,9 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "prepare": "husky"
+    "prepare": "husky",
+    "deploy": "bash scripts/deploy.sh",
+    "check": "tsc --noEmit -p tsconfig.app.json"
   },
   "dependencies": {
     "lucide-react": "^1.7.0",
