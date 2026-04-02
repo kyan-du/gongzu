@@ -8,12 +8,18 @@ function todayCST(): string {
   return cst.toISOString().split('T')[0];
 }
 
-// GET /api/review?userId=cyan&date=2026-04-02&category=英语语法
+const CATEGORY_SLUGS: Record<string, string> = {
+  'english-grammar': '英语语法',
+  'xiyouji': '西游记',
+  'reading': '阅读理解·名人故事',
+};
+
+// GET /api/review?userId=cyan&category=english-grammar
 export const onRequestGet: PagesFunction<Env> = async (context) => {
   const url = new URL(context.request.url);
   const userId = url.searchParams.get('userId');
   const date = url.searchParams.get('date') || todayCST();
-  const category = url.searchParams.get('category');
+  const categoryParam = url.searchParams.get('category');
 
   if (!userId) {
     return new Response(JSON.stringify({ error: 'userId required' }), {
@@ -21,6 +27,11 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       headers: { 'Content-Type': 'application/json' },
     });
   }
+
+  // Resolve slug to Chinese category name
+  const category = categoryParam
+    ? (CATEGORY_SLUGS[categoryParam] || categoryParam)
+    : null;
 
   let query = `
     SELECT id, knowledge_point, category, error_count, correct_streak,
