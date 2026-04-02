@@ -84,32 +84,36 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
           stem = content.stem || '';
           correctAnswer = correctAnswerRaw.answers?.[0] || '';
         } else if (row.type === 'reading') {
-          // For reading type, show the title + sub-questions that were wrong
+          // For reading type, show each wrong sub-question with full stem + options
           const title = content.title || '阅读理解';
           const subQuestions = content.questions || [];
           const userAnswers = (row.user_answer as string).split(',');
           const correctAnswers = Array.isArray(correctAnswerRaw) ? correctAnswerRaw : (correctAnswerRaw.answers || []);
           
-          // Build a summary showing only the wrong sub-questions
-          const wrongParts: string[] = [];
-          for (let i = 0; i < subQuestions.length; i++) {
-            if (userAnswers[i] && correctAnswers[i] && userAnswers[i].trim() !== correctAnswers[i].trim()) {
-              wrongParts.push(`第${i + 1}题: ${subQuestions[i].stem || ''}`);
-            }
-          }
-          stem = title + (wrongParts.length > 0 ? ' — ' + wrongParts.join('; ') : '');
-          
-          // Show only wrong answers
+          const wrongLines: string[] = [];
           const wrongUser: string[] = [];
           const wrongCorrect: string[] = [];
           for (let i = 0; i < subQuestions.length; i++) {
-            if (userAnswers[i] && correctAnswers[i] && userAnswers[i].trim() !== correctAnswers[i].trim()) {
-              wrongUser.push(`第${i + 1}题: ${userAnswers[i].trim()}`);
-              wrongCorrect.push(`第${i + 1}题: ${correctAnswers[i].trim()}`);
+            const ua = (userAnswers[i] || '').trim();
+            const ca = (correctAnswers[i] || '').trim();
+            if (ua && ca && ua !== ca) {
+              const sq = subQuestions[i];
+              let line = sq.stem || '';
+              if (sq.options) {
+                const optText = sq.options.map((o: any) => `${o.label}. ${o.text}`).join('  ');
+                line += '\n' + optText;
+              }
+              wrongLines.push(line);
+              // Find option text for user's and correct answer
+              const userOpt = sq.options?.find((o: any) => o.label === ua);
+              const correctOpt = sq.options?.find((o: any) => o.label === ca);
+              wrongUser.push(userOpt ? `${ua}. ${userOpt.text}` : ua);
+              wrongCorrect.push(correctOpt ? `${ca}. ${correctOpt.text}` : ca);
             }
           }
-          userAnswer = wrongUser.join(', ') || (row.user_answer as string);
-          correctAnswer = wrongCorrect.join(', ') || correctAnswers.join(',');
+          stem = title + (wrongLines.length > 0 ? '\n\n' + wrongLines.join('\n\n') : '');
+          userAnswer = wrongUser.join('; ');
+          correctAnswer = wrongCorrect.join('; ');
         }
 
         // 截断过长的 stem

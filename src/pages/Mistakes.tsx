@@ -197,7 +197,7 @@ export default function Mistakes() {
                                     {mistake.date}
                                   </div>
                                   <div className="text-sm text-gray-700 dark:text-gray-300">
-                                    {mistake.stem}
+                                    <span className="whitespace-pre-wrap">{mistake.stem}</span>
                                   </div>
                                   <div className="flex items-center gap-2 text-sm">
                                     <span className="text-red-500 dark:text-red-400 font-medium">
