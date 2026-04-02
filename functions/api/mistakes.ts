@@ -79,14 +79,14 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 
         if (row.type === 'choice') {
           const options = content.options || [];
-          const optText = options.map((o: any) => \`\${o.label}. \${o.text}\`).join('  ');
+          const optText = options.map((o: any) => `${o.label}. ${o.text}`).join('  ');
           stem = (content.stem || '') + '\n' + optText;
           const ua = row.user_answer as string;
           const ca = correctAnswerRaw.answer || '';
           const userOpt = options.find((o: any) => o.label === ua);
           const correctOpt = options.find((o: any) => o.label === ca);
-          userAnswer = userOpt ? \`\${ua}. \${userOpt.text}\` : ua;
-          correctAnswer = correctOpt ? \`\${ca}. \${correctOpt.text}\` : ca;
+          userAnswer = userOpt ? `${ua}. ${userOpt.text}` : ua;
+          correctAnswer = correctOpt ? `${ca}. ${correctOpt.text}` : ca;
         } else if (row.type === 'blank') {
           stem = content.stem || '';
           userAnswer = row.user_answer as string;
