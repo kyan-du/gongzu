@@ -96,7 +96,7 @@ export default function Quiz() {
       <div className="min-h-screen flex items-center justify-center dark:bg-gray-900">
         <div className="text-center">
           <p className="text-gray-500 dark:text-gray-400">找不到这份作业</p>
-          <button onClick={() => navigate(`/${userId}/today`)} className="mt-4 text-blue-600 dark:text-blue-400 hover:underline">返回</button>
+          <button onClick={() => navigate(`/${userId}/${date}`)} className="mt-4 text-blue-600 dark:text-blue-400 hover:underline">返回</button>
         </div>
       </div>
     );
@@ -110,7 +110,7 @@ export default function Quiz() {
       <div className="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-10">
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <button onClick={() => navigate(`/${userId}/today`)} className="text-gray-400 dark:text-gray-500 hover:text-blue-500 dark:hover:text-blue-400 transition">
+            <button onClick={() => navigate(`/${userId}/${date}`)} className="text-gray-400 dark:text-gray-500 hover:text-blue-500 dark:hover:text-blue-400 transition">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
             </button>
             <img src="/logo-night-64.png" alt="拱卒" className="w-7 h-7 rounded-full object-cover dark:hidden" />
@@ -184,7 +184,7 @@ export default function Quiz() {
           </button>
         ) : (
           <button
-            onClick={() => navigate(`/${userId}/today`)}
+            onClick={() => navigate(`/${userId}/${date}`)}
             className="w-full bg-gray-600 dark:bg-gray-500 text-white py-4 px-6 rounded-xl font-bold text-lg hover:bg-gray-700 dark:hover:bg-gray-600 transition shadow-md mt-6 mb-8"
           >
             返回
