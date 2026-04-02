@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ChevronLeft, ChevronDown, ChevronRight, RotateCcw } from 'lucide-react';
+import { ChevronLeft, ChevronDown, ChevronRight } from 'lucide-react';
 
 interface KnowledgePoint {
   id: string;
@@ -34,30 +34,7 @@ export default function Mistakes() {
   const [mistakesMap, setMistakesMap] = useState<Record<string, MistakeDetail[]>>({});
   
   const [showMastered, setShowMastered] = useState(false);
-  const [redoLoading, setRedoLoading] = useState(false);
 
-  const handleRedoMistakes = async () => {
-    if (redoLoading) return;
-    setRedoLoading(true);
-    try {
-      const res = await fetch('/api/mistakes/redo', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, count: 5 }),
-      });
-      if (res.ok) {
-        await res.json();
-        navigate(`/${userId}/today`);
-      } else {
-        const err = await res.json().catch(() => ({}));
-        alert(err.error || '重做失败');
-      }
-    } catch (e) {
-      console.error('Redo failed:', e);
-    } finally {
-      setRedoLoading(false);
-    }
-  };
 
   useEffect(() => {
     fetchPoints();
@@ -311,18 +288,7 @@ export default function Mistakes() {
         )}
       </div>
 
-      {/* 重做错题按钮 */}
-      {points.length > 0 && (
-        <div className="fixed bottom-6 left-0 right-0 flex justify-center px-4">
-          <button
-            onClick={handleRedoMistakes}
-            className="flex items-center gap-2 px-6 py-3 bg-blue-600 dark:bg-blue-500 text-white font-medium rounded-full shadow-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition"
-          >
-            <RotateCcw size={18} />
-            <span>重做错题</span>
-          </button>
-        </div>
-      )}
+
     </div>
   );
 }
