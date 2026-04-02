@@ -58,10 +58,17 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       const result = await context.env.DB.prepare(query).bind(userId).all();
       const mistakes: MistakeDetail[] = [];
 
+      // Also get the category for this knowledge point (for fallback matching)
+      const masteryRow = await context.env.DB.prepare(
+        'SELECT category FROM knowledge_mastery WHERE user_id = ? AND knowledge_point = ? LIMIT 1'
+      ).bind(userId, point).first();
+      const category = masteryRow?.category as string | null;
+
       for (const row of result.results) {
         const tags = row.tags ? JSON.parse(row.tags as string) : [];
-        // 只包含这个知识点的题
-        if (!tags.includes(point)) continue;
+        // Match: exact knowledge_point in tags, OR fallback to category match
+        const matches = tags.includes(point) || (category && tags.includes(category));
+        if (!matches) continue;
 
         const content = JSON.parse(row.content as string);
         const correctAnswerRaw = JSON.parse(row.correct_answer_raw as string);
