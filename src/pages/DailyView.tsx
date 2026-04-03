@@ -204,29 +204,32 @@ export default function DailyView() {
 
 
 
-  const getDayStatus = (date: Date): string => {
-    if (!monthlyData) return 'default';
+  const getDayStatus = (date: Date): { status: string; hasData: boolean; answered: number } => {
+    if (!monthlyData) return { status: 'default', hasData: false, answered: 0 };
     const dateStr = toDateStr(date);
     const dayData = monthlyData.days[dateStr];
 
-    if (!dayData || dayData.quizCount === 0) return 'default';
+    if (!dayData || dayData.quizCount === 0) return { status: 'default', hasData: false, answered: 0 };
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const checkDate = new Date(date);
     checkDate.setHours(0, 0, 0, 0);
 
-    if (checkDate > today) return 'future';
+    if (checkDate > today) return { status: 'future', hasData: true, answered: 0 };
 
+    // Past day with data
     if (dayData.allCompleted && (dayData.accuracy === null || dayData.accuracy >= 80)) {
-      return 'completed'; // Green
+      return { status: 'completed-high', hasData: true, answered: dayData.quizCount }; // Green dot
     } else if (dayData.allCompleted && dayData.accuracy !== null && dayData.accuracy < 80) {
-      return 'low-accuracy'; // Yellow/Amber
+      return { status: 'completed-low', hasData: true, answered: dayData.quizCount }; // Amber dot
     } else if (!dayData.allCompleted && dayData.quizCount > 0) {
-      return 'incomplete'; // Red border
+      // Check if no answers at all
+      const answered = 0; // We don't have this data, so assume incomplete means some answered
+      return { status: 'incomplete', hasData: true, answered }; // Red or amber dot
     }
 
-    return 'default';
+    return { status: 'default', hasData: true, answered: 0 };
   };
 
   const selectDate = (date: Date) => {
@@ -258,7 +261,7 @@ export default function DailyView() {
             <img src="/logo-day-64.png" alt="拱卒" className="w-8 h-8 hidden dark:block" />
             <div>
               <span className="text-lg font-bold text-gray-900 dark:text-gray-100">拱卒</span>
-              <p className="text-xs text-gray-400 dark:text-gray-500 -mt-0.5">日拱一卒，功不唐捐</p>
+              <p className="text-xs text-amber-600/70 dark:text-amber-400/70 -mt-0.5">日拱一卒，功不唐捐</p>
             </div>
           </div>
           <div className="relative" ref={menuRef}>
@@ -377,51 +380,64 @@ export default function DailyView() {
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-3">
           <div className="flex items-center justify-between gap-1">
             {weekDays.map((day, idx) => {
-              const status = getDayStatus(day);
+              const statusData = getDayStatus(day);
               const isSelected = isSameDay(day, currentDate);
               const isTodayDate = isToday(day);
 
               let bgClass = 'bg-gray-100 dark:bg-gray-700';
               let textClass = 'text-gray-700 dark:text-gray-300';
               let borderClass = '';
+              let dotColor = '';
 
-              if (status === 'completed') {
-                bgClass = 'bg-green-500 dark:bg-green-600';
+              // Future dates
+              if (statusData.status === 'future') {
+                bgClass = 'bg-gray-50 dark:bg-gray-800';
+                textClass = 'text-gray-400 dark:text-gray-600 opacity-40';
+              }
+              // Today - solid amber fill
+              else if (isTodayDate) {
+                bgClass = 'bg-amber-500';
                 textClass = 'text-white';
-              } else if (status === 'low-accuracy') {
-                bgClass = 'bg-amber-500 dark:bg-amber-600';
-                textClass = 'text-white';
-              } else if (status === 'incomplete') {
+              }
+              // Selected (not today) - amber border
+              else if (isSelected) {
                 bgClass = 'bg-white dark:bg-gray-800';
-                borderClass = 'ring-2 ring-red-500 dark:ring-red-400';
+                borderClass = 'ring-2 ring-amber-500';
                 textClass = 'text-gray-700 dark:text-gray-300';
-              } else if (status === 'future') {
-                textClass = 'text-gray-400 dark:text-gray-600';
               }
+              // Past days with status dots
+              else if (statusData.hasData && statusData.status !== 'default') {
+                bgClass = 'bg-gray-100 dark:bg-gray-700';
+                textClass = 'text-gray-700 dark:text-gray-300';
 
-              if (isTodayDate && !isSelected) {
-                borderClass += ' ring-2 ring-blue-500 dark:ring-blue-400';
-              }
-
-              if (isSelected) {
-                borderClass += ' ring-2 ring-blue-600 dark:ring-blue-500';
+                if (statusData.status === 'completed-high') {
+                  dotColor = 'bg-green-500';
+                } else if (statusData.status === 'completed-low') {
+                  dotColor = 'bg-amber-500';
+                } else if (statusData.status === 'incomplete') {
+                  dotColor = statusData.answered === 0 ? 'bg-red-500' : 'bg-amber-500';
+                }
               }
 
               return (
                 <button
                   key={idx}
                   onClick={() => selectDate(day)}
-                  className={`flex-1 aspect-square rounded-full flex flex-col items-center justify-center transition hover:scale-105 ${bgClass} ${borderClass}`}
+                  disabled={statusData.status === 'future'}
+                  className={`flex-1 aspect-square rounded-full flex flex-col items-center justify-center transition hover:scale-105 disabled:hover:scale-100 disabled:cursor-default ${bgClass} ${borderClass}`}
                 >
                   <div className={`text-xs ${textClass} opacity-70`}>{weekDayNames[idx]}</div>
                   <div className={`text-lg font-bold ${textClass}`}>{day.getDate()}</div>
+                  {dotColor && (
+                    <div className={`w-1 h-1 rounded-full ${dotColor} mt-0.5`} />
+                  )}
                 </button>
               );
             })}
           </div>
           <button
             onClick={() => setCalendarExpanded(!calendarExpanded)}
-            className="w-full mt-2 py-1 flex items-center justify-center text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition"
+            className="w-full mt-2 py-1 flex items-center justify-center text-amber-500 hover:text-amber-600 dark:hover:text-amber-400 transition"
           >
             {calendarExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           </button>
@@ -461,7 +477,7 @@ export default function DailyView() {
           </div>
           <div className="grid grid-cols-7 gap-1">
             {monthDays.map((day, idx) => {
-              const status = getDayStatus(day);
+              const statusData = getDayStatus(day);
               const isSelected = isSameDay(day, currentDate);
               const isTodayDate = isToday(day);
               const isCurrentMonth = day.getMonth() === calendarMonth.getMonth();
@@ -469,29 +485,39 @@ export default function DailyView() {
               let bgClass = 'bg-gray-100 dark:bg-gray-700';
               let textClass = 'text-gray-700 dark:text-gray-300';
               let borderClass = '';
+              let dotColor = '';
 
               if (!isCurrentMonth) {
                 textClass = 'text-gray-300 dark:text-gray-600';
               } else {
-                if (status === 'completed') {
-                  bgClass = 'bg-green-500 dark:bg-green-600';
+                // Future dates
+                if (statusData.status === 'future') {
+                  bgClass = 'bg-gray-50 dark:bg-gray-800';
+                  textClass = 'text-gray-400 dark:text-gray-600 opacity-40';
+                }
+                // Today - solid amber fill
+                else if (isTodayDate) {
+                  bgClass = 'bg-amber-500';
                   textClass = 'text-white';
-                } else if (status === 'low-accuracy') {
-                  bgClass = 'bg-amber-500 dark:bg-amber-600';
-                  textClass = 'text-white';
-                } else if (status === 'incomplete') {
+                }
+                // Selected (not today) - amber border
+                else if (isSelected) {
                   bgClass = 'bg-white dark:bg-gray-800';
-                  borderClass = 'ring-2 ring-red-500 dark:ring-red-400';
-                } else if (status === 'future') {
-                  textClass = 'text-gray-400 dark:text-gray-600';
+                  borderClass = 'ring-2 ring-amber-500';
+                  textClass = 'text-gray-700 dark:text-gray-300';
                 }
+                // Past days with status dots
+                else if (statusData.hasData && statusData.status !== 'default') {
+                  bgClass = 'bg-gray-100 dark:bg-gray-700';
+                  textClass = 'text-gray-700 dark:text-gray-300';
 
-                if (isTodayDate && !isSelected) {
-                  borderClass += ' ring-2 ring-blue-500 dark:ring-blue-400';
-                }
-
-                if (isSelected) {
-                  borderClass += ' ring-2 ring-blue-600 dark:ring-blue-500';
+                  if (statusData.status === 'completed-high') {
+                    dotColor = 'bg-green-500';
+                  } else if (statusData.status === 'completed-low') {
+                    dotColor = 'bg-amber-500';
+                  } else if (statusData.status === 'incomplete') {
+                    dotColor = statusData.answered === 0 ? 'bg-red-500' : 'bg-amber-500';
+                  }
                 }
               }
 
@@ -499,9 +525,13 @@ export default function DailyView() {
                 <button
                   key={idx}
                   onClick={() => selectDate(day)}
-                  className={`aspect-square rounded-full flex items-center justify-center transition hover:scale-105 ${bgClass} ${borderClass}`}
+                  disabled={statusData.status === 'future'}
+                  className={`aspect-square rounded-full flex flex-col items-center justify-center transition hover:scale-105 disabled:hover:scale-100 disabled:cursor-default ${bgClass} ${borderClass}`}
                 >
                   <div className={`text-sm font-medium ${textClass}`}>{day.getDate()}</div>
+                  {dotColor && (
+                    <div className={`w-1 h-1 rounded-full ${dotColor} mt-0.5`} />
+                  )}
                 </button>
               );
             })}
@@ -521,10 +551,9 @@ export default function DailyView() {
         {loading ? (
           <div className="text-center text-gray-400 dark:text-gray-500 py-12">加载中...</div>
         ) : quizzes.length === 0 ? (
-          <div className="text-center py-12">
-            <div className="text-4xl mb-4">📝</div>
-            <p className="text-gray-500 dark:text-gray-400">{isToday(currentDate) ? '今天还没有作业' : '这天没有作业'}</p>
-            {isToday(currentDate) && <p className="text-sm text-gray-400 dark:text-gray-500 mt-2">明天见！</p>}
+          <div className="bg-white dark:bg-gray-800 rounded-xl border-2 border-dashed border-gray-200 dark:border-gray-700 text-center py-8">
+            <div className="text-3xl mb-3">📝</div>
+            <p className="text-gray-500 dark:text-gray-400">今天暂无作业</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -579,10 +608,21 @@ export default function DailyView() {
               }`} />
             </div>
             <div className="text-left">
-              <div className="font-medium text-gray-900 dark:text-gray-100">错题本</div>
+              <div className="font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                错题本
+                {mistakesCount > 0 ? (
+                  <span className="bg-red-500 text-white rounded-full w-6 h-6 text-sm font-bold inline-flex items-center justify-center">
+                    {mistakesCount}
+                  </span>
+                ) : (
+                  <span className="bg-green-500 text-white rounded-full w-6 h-6 text-sm font-bold inline-flex items-center justify-center">
+                    ✓
+                  </span>
+                )}
+              </div>
               <div className="text-sm text-gray-400 dark:text-gray-500">
                 {mistakesCount > 0
-                  ? `${mistakesCount}个知识点待复习`
+                  ? '个知识点待复习'
                   : '暂无错题，继续加油💪'}
               </div>
             </div>
