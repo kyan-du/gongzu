@@ -245,7 +245,7 @@ export default function Home() {
               </div>
               <div className="grid grid-cols-7 gap-0.5">
                 {calendarDays.map((d, i) => {
-                  const isClickable = d.isCurrentMonth && !d.isFuture;
+                  const isClickable = !d.isFuture;
                   const isSelected = d.date === selectedDate;
                   const md = monthlyData[d.date];
                   const hasData = !!md && md.quizCount > 0;
