@@ -56,8 +56,10 @@ export default function DailyQuiz() {
         <div className="bg-white dark:bg-gray-800 shadow-sm">
           <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <img src="/logo-night-64.png" alt="拱卒" className="w-8 h-8 rounded-full object-cover dark:hidden" />
-              <img src="/logo-day-64.png" alt="拱卒" className="w-8 h-8 rounded-full object-cover hidden dark:block" />
+              <button onClick={() => navigate(`/${userId}/home`)} className="hover:opacity-80 transition">
+                <img src="/logo-night-64.png" alt="拱卒" className="w-8 h-8 rounded-full object-cover dark:hidden" />
+                <img src="/logo-day-64.png" alt="拱卒" className="w-8 h-8 rounded-full object-cover hidden dark:block" />
+              </button>
               <div>
                 <span className="text-lg font-bold text-gray-900 dark:text-gray-100">拱卒</span>
                 <p className="text-xs text-gray-400 dark:text-gray-500 -mt-0.5">日拱一卒，功不唐捐</p>
@@ -112,8 +114,10 @@ export default function DailyQuiz() {
         <div className="bg-white dark:bg-gray-800 shadow-sm">
           <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <img src="/logo-night-64.png" alt="拱卒" className="w-8 h-8 rounded-full object-cover dark:hidden" />
-              <img src="/logo-day-64.png" alt="拱卒" className="w-8 h-8 rounded-full object-cover hidden dark:block" />
+              <button onClick={() => navigate(`/${userId}/home`)} className="hover:opacity-80 transition">
+                <img src="/logo-night-64.png" alt="拱卒" className="w-8 h-8 rounded-full object-cover dark:hidden" />
+                <img src="/logo-day-64.png" alt="拱卒" className="w-8 h-8 rounded-full object-cover hidden dark:block" />
+              </button>
               <div>
                 <span className="text-lg font-bold text-gray-900 dark:text-gray-100">拱卒</span>
                 <p className="text-xs text-gray-400 dark:text-gray-500 -mt-0.5">日拱一卒，功不唐捐</p>
@@ -149,8 +153,10 @@ export default function DailyQuiz() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
       <div className="bg-white dark:bg-gray-800 shadow-sm">
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center gap-3">
-          <img src="/logo-night-64.png" alt="拱卒" className="w-8 h-8 rounded-full object-cover dark:hidden" />
-          <img src="/logo-day-64.png" alt="拱卒" className="w-8 h-8 rounded-full object-cover hidden dark:block" />
+          <button onClick={() => navigate(`/${userId}/home`)} className="hover:opacity-80 transition">
+            <img src="/logo-night-64.png" alt="拱卒" className="w-8 h-8 rounded-full object-cover dark:hidden" />
+            <img src="/logo-day-64.png" alt="拱卒" className="w-8 h-8 rounded-full object-cover hidden dark:block" />
+          </button>
           <div>
             <span className="text-lg font-bold text-gray-900 dark:text-gray-100">拱卒</span>
             <p className="text-xs text-gray-400 dark:text-gray-500 -mt-0.5">日拱一卒，功不唐捐</p>

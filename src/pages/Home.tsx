@@ -138,7 +138,7 @@ export default function Home() {
             <img src="/logo-day-64.png" alt="拱卒" className="w-8 h-8 hidden dark:block" />
             <div>
               <span className="text-lg font-bold text-gray-900 dark:text-gray-100">拱卒</span>
-              <p className="text-xs text-amber-600/70 dark:text-amber-400/70 -mt-0.5">日拱一卒，功不唐捐</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500 -mt-0.5">日拱一卒，功不唐捐</p>
             </div>
           </button>
           <div className="relative" ref={menuRef}>

@@ -16,8 +16,8 @@ function App() {
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/login/select" element={<SelectUser />} />
-        <Route path="/cyan" element={<Login />} />
-        <Route path="/ryan" element={<Login />} />
+        <Route path="/cyan" element={<Home />} />
+        <Route path="/ryan" element={<Home />} />
         {/* Main view: today or specific date */}
         <Route path="/:userId/today" element={<DailyView />} />
         <Route path="/:userId/home" element={<Home />} />
