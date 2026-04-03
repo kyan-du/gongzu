@@ -13,7 +13,7 @@ function todayCST(): string {
 export const onRequestPost: PagesFunction<Env> = async (context) => {
   try {
     const body = await context.request.json() as any;
-    const { userId } = body;
+    const { userId, replace } = body;
 
     if (!userId) {
       return new Response(JSON.stringify({ error: 'userId required' }), {
@@ -24,20 +24,54 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
     const today = todayCST();
 
-    // Check if quizzes already exist for today
+    // Check existing quizzes
     const existing = await context.env.DB.prepare(
       'SELECT COUNT(*) as cnt FROM daily_quizzes WHERE user_id = ? AND date = ?'
     ).bind(userId, today).first<{ cnt: number }>();
 
-    if ((existing?.cnt || 0) > 0) {
-      return new Response(JSON.stringify({
-        ok: true,
-        alreadyExists: true,
-        quizCount: existing?.cnt || 0,
-        message: `今天已有 ${existing?.cnt} 套题，请刷新页面查看`,
-      }), {
-        headers: { 'Content-Type': 'application/json' },
-      });
+    const quizCount = existing?.cnt || 0;
+
+    if (quizCount > 0) {
+      if (replace) {
+        // Check if any quiz has been answered
+        const answered = await context.env.DB.prepare(
+          `SELECT COUNT(*) as cnt FROM submissions s
+           JOIN daily_quizzes dq ON s.quiz_id = dq.id
+           WHERE dq.user_id = ? AND dq.date = ?`
+        ).bind(userId, today).first<{ cnt: number }>();
+
+        if ((answered?.cnt || 0) > 0) {
+          return new Response(JSON.stringify({
+            ok: false,
+            error: '已有答题记录，无法重新出题',
+          }), {
+            status: 400,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        }
+
+        // Delete old quizzes and their questions
+        const oldQuizzes = await context.env.DB.prepare(
+          'SELECT id, question_ids FROM daily_quizzes WHERE user_id = ? AND date = ?'
+        ).bind(userId, today).all();
+
+        for (const row of (oldQuizzes.results || [])) {
+          const qIds = JSON.parse(row.question_ids as string) as string[];
+          for (const qId of qIds) {
+            await context.env.DB.prepare('DELETE FROM questions WHERE id = ?').bind(qId).run();
+          }
+          await context.env.DB.prepare('DELETE FROM daily_quizzes WHERE id = ?').bind(row.id).run();
+        }
+      } else {
+        return new Response(JSON.stringify({
+          ok: true,
+          alreadyExists: true,
+          quizCount,
+          message: `今天已有 ${quizCount} 套题，请刷新页面查看`,
+        }), {
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }
     }
 
     // Check for duplicate requests within last 10 minutes
@@ -56,20 +90,18 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       });
     }
 
-    // Record request in DB
+    // Record request
     const id = crypto.randomUUID();
     await context.env.DB.prepare(
       'INSERT INTO quiz_requests (id, user_id, date, status, created_at) VALUES (?, ?, ?, ?, ?)'
     ).bind(id, userId, today, 'pending', Math.floor(Date.now() / 1000)).run();
 
-    // Send webhook via OpenClaw inbound API
+    // Send webhook
     const webhookUrl = context.env.WEBHOOK_URL;
     const webhookToken = context.env.WEBHOOK_TOKEN;
 
     if (webhookUrl && webhookToken) {
       const displayName = userId === 'cyan' ? '彤彤' : userId === 'ryan' ? '可可' : userId;
-
-      // OpenClaw inbound webhook format: POST /api/inbound with {token, text}
       const inboundUrl = webhookUrl.replace(/\/$/, '') + '/api/inbound';
 
       context.waitUntil(
@@ -78,7 +110,9 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             token: webhookToken,
-            text: `拱卒出题请求：${displayName}在拱卒上点了"出题"按钮，今天（${today}）还没有题目，请尽快为 ${displayName}(${userId}) 出题。`,
+            text: replace
+              ? `拱卒重新出题请求：${displayName}点了"重新出题"，今天（${today}）的旧题已清除，请重新为 ${displayName}(${userId}) 出题。`
+              : `拱卒出题请求：${displayName}在拱卒上点了"出题"按钮，今天（${today}）还没有题目，请尽快为 ${displayName}(${userId}) 出题。`,
           }),
         }).catch(() => {})
       );

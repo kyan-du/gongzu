@@ -145,6 +145,7 @@ export default function Home() {
   const totalQuizzes = quizzes.length;
   const completedQuizzes = quizzes.filter(q => quizStatus[q.id]?.completed).length;
   const allCompleted = totalQuizzes > 0 && completedQuizzes === totalQuizzes;
+  const hasAnyAnswer = quizzes.some(q => (quizStatus[q.id]?.answered || 0) > 0);
 
   const sortedQuizzes = [...quizzes].sort((a, b) => {
     const ac = quizStatus[a.id]?.completed || false, bc = quizStatus[b.id]?.completed || false;
@@ -309,7 +310,7 @@ export default function Home() {
                     {allCompleted ? '✅ 全部完成' : `${completedQuizzes}/${totalQuizzes} 完成`}
                   </div>
                 )}
-                {selectedDate === todayStr && !loadingDay && totalQuizzes === 0 && (
+                {selectedDate === todayStr && !loadingDay && !hasAnyAnswer && (
                   requested ? (
                     <span className="text-xs text-gray-400 dark:text-gray-500">已通知出题 ✓</span>
                   ) : (
@@ -318,7 +319,7 @@ export default function Home() {
                       disabled={requesting}
                       className="text-sm font-medium px-3 py-1 rounded-lg bg-amber-500 text-white hover:bg-amber-600 active:scale-95 transition disabled:opacity-50"
                     >
-                      {requesting ? '通知中...' : '出题'}
+                      {requesting ? '通知中...' : totalQuizzes > 0 ? '重新出题' : '出题'}
                     </button>
                   )
                 )}
