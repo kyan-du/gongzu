@@ -59,9 +59,22 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
         }
       } else if (question.type === 'blank') {
         const userAns = (ans.answer || '').trim().toLowerCase();
-        const accepts = qContent.blanks?.[0]?.accepts || [qAnswer.answers?.[0]];
-        correct = accepts.some((a: string) => a.toLowerCase() === userAns);
-        correctAnswer = qAnswer.answers?.[0] || '';
+        // qAnswer can be: string "peaceful", object {answers:["peaceful"]}, or "tall as" for multi-blank
+        let expectedAnswers: string[] = [];
+        if (typeof qAnswer === 'string') {
+          expectedAnswers = [qAnswer];
+        } else if (Array.isArray(qAnswer)) {
+          expectedAnswers = qAnswer;
+        } else if (qAnswer.answers) {
+          expectedAnswers = Array.isArray(qAnswer.answers) ? qAnswer.answers : [qAnswer.answers];
+        }
+        // blanks[].accepts for alternative answers
+        const accepts = qContent.blanks?.[0]?.accepts;
+        const allAccepted = accepts
+          ? accepts.map((a: string) => a.toLowerCase())
+          : expectedAnswers.map((a: string) => a.toLowerCase());
+        correct = allAccepted.some((a: string) => a === userAns);
+        correctAnswer = expectedAnswers[0] || '';
       } else if (question.type === 'reading') {
         // answer is array like ["B", "A", "C"], user submits comma-separated "B,A,C"
         const userAnswers = (ans.answer || '').split(',').map((a: string) => a.trim().toUpperCase());
@@ -251,7 +264,13 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
             correctAnswer = qAnswer.answer || '';
           }
         } else if (question.type === 'blank') {
-          correctAnswer = qAnswer.answers?.[0] || '';
+          if (typeof qAnswer === 'string') {
+            correctAnswer = qAnswer;
+          } else if (Array.isArray(qAnswer)) {
+            correctAnswer = qAnswer[0] || '';
+          } else {
+            correctAnswer = qAnswer.answers?.[0] || '';
+          }
         } else if (question.type === 'reading') {
           correctAnswer = Array.isArray(qAnswer) ? qAnswer.join(',') : (qAnswer.answers || []).join(',');
         }
