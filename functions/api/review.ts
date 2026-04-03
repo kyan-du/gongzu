@@ -35,18 +35,18 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 
   let query = `
     SELECT id, knowledge_point, category, error_count, correct_streak,
-           interval_days, next_review_at, last_error_at
+           interval_days, next_review_at, last_error_at, mastered
     FROM knowledge_mastery
-    WHERE user_id = ? AND mastered = 0 AND next_review_at <= ?
+    WHERE user_id = ?
   `;
-  const bindings: any[] = [userId, date];
+  const bindings: any[] = [userId];
 
   if (category) {
     query += ' AND category = ?';
     bindings.push(category);
   }
 
-  query += ' ORDER BY error_count DESC, next_review_at ASC';
+  query += ' ORDER BY mastered ASC, next_review_at ASC, error_count DESC';
 
   const result = await context.env.DB.prepare(query).bind(...bindings).all();
 
@@ -59,6 +59,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     intervalDays: row.interval_days,
     nextReviewAt: row.next_review_at,
     lastErrorAt: row.last_error_at,
+    mastered: !!row.mastered,
   }));
 
   return new Response(JSON.stringify({ date, points }), {
