@@ -54,6 +54,8 @@ export default function Home() {
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
   const [quizStatus, setQuizStatus] = useState<Record<string, QuizStatus>>({});
   const [loadingDay, setLoadingDay] = useState(true);
+  const [requesting, setRequesting] = useState(false);
+  const [requested, setRequested] = useState(false);
   const [mistakesCount, setMistakesCount] = useState<number>(0);
   const [calMonth, setCalMonth] = useState(() => new Date());
   const [monthlyData, setMonthlyData] = useState<Record<string, MonthlyDayData>>({});
@@ -165,8 +167,25 @@ export default function Home() {
     return 'empty';
   }
 
+  const handleRequestQuiz = async () => {
+    setRequesting(true);
+    try {
+      await fetch('/api/request-quiz', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId }),
+      });
+      setRequested(true);
+    } catch (e) {
+      console.error('Failed to request quiz:', e);
+    } finally {
+      setRequesting(false);
+    }
+  };
+
   const handleDateClick = (dateStr: string) => {
     setSelectedDate(dateStr);
+    setRequested(false);
     // Ensure calendar shows the right month
     const [y, m] = dateStr.split('-').map(Number);
     if (toMonthStr(calMonth) !== `${y}-${String(m).padStart(2, '0')}`) {
@@ -265,7 +284,7 @@ export default function Home() {
 
           {/* RIGHT COLUMN: Selected day content */}
           <div className="flex-1 min-w-0">
-            {/* Date label + progress badge */}
+            {/* Date label + progress badge / request button */}
             <div className="flex items-baseline justify-between mb-4">
               <div>
                 <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">
@@ -275,15 +294,30 @@ export default function Home() {
                   <p className="text-sm text-gray-500 dark:text-gray-400">{selectedDate}</p>
                 )}
               </div>
-              {totalQuizzes > 0 && (
-                <div className={`text-sm font-medium px-3 py-1 rounded-full ${
-                  allCompleted ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' :
-                  completedQuizzes > 0 ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' :
-                  'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400'
-                }`}>
-                  {allCompleted ? '✅ 全部完成' : `${completedQuizzes}/${totalQuizzes} 完成`}
-                </div>
-              )}
+              <div className="flex items-center gap-2">
+                {totalQuizzes > 0 && (
+                  <div className={`text-sm font-medium px-3 py-1 rounded-full ${
+                    allCompleted ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' :
+                    completedQuizzes > 0 ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' :
+                    'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400'
+                  }`}>
+                    {allCompleted ? '✅ 全部完成' : `${completedQuizzes}/${totalQuizzes} 完成`}
+                  </div>
+                )}
+                {selectedDate === todayStr && !loadingDay && (
+                  requested ? (
+                    <span className="text-xs text-gray-400 dark:text-gray-500">已通知出题 ✓</span>
+                  ) : (
+                    <button
+                      onClick={handleRequestQuiz}
+                      disabled={requesting}
+                      className="text-sm font-medium px-3 py-1 rounded-lg bg-amber-500 text-white hover:bg-amber-600 active:scale-95 transition disabled:opacity-50"
+                    >
+                      {requesting ? '通知中...' : '出题'}
+                    </button>
+                  )
+                )}
+              </div>
             </div>
 
             {loadingDay ? (
