@@ -265,13 +265,24 @@ export default function Home() {
 
           {/* RIGHT COLUMN: Selected day content */}
           <div className="flex-1 min-w-0">
-            {/* Date label */}
-            <div className="mb-4">
-              <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">
-                {formatDateLabel(selectedDate, todayStr)}
-              </h2>
-              {selectedDate !== todayStr && (
-                <p className="text-sm text-gray-500 dark:text-gray-400">{selectedDate}</p>
+            {/* Date label + progress badge */}
+            <div className="flex items-baseline justify-between mb-4">
+              <div>
+                <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">
+                  {formatDateLabel(selectedDate, todayStr)}
+                </h2>
+                {selectedDate !== todayStr && (
+                  <p className="text-sm text-gray-500 dark:text-gray-400">{selectedDate}</p>
+                )}
+              </div>
+              {totalQuizzes > 0 && (
+                <div className={`text-sm font-medium px-3 py-1 rounded-full ${
+                  allCompleted ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' :
+                  completedQuizzes > 0 ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' :
+                  'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400'
+                }`}>
+                  {allCompleted ? '✅ 全部完成' : `${completedQuizzes}/${totalQuizzes} 完成`}
+                </div>
               )}
             </div>
 
@@ -285,17 +296,6 @@ export default function Home() {
               </div>
             ) : (
               <>
-                {/* Progress summary */}
-                <div className="flex items-center gap-3 mb-4">
-                  <div className={`text-sm font-medium px-3 py-1 rounded-full ${
-                    allCompleted ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' :
-                    completedQuizzes > 0 ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' :
-                    'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400'
-                  }`}>
-                    {allCompleted ? '✅ 全部完成' : `${completedQuizzes}/${totalQuizzes} 完成`}
-                  </div>
-                </div>
-
                 {/* Quiz cards */}
                 <div className="space-y-3">
                   {sortedQuizzes.map((quiz) => (
