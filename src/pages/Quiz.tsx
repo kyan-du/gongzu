@@ -16,6 +16,7 @@ export default function Quiz() {
   const [loading, setLoading] = useState(true);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [results, setResults] = useState<SubmissionResult[]>([]);
   const [score, setScore] = useState({ correct: 0, total: 0 });
 
@@ -61,7 +62,8 @@ export default function Quiz() {
   };
 
   const handleSubmit = async () => {
-    if (!quiz) return;
+    if (!quiz || submitting) return;
+    setSubmitting(true);
     try {
       const answerList = quiz.questions.map((q: any) => ({
         questionId: q.id,
@@ -82,6 +84,8 @@ export default function Quiz() {
     } catch (e) {
       console.error(e);
       alert('提交失败，请重试');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -231,9 +235,14 @@ export default function Quiz() {
         {!submitted ? (
           <button
             onClick={handleSubmit}
-            className="w-full bg-blue-600 dark:bg-blue-500 text-white py-4 px-6 rounded-xl font-bold text-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition shadow-md mt-6 mb-8"
+            disabled={submitting}
+            className={`w-full py-4 px-6 rounded-xl font-bold text-lg transition shadow-md mt-6 mb-8 ${
+              submitting
+                ? 'bg-gray-400 dark:bg-gray-600 text-gray-200 cursor-not-allowed'
+                : 'bg-blue-600 dark:bg-blue-500 text-white hover:bg-blue-700 dark:hover:bg-blue-600'
+            }`}
           >
-            交卷（{answeredCount}/{totalCount}）
+            {submitting ? '正在判分…' : `交卷（${answeredCount}/${totalCount}）`}
           </button>
         ) : (
           <button
