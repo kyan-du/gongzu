@@ -54,13 +54,13 @@ export default function BlankQuestion({ question, index, onAnswer, submitted, re
     return part;
   });
 
-  // Extract Chinese instruction prefix (e.g. "改写句子（改为感叹句）：") as a separate label
+  // Extract Chinese instruction prefix as a tag label (strip trailing colon)
   let instructionLabel = '';
   const firstPart = cleanParts[0];
-  const instrMatch = firstPart.match(/^([\u4e00-\u9fff\u3000-\u303f\uff00-\uffef（）]+[：:]\s*)/);
+  const instrMatch = firstPart.match(/^([\u4e00-\u9fff\u3000-\u303f\uff00-\uffef（）]+)[：:]\s*/);
   if (instrMatch) {
-    instructionLabel = instrMatch[1].trim();
-    cleanParts[0] = firstPart.slice(instrMatch[1].length);
+    instructionLabel = instrMatch[1];
+    cleanParts[0] = firstPart.slice(instrMatch[0].length);
   }
 
   // Build token stream: text / blank / break
@@ -134,7 +134,7 @@ export default function BlankQuestion({ question, index, onAnswer, submitted, re
         <span className="text-sm font-bold text-gray-400 dark:text-gray-500 mt-1">{index + 1}.</span>
         <div className="flex-1 text-base leading-relaxed text-gray-900 dark:text-gray-100">
           {instructionLabel && (
-            <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">{instructionLabel}</div>
+            <span className="inline-block text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full mb-1">{instructionLabel}</span>
           )}
           {lines.map((lineTokens, li) => (
             <div key={li} className="flex flex-wrap items-center gap-y-1">
