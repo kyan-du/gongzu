@@ -4,7 +4,7 @@ import { CheckCircle, Clock, BookX, ChevronLeft, ChevronRight, BookOpen, Languag
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Header from '../components/Header';
-import { ActivityRings } from '@jonasdoesthings/react-activity-rings';
+import ActivityRings from '../components/ActivityRings';
 
 interface Quiz {
   id: string;
@@ -275,19 +275,13 @@ export default function Home() {
                         ${!isClickable ? 'cursor-default' : ''}
                       `}>
                       {ringDefs.length > 0 && (
-                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ opacity: (isDimmed || isSelected) ? 0.3 : 1 }}>
-                          <ActivityRings
-                            rings={ringDefs}
-                            options={{
-                              initialRadius: 8,
-                              paddingBetweenRings: 0.5,
-                              containerHeight: '32px',
-                              containerWidth: '32px',
-                              animationDurationMillis: 600,
-                              backgroundOpacity: 0.2,
-                            }}
-                          />
-                        </div>
+                        <ActivityRings
+                          rings={ringDefs}
+                          dimmed={isDimmed || isSelected}
+                          size={32}
+                          animationMs={500}
+                          bgOpacity={0.2}
+                        />
                       )}
                       <span className="relative z-10">{d.day}</span>
                     </button>
