@@ -49,17 +49,19 @@ export default function BlankQuestion({ question, index, onAnswer, submitted, re
     return part;
   });
 
-  // Extract Chinese instruction from stem (e.g. "改写句子（改为感叹句）：")
+  // Determine instruction label
+  // 1. From stem (e.g. "改写句子（改为感叹句）：")
+  // 2. If blanks have hints (word form exercise): "用所给词的适当形式填空"  
+  // 3. Fallback: tags[1] if available
   let instructionLabel = '';
   const firstPart = cleanParts[0];
   const instrMatch = firstPart.match(/^([\u4e00-\u9fff\u3000-\u303f\uff00-\uffef（）]+)[：:]\s*/);
   if (instrMatch) {
     instructionLabel = instrMatch[1];
     cleanParts[0] = firstPart.slice(instrMatch[0].length);
-  }
-
-  // Fallback: use tags[1] as label if no instruction in stem (e.g. "词性转换")
-  if (!instructionLabel && tags.length > 1) {
+  } else if (hints.some(h => h.length > 0)) {
+    instructionLabel = '用所给词的适当形式填空';
+  } else if (tags.length > 1) {
     instructionLabel = tags[1];
   }
 
