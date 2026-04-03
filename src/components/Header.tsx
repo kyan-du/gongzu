@@ -1,4 +1,4 @@
-import { LogOut, ChevronDown, Sun, Moon, Monitor, Users, Palette, Check, BookX } from 'lucide-react';
+import { LogOut, ChevronDown, ChevronLeft, Sun, Moon, Monitor, Users, Palette, Check, BookX } from 'lucide-react';
 import { getStoredTheme, setStoredTheme } from '../lib/theme';
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -7,9 +7,10 @@ import { logout } from '../lib/api';
 interface HeaderProps {
   userId: string;
   maxWidth?: string;
+  showBack?: boolean;
 }
 
-export default function Header({ userId, maxWidth }: HeaderProps) {
+export default function Header({ userId, maxWidth, showBack }: HeaderProps) {
   const navigate = useNavigate();
   const [showMenu, setShowMenu] = useState(false);
   const [theme, setTheme] = useState(getStoredTheme);
@@ -46,10 +47,20 @@ export default function Header({ userId, maxWidth }: HeaderProps) {
   return (
     <div className="bg-white dark:bg-gray-800 shadow-sm">
       <div className={`${maxWidth || 'max-w-2xl'} mx-auto px-4 py-3 flex items-center justify-between`}>
-        <button
-          onClick={() => navigate(`/${userId}/home`)}
-          className="flex items-center gap-3 hover:opacity-80 transition"
-        >
+        <div className="flex items-center gap-1">
+          {showBack && (
+            <button
+              onClick={() => navigate(`/${userId}/home`)}
+              className="p-1.5 -ml-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+              aria-label="返回主页"
+            >
+              <ChevronLeft className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+            </button>
+          )}
+          <button
+            onClick={() => navigate(`/${userId}/home`)}
+            className="flex items-center gap-3 hover:opacity-80 transition"
+          >
           <img src="/logo-night-64.png" alt="拱卒" className="w-8 h-8 dark:hidden" />
           <img src="/logo-day-64.png" alt="拱卒" className="w-8 h-8 hidden dark:block" />
           <div className="text-left">
@@ -57,6 +68,7 @@ export default function Header({ userId, maxWidth }: HeaderProps) {
             <p className="text-xs text-gray-400 dark:text-gray-500 -mt-0.5">日拱一卒，功不唐捐</p>
           </div>
         </button>
+        </div>
         <div className="relative" ref={menuRef}>
           <button
             onClick={() => setShowMenu(!showMenu)}

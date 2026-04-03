@@ -163,7 +163,7 @@ export default function Mistakes() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
-      <Header userId={userId || ''} />
+      <Header userId={userId || ''} showBack />
 
       <div className="max-w-2xl mx-auto px-4 py-6">
         {/* Title card */}
