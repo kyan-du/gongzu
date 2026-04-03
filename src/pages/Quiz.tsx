@@ -175,10 +175,11 @@ export default function Quiz() {
         </div>
       )}
 
-      <div className="max-w-2xl mx-auto px-4 py-4">
+      <div className="max-w-2xl mx-auto px-4 py-4 space-y-4">
         {quiz.questions?.map((q: any, i: number) => {
+          let questionComponent = null;
           if (q.type === 'choice') {
-            return (
+            questionComponent = (
               <ChoiceQuestion
                 key={`${q.id}-${submitted}`}
                 question={q}
@@ -189,9 +190,8 @@ export default function Quiz() {
                 initialAnswer={answers[q.id]}
               />
             );
-          }
-          if (q.type === 'blank') {
-            return (
+          } else if (q.type === 'blank') {
+            questionComponent = (
               <BlankQuestion
                 key={`${q.id}-${submitted}`}
                 question={q}
@@ -202,9 +202,8 @@ export default function Quiz() {
                 initialAnswer={answers[q.id]}
               />
             );
-          }
-          if (q.type === 'reading') {
-            return (
+          } else if (q.type === 'reading') {
+            questionComponent = (
               <ReadingQuestion
                 key={`${q.id}-${submitted}`}
                 question={q}
@@ -215,9 +214,8 @@ export default function Quiz() {
                 initialAnswer={answers[q.id]}
               />
             );
-          }
-          if (q.type === 'rewrite') {
-            return (
+          } else if (q.type === 'rewrite') {
+            questionComponent = (
               <RewriteQuestion
                 key={`${q.id}-${submitted}`}
                 question={q}
@@ -229,7 +227,16 @@ export default function Quiz() {
               />
             );
           }
-          return null;
+          if (!questionComponent) return null;
+          return (
+            <div key={q.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-xs font-bold flex items-center justify-center">{i + 1}</span>
+                <span className="text-xs text-gray-400 dark:text-gray-500">{q.type === 'choice' ? '选择' : q.type === 'blank' ? '填空' : q.type === 'rewrite' ? '改写' : '阅读'}</span>
+              </div>
+              {questionComponent}
+            </div>
+          );
         })}
 
         {!submitted ? (
