@@ -309,7 +309,7 @@ export default function Home() {
                     {allCompleted ? '✅ 全部完成' : `${completedQuizzes}/${totalQuizzes} 完成`}
                   </div>
                 )}
-                {selectedDate === todayStr && !loadingDay && (
+                {selectedDate === todayStr && !loadingDay && totalQuizzes === 0 && (
                   requested ? (
                     <span className="text-xs text-gray-400 dark:text-gray-500">已通知出题 ✓</span>
                   ) : (
