@@ -4,6 +4,7 @@ import { CheckCircle, Clock, BookX, ChevronLeft, ChevronRight, BookOpen, Languag
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Header from '../components/Header';
+import ActivityRings from '../components/ActivityRings';
 
 interface Quiz {
   id: string;
@@ -29,6 +30,8 @@ interface MonthlyDayData {
   answeredQuestions: number;
   correctAnswers: number;
   accuracy: number | null;
+  reviewDue: number;
+  reviewDone: number;
 }
 
 function toDateStr(d: Date) {
@@ -106,7 +109,10 @@ export default function Home() {
       .then(r => r.json())
       .then(data => {
         const map: Record<string, MonthlyDayData> = {};
-        for (const d of (data.dailyData || [])) map[d.date] = d;
+        const days = data.days || {};
+        for (const [date, d] of Object.entries(days) as [string, any][]) {
+          map[date] = { date, ...d };
+        }
         setMonthlyData(map);
         setMonthlyCache(prev => ({ ...prev, [monthKey]: map }));
       })
@@ -158,15 +164,6 @@ export default function Home() {
     if (toMonthStr(next) <= toMonthStr(new Date())) setCalMonth(next);
   };
   const isCurrentMonthView = toMonthStr(calMonth) === toMonthStr(new Date());
-
-  function getDayStatus(dateStr: string, isFuture: boolean): 'none' | 'complete' | 'partial' | 'empty' {
-    if (isFuture) return 'none';
-    const d = monthlyData[dateStr];
-    if (!d || d.quizCount === 0) return 'none';
-    if (d.completedCount === d.quizCount) return 'complete';
-    if (d.answeredQuestions > 0) return 'partial';
-    return 'empty';
-  }
 
   const handleRequestQuiz = async () => {
     setRequesting(true);
@@ -231,9 +228,16 @@ export default function Home() {
               </div>
               <div className="grid grid-cols-7 gap-0.5">
                 {calendarDays.map((d, i) => {
-                  const status = getDayStatus(d.date, d.isFuture);
                   const isClickable = d.isCurrentMonth && !d.isFuture;
                   const isSelected = d.date === selectedDate;
+                  const md = monthlyData[d.date];
+                  const hasData = !!md && md.quizCount > 0;
+                  const isDimmed = !d.isCurrentMonth;
+
+                  // Ring values: 0-1
+                  const completion = hasData ? md.completedCount / md.quizCount : 0;
+                  const accuracy = hasData && md.answeredQuestions > 0 ? md.correctAnswers / md.answeredQuestions : 0;
+                  const reviewVal = hasData && md.reviewDue > 0 ? md.reviewDone / md.reviewDue : (hasData ? 1 : 0);
 
                   return (
                     <button key={i} disabled={!isClickable}
@@ -243,18 +247,23 @@ export default function Home() {
                         ${!d.isCurrentMonth ? 'text-gray-300 dark:text-gray-700' : ''}
                         ${d.isCurrentMonth && d.isFuture ? 'text-gray-300 dark:text-gray-600' : ''}
                         ${d.isCurrentMonth && !d.isFuture && !d.isToday && !isSelected ? 'text-gray-700 dark:text-gray-300' : ''}
-                        ${d.isToday && !isSelected ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 font-bold' : ''}
+                        ${d.isToday && !isSelected ? 'text-amber-600 dark:text-amber-400 font-bold' : ''}
                         ${isSelected ? 'bg-amber-500 text-white font-bold shadow-sm' : ''}
                         ${isClickable && !isSelected ? 'hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer' : ''}
                         ${!isClickable ? 'cursor-default' : ''}
                       `}>
-                      {d.day}
-                      {d.isCurrentMonth && !d.isFuture && !isSelected && status !== 'none' && (
-                        <span className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full ${
-                          status === 'complete' ? 'bg-emerald-500' :
-                          status === 'partial' ? 'bg-amber-500' : 'bg-red-400'
-                        }`} />
+                      {hasData && !d.isFuture && (
+                        <ActivityRings
+                          completion={completion}
+                          accuracy={accuracy}
+                          review={reviewVal}
+                          hasData={true}
+                          dimmed={isDimmed || isSelected}
+                          size={36}
+                          strokeWidth={2.5}
+                        />
                       )}
+                      <span className="relative z-10">{d.day}</span>
                     </button>
                   );
                 })}
