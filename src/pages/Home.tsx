@@ -4,7 +4,7 @@ import { CheckCircle, Clock, BookX, ChevronLeft, ChevronRight, BookOpen, Languag
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Header from '../components/Header';
-import ActivityRings from '../components/ActivityRings';
+import { ActivityRings } from '@jonasdoesthings/react-activity-rings';
 
 interface Quiz {
   id: string;
@@ -235,25 +235,28 @@ export default function Home() {
                   const isDimmed = !d.isCurrentMonth;
 
                   // Build rings: only include rings with meaningful data
-                  const ringDefs: { value: number; color: string }[] = [];
+                  const ringDefs: { filledPercentage: number; color: string; ringWidth?: number }[] = [];
                   if (hasData && !d.isFuture) {
                     // Outer: completion (Apple red/pink)
                     ringDefs.push({
-                      value: md.completedCount / md.quizCount,
+                      filledPercentage: md.completedCount / md.quizCount,
                       color: '#FA114F',
+                      ringWidth: 4,
                     });
                     // Middle: accuracy (Apple green)
                     if (md.answeredQuestions > 0) {
                       ringDefs.push({
-                        value: md.correctAnswers / md.answeredQuestions,
+                        filledPercentage: md.correctAnswers / md.answeredQuestions,
                         color: '#92E82A',
+                        ringWidth: 4,
                       });
                     }
                     // Inner: review (Apple cyan/teal)
                     if (md.reviewDue > 0) {
                       ringDefs.push({
-                        value: md.reviewDone / md.reviewDue,
+                        filledPercentage: md.reviewDone / md.reviewDue,
                         color: '#00E5CC',
+                        ringWidth: 4,
                       });
                     }
                   }
@@ -272,12 +275,19 @@ export default function Home() {
                         ${!isClickable ? 'cursor-default' : ''}
                       `}>
                       {ringDefs.length > 0 && (
-                        <ActivityRings
-                          rings={ringDefs}
-                          dimmed={isDimmed || isSelected}
-                          size={32}
-                          strokeWidth={2}
-                        />
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ opacity: (isDimmed || isSelected) ? 0.3 : 1 }}>
+                          <ActivityRings
+                            rings={ringDefs}
+                            options={{
+                              initialRadius: 8,
+                              paddingBetweenRings: 0.5,
+                              containerHeight: '32px',
+                              containerWidth: '32px',
+                              animationDurationMillis: 600,
+                              backgroundOpacity: 0.2,
+                            }}
+                          />
+                        </div>
                       )}
                       <span className="relative z-10">{d.day}</span>
                     </button>
