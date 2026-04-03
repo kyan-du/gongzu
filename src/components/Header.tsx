@@ -41,7 +41,7 @@ export default function Header({ userId, maxWidth, showBack }: HeaderProps) {
     return null;
   }
 
-  const userName = userId === 'cyan' ? '彤彤' : userId === 'ryan' ? '可可' : userId;
+  const userName = userId === 'cyan' ? '彤彤' : userId === 'ryan' ? '可可' : userId === 'parent' ? '家长' : userId;
   const avatarSrc = userId === 'cyan' ? '/avatar-cyan.jpg' : userId === 'ryan' ? '/avatar-ryan.jpg' : '/avatar-parent.jpg';
 
   return (

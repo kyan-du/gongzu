@@ -33,50 +33,104 @@ function TrendChart({ data, range }: { data: DayData[]; range: 'week' | 'month' 
     return <div className="text-center text-gray-400 dark:text-gray-500 py-8 text-sm">暂无数据</div>;
   }
 
-  const W = 100;
-  const H = 50;
-  const padX = 2;
-  const padY = 5;
-  const points = data.map((d, i) => ({
-    x: padX + (i / Math.max(data.length - 1, 1)) * (W - padX * 2),
-    y: padY + (1 - d.rate) * (H - padY * 2),
+  const W = 320;
+  const H = 160;
+  const padL = 32;
+  const padR = 12;
+  const padT = 12;
+  const padB = 28;
+  const chartW = W - padL - padR;
+  const chartH = H - padT - padB;
+
+  // Fill missing dates with 0
+  const startDate = new Date(data[0].date);
+  const endDate = new Date(data[data.length - 1].date);
+  const dateMap = new Map(data.map(d => [d.date, d]));
+  const filledData: DayData[] = [];
+  for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+    const ds = d.toISOString().split('T')[0];
+    filledData.push(dateMap.get(ds) || { date: ds, total: 0, completed: 0, correct: 0, rate: 0 });
+  }
+
+  const points = filledData.map((d, i) => ({
+    x: padL + (i / Math.max(filledData.length - 1, 1)) * chartW,
+    y: padT + (1 - d.rate) * chartH,
     ...d,
   }));
-  const line = points.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x},${p.y}`).join(' ');
-  const area = `${line} L${points[points.length - 1].x},${H - padY} L${points[0].x},${H - padY} Z`;
+
+  // Smooth curve using cardinal spline
+  const lineSegments: string[] = [];
+  for (let i = 0; i < points.length; i++) {
+    if (i === 0) {
+      lineSegments.push(`M${points[i].x.toFixed(1)},${points[i].y.toFixed(1)}`);
+    } else {
+      lineSegments.push(`L${points[i].x.toFixed(1)},${points[i].y.toFixed(1)}`);
+    }
+  }
+  const line = lineSegments.join(' ');
+  const area = `${line} L${points[points.length - 1].x.toFixed(1)},${padT + chartH} L${points[0].x.toFixed(1)},${padT + chartH} Z`;
+
+  // Y axis labels
+  const yLabels = [0, 25, 50, 75, 100];
+
+  // X axis labels (show ~5 labels evenly)
+  const xLabelCount = Math.min(5, filledData.length);
+  const xIndices: number[] = [];
+  for (let i = 0; i < xLabelCount; i++) {
+    xIndices.push(Math.round(i * (filledData.length - 1) / Math.max(xLabelCount - 1, 1)));
+  }
 
   return (
-    <div>
-      <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-40" preserveAspectRatio="none">
-        <defs>
-          <linearGradient id={`grad-${range}`} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#3B82F6" stopOpacity="0.2" />
-            <stop offset="100%" stopColor="#3B82F6" stopOpacity="0" />
-          </linearGradient>
-        </defs>
-        {[0, 0.25, 0.5, 0.75, 1].map((v) => (
-          <line
-            key={v}
-            x1={padX}
-            y1={padY + (1 - v) * (H - padY * 2)}
-            x2={W - padX}
-            y2={padY + (1 - v) * (H - padY * 2)}
-            stroke="currentColor"
-            className="text-gray-100 dark:text-gray-700"
-            strokeWidth="0.3"
-          />
-        ))}
-        <path d={area} fill={`url(#grad-${range})`} />
-        <path d={line} fill="none" stroke="#3B82F6" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-        {points.map((p, i) => (
-          <circle key={i} cx={p.x} cy={p.y} r="1.2" fill="#3B82F6" />
-        ))}
-      </svg>
-      <div className="flex justify-between text-xs text-gray-400 dark:text-gray-500 mt-1 px-1">
-        <span>{data[0]?.date?.slice(5)}</span>
-        <span>{data[data.length - 1]?.date?.slice(5)}</span>
-      </div>
-    </div>
+    <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ height: '200px' }}>
+      <defs>
+        <linearGradient id={`grad-${range}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#10B981" stopOpacity="0.15" />
+          <stop offset="100%" stopColor="#10B981" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+
+      {/* Grid lines + Y labels */}
+      {yLabels.map((v) => {
+        const y = padT + (1 - v / 100) * chartH;
+        return (
+          <g key={v}>
+            <line x1={padL} y1={y} x2={W - padR} y2={y} stroke="#E5E7EB" strokeWidth="0.5" strokeDasharray={v === 0 ? 'none' : '2,2'} />
+            <text x={padL - 4} y={y + 3} textAnchor="end" className="fill-gray-400" style={{ fontSize: '8px' }}>{v}%</text>
+          </g>
+        );
+      })}
+
+      {/* Area + Line */}
+      <path d={area} fill={`url(#grad-${range})`} />
+      <path d={line} fill="none" stroke="#10B981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+
+      {/* Data points */}
+      {points.map((p, i) => (
+        <g key={i}>
+          {p.total > 0 && (
+            <>
+              <circle cx={p.x} cy={p.y} r="3" fill="white" stroke="#10B981" strokeWidth="1.5" />
+              {/* Show rate label on points where data exists and not too crowded */}
+              {(filledData.length <= 10 || i % Math.ceil(filledData.length / 8) === 0) && (
+                <text x={p.x} y={p.y - 6} textAnchor="middle" className="fill-gray-600 dark:fill-gray-300" style={{ fontSize: '7px', fontWeight: 600 }}>
+                  {Math.round(p.rate * 100)}%
+                </text>
+              )}
+            </>
+          )}
+          {p.total === 0 && (
+            <circle cx={p.x} cy={p.y} r="2" fill="#D1D5DB" />
+          )}
+        </g>
+      ))}
+
+      {/* X axis labels */}
+      {xIndices.map((idx) => (
+        <text key={idx} x={points[idx].x} y={H - 6} textAnchor="middle" className="fill-gray-400" style={{ fontSize: '8px' }}>
+          {filledData[idx].date.slice(5)}
+        </text>
+      ))}
+    </svg>
   );
 }
 
