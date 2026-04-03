@@ -1,294 +1,142 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { ChevronLeft, ChevronDown, ChevronRight } from 'lucide-react';
+import { useParams } from 'react-router-dom';
+import Header from '../components/Header';
 
-interface KnowledgePoint {
+interface MasteryItem {
   id: string;
   knowledgePoint: string;
-  category: string | null;
+  category: string;
   errorCount: number;
   correctStreak: number;
   intervalDays: number;
-  nextReviewAt: string | null;
+  nextReviewAt: string;
+  lastErrorAt: string;
   mastered: boolean;
-  masteredReason: string | null;
-  lastErrorAt: string | null;
-}
-
-interface MistakeDetail {
-  date: string;
-  stem: string;
-  userAnswer: string;
-  correctAnswer: string;
-  explanation: string;
 }
 
 export default function Mistakes() {
-  const { userId } = useParams<{ userId: string }>();
-  const navigate = useNavigate();
-
-  const [points, setPoints] = useState<KnowledgePoint[]>([]);
-  const [masteredPoints, setMasteredPoints] = useState<KnowledgePoint[]>([]);
+  const { userId } = useParams();
+  const [items, setItems] = useState<MasteryItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [expandedPoints, setExpandedPoints] = useState<Set<string>>(new Set());
-  const [mistakesMap, setMistakesMap] = useState<Record<string, MistakeDetail[]>>({});
-  
-  const [showMastered, setShowMastered] = useState(false);
-
 
   useEffect(() => {
-    fetchPoints();
+    if (!userId) return;
+    fetch(`/api/review?userId=${userId}`)
+      .then(r => r.json())
+      .then(data => setItems(data.items || []))
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, [userId]);
 
-  const fetchPoints = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch(`/api/mistakes?userId=${userId}`);
-      const data = await res.json();
-      setPoints(data.points || []);
-      setMasteredPoints(data.masteredPoints || []);
-    } catch (e) {
-      console.error('Failed to fetch knowledge points:', e);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const today = new Date().toISOString().split('T')[0];
+  const overdue = items.filter(i => !i.mastered && i.nextReviewAt <= today);
+  const upcoming = items.filter(i => !i.mastered && i.nextReviewAt > today);
+  const mastered = items.filter(i => i.mastered);
 
-  const fetchMistakesForPoint = async (point: string) => {
-    
-    try {
-      const res = await fetch(`/api/mistakes?userId=${userId}&point=${encodeURIComponent(point)}`);
-      const data = await res.json();
-      setMistakesMap(prev => ({ ...prev, [point]: data.mistakes || [] }));
-    } catch (e) {
-      console.error('Failed to fetch mistakes:', e);
-    } finally {
-      
-    }
-  };
-
-  const togglePoint = async (point: KnowledgePoint) => {
-    if (expandedPoints.has(point.id)) {
-      setExpandedPoints(prev => { const next = new Set(prev); next.delete(point.id); return next; });
-    } else {
-      setExpandedPoints(prev => new Set(prev).add(point.id));
-      await fetchMistakesForPoint(point.knowledgePoint);
-    }
-  };
-
-  const handleMastery = async (pointId: string, action: 'master' | 'unmaster') => {
-    try {
-      await fetch('/api/mistakes/mastery', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId,
-          masteryId: pointId,
-          action,
-        }),
-      });
-      // 重新加载知识点列表
-      await fetchPoints();
-      setExpandedPoints(prev => { const next = new Set(prev); next.delete(pointId); return next; });
-    } catch (e) {
-      console.error('Failed to update mastery:', e);
-    }
-  };
-
-
-  const formatReviewDate = (date: string | null) => {
-    if (!date) return '';
-    const d = new Date(date);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const reviewDate = new Date(d);
-    reviewDate.setHours(0, 0, 0, 0);
-    const diffDays = Math.floor((reviewDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-    
+  const formatRelative = (dateStr: string) => {
+    const d = new Date(dateStr);
+    const now = new Date();
+    const diffDays = Math.round((d.getTime() - now.getTime()) / 86400000);
     if (diffDays === 0) return '今天';
     if (diffDays === 1) return '明天';
     if (diffDays === -1) return '昨天';
-    if (diffDays < 0) return `${Math.abs(diffDays)}天前`;
-    return `${d.getMonth() + 1}/${d.getDate()}`;
+    if (diffDays < 0) return `${-diffDays}天前`;
+    return `${diffDays}天后`;
   };
 
-  return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
-      {/* Header */}
-      <div className="bg-white dark:bg-gray-800 shadow-sm">
-        <div className="max-w-2xl mx-auto px-4 py-3 flex items-center gap-3">
-          <button
-            onClick={() => navigate(`/${userId}/today`)}
-            className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition"
-          >
-            <ChevronLeft className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-          </button>
-          <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">错题本</h1>
+  const handleMastered = async (id: string) => {
+    await fetch(`/api/review`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'mark-mastered', masteryId: id, userId }),
+    });
+    setItems(prev => prev.map(i => i.id === id ? { ...i, mastered: true } : i));
+  };
+
+  const renderItem = (item: MasteryItem, isOverdue: boolean) => (
+    <div key={item.id} className={`p-4 rounded-xl shadow-sm ${
+      isOverdue
+        ? 'bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800/30'
+        : 'bg-white dark:bg-gray-800'
+    }`}>
+      <div className="flex items-start justify-between">
+        <div className="flex-1">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="font-medium text-gray-900 dark:text-gray-100">{item.knowledgePoint}</span>
+            <span className="text-xs text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded">{item.category}</span>
+          </div>
+          <div className="text-sm text-gray-500 dark:text-gray-400">
+            错 {item.errorCount} 次 · 下次复习 {formatRelative(item.nextReviewAt)}
+          </div>
         </div>
+        {!item.mastered && (
+          <button
+            onClick={() => handleMastered(item.id)}
+            className="text-xs text-green-600 dark:text-green-400 border border-green-300 dark:border-green-700 px-2 py-1 rounded-full hover:bg-green-50 dark:hover:bg-green-900/20 transition whitespace-nowrap"
+          >
+            我会了
+          </button>
+        )}
       </div>
+    </div>
+  );
 
-      {/* Content */}
-      <div className="max-w-2xl mx-auto px-4 py-6">
+  return (
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <Header userId={userId || ''} />
+      <div className="max-w-lg mx-auto px-4 pb-8">
+        <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">📋 错题本</h2>
+
         {loading ? (
-          <div className="text-center text-gray-400 dark:text-gray-500 py-12">加载中...</div>
+          <div className="text-center py-12 text-gray-400">加载中...</div>
+        ) : items.length === 0 ? (
+          <div className="text-center py-12 text-gray-400">
+            <p className="text-4xl mb-2">🎉</p>
+            <p>还没有错题记录</p>
+          </div>
         ) : (
-          <>
-            {/* 需要复习的知识点 */}
-            {points.length > 0 && (
-              <div className="mb-6">
-                <h2 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3 px-1">
-                  需要复习（{points.length}）
-                </h2>
-                <div className="space-y-3">
-                  {points.map((point) => (
-                    <div key={point.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
-                      {/* 知识点卡片头部 */}
-                      <button
-                        onClick={() => togglePoint(point)}
-                        className="w-full px-4 py-3 flex items-start justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition text-left"
-                      >
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="font-medium text-gray-900 dark:text-gray-100">
-                              {point.knowledgePoint}
-                            </span>
-                            {point.category && (
-                              <span className="text-xs text-gray-400 dark:text-gray-500">
-                                {point.category}
-                              </span>
-                            )}
-                          </div>
-                          <div className="text-sm text-gray-500 dark:text-gray-400">
-                            错 {point.errorCount} 次 · 下次复习 {formatReviewDate(point.nextReviewAt)}
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleMastery(point.id, 'master');
-                            }}
-                            className="px-3 py-1 text-xs font-medium text-green-600 dark:text-green-400 border border-green-600 dark:border-green-400 rounded-full hover:bg-green-50 dark:hover:bg-green-900/20 transition"
-                          >
-                            我会了
-                          </button>
-                          <ChevronRight
-                            className={`w-5 h-5 text-gray-400 transition-transform ${
-                              expandedPoints.has(point.id) ? 'rotate-90' : ''
-                            }`}
-                          />
-                        </div>
-                      </button>
-
-                      {/* 展开的错题列表 */}
-                      {expandedPoints.has(point.id) && (
-                        <div className="border-t border-gray-100 dark:border-gray-700">
-                          {!mistakesMap[point.knowledgePoint] ? (
-                            <div className="px-4 py-6 text-center text-sm text-gray-400 dark:text-gray-500">
-                              加载中...
-                            </div>
-                          ) : mistakesMap[point.knowledgePoint].length === 0 ? (
-                            <div className="px-4 py-6 text-center text-sm text-gray-400 dark:text-gray-500">
-                              没有错题记录
-                            </div>
-                          ) : (
-                            <div className="divide-y divide-gray-100 dark:divide-gray-700">
-                              {(mistakesMap[point.knowledgePoint] || []).map((mistake, idx) => (
-                                <div key={idx} className="px-4 py-3 space-y-2">
-                                  <div className="text-xs text-gray-400 dark:text-gray-500">
-                                    {mistake.date}
-                                  </div>
-                                  <div className="text-sm text-gray-700 dark:text-gray-300">
-                                    <span className="whitespace-pre-wrap">{mistake.stem}</span>
-                                  </div>
-                                  <div className="flex items-center gap-2 text-sm">
-                                    <span className="text-red-500 dark:text-red-400 font-medium">
-                                      {mistake.userAnswer || '(未作答)'}
-                                    </span>
-                                    <span className="text-gray-400 dark:text-gray-500">→</span>
-                                    <span className="text-green-600 dark:text-green-400 font-medium">
-                                      {mistake.correctAnswer}
-                                    </span>
-                                  </div>
-                                  {mistake.explanation && (
-                                    <div className="text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900 rounded-lg p-2 mt-2">
-                                      {mistake.explanation}
-                                    </div>
-                                  )}
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  ))}
+          <div className="space-y-6">
+            {/* Overdue */}
+            {overdue.length > 0 && (
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-sm font-medium text-red-600 dark:text-red-400">需要复习</span>
+                  <span className="text-xs text-red-500 bg-red-100 dark:bg-red-900/20 px-1.5 py-0.5 rounded-full">{overdue.length}</span>
+                </div>
+                <div className="space-y-2">
+                  {overdue.map(i => renderItem(i, true))}
                 </div>
               </div>
             )}
 
-            {/* 已掌握的知识点（折叠） */}
-            {masteredPoints.length > 0 && (
-              <div className="mb-6">
-                <button
-                  onClick={() => setShowMastered(!showMastered)}
-                  className="w-full flex items-center justify-between text-sm font-medium text-gray-500 dark:text-gray-400 mb-3 px-1 hover:text-gray-700 dark:hover:text-gray-300 transition"
-                >
-                  <span>已掌握（{masteredPoints.length}）</span>
-                  <ChevronDown
-                    className={`w-4 h-4 transition-transform ${showMastered ? 'rotate-180' : ''}`}
-                  />
-                </button>
-                {showMastered && (
-                  <div className="space-y-3">
-                    {masteredPoints.map((point) => (
-                      <div
-                        key={point.id}
-                        className="bg-white dark:bg-gray-800 rounded-xl shadow-sm px-4 py-3"
-                      >
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-1">
-                              <span className="font-medium text-gray-900 dark:text-gray-100">
-                                {point.knowledgePoint}
-                              </span>
-                              {point.category && (
-                                <span className="text-xs text-gray-400 dark:text-gray-500">
-                                  {point.category}
-                                </span>
-                              )}
-                            </div>
-                            <div className="text-sm text-gray-500 dark:text-gray-400">
-                              已掌握 {point.masteredReason === 'auto' ? '(自动)' : '(手动标记)'}
-                            </div>
-                          </div>
-                          <button
-                            onClick={() => handleMastery(point.id, 'unmaster')}
-                            className="px-3 py-1 text-xs font-medium text-blue-600 dark:text-blue-400 border border-blue-600 dark:border-blue-400 rounded-full hover:bg-blue-50 dark:hover:bg-blue-900/20 transition"
-                          >
-                            再练练
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
+            {/* Upcoming */}
+            {upcoming.length > 0 && (
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-sm font-medium text-gray-600 dark:text-gray-400">即将复习</span>
+                  <span className="text-xs text-gray-500 bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded-full">{upcoming.length}</span>
+                </div>
+                <div className="space-y-2">
+                  {upcoming.map(i => renderItem(i, false))}
+                </div>
               </div>
             )}
 
-            {/* 空状态 */}
-            {points.length === 0 && masteredPoints.length === 0 && (
-              <div className="text-center py-12">
-                <div className="text-4xl mb-4">🎉</div>
-                <p className="text-gray-500 dark:text-gray-400">太棒了！没有错题</p>
-                <p className="text-sm text-gray-400 dark:text-gray-500 mt-2">继续保持！</p>
+            {/* Mastered */}
+            {mastered.length > 0 && (
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-sm font-medium text-green-600 dark:text-green-400">已掌握</span>
+                  <span className="text-xs text-green-500 bg-green-100 dark:bg-green-900/20 px-1.5 py-0.5 rounded-full">{mastered.length}</span>
+                </div>
+                <div className="space-y-2 opacity-60">
+                  {mastered.map(i => renderItem(i, false))}
+                </div>
               </div>
             )}
-          </>
+          </div>
         )}
       </div>
-
-
     </div>
   );
 }
