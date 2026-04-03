@@ -24,49 +24,43 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
     const today = todayCST();
 
-    // Check if there are already quizzes for today
+    // Check if quizzes already exist for today
     const existing = await context.env.DB.prepare(
       'SELECT COUNT(*) as cnt FROM daily_quizzes WHERE user_id = ? AND date = ?'
     ).bind(userId, today).first<{ cnt: number }>();
 
-    const quizCount = existing?.cnt || 0;
-
-    // If quizzes already exist, don't send webhook — just tell user to refresh
-    if (quizCount > 0) {
+    if ((existing?.cnt || 0) > 0) {
       return new Response(JSON.stringify({
         ok: true,
         alreadyExists: true,
-        quizCount,
-        message: `今天已有 ${quizCount} 套题，请刷新页面查看`,
+        quizCount: existing?.cnt || 0,
+        message: `今天已有 ${existing?.cnt} 套题，请刷新页面查看`,
       }), {
         headers: { 'Content-Type': 'application/json' },
       });
     }
 
-    // No quizzes yet — fire webhook to notify the assistant
-    const webhookUrl = context.env.WEBHOOK_URL;
-    const webhookToken = context.env.WEBHOOK_TOKEN;
+    // Check for duplicate requests within last 10 minutes
+    const tenMinAgo = Math.floor(Date.now() / 1000) - 600;
+    const recentReq = await context.env.DB.prepare(
+      'SELECT COUNT(*) as cnt FROM quiz_requests WHERE user_id = ? AND date = ? AND created_at > ?'
+    ).bind(userId, today, tenMinAgo).first<{ cnt: number }>();
 
-    if (webhookUrl && webhookToken) {
-      const displayName = userId === 'cyan' ? '彤彤' : userId === 'ryan' ? '可可' : userId;
-
-      context.waitUntil(
-        fetch(webhookUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${webhookToken}`,
-          },
-          body: JSON.stringify({
-            message: `拱卒出题请求：${displayName}在拱卒上点了"出题"按钮，今天（${today}）还没有题目，请尽快为 ${displayName}(${userId}) 出题。`,
-            name: 'GongZu',
-            deliver: true,
-            channel: 'telegram',
-            to: '7958430491',
-          }),
-        }).catch(() => {})
-      );
+    if ((recentReq?.cnt || 0) > 0) {
+      return new Response(JSON.stringify({
+        ok: true,
+        duplicate: true,
+        message: '已通知出题，请耐心等待',
+      }), {
+        headers: { 'Content-Type': 'application/json' },
+      });
     }
+
+    // Insert request record
+    const id = crypto.randomUUID();
+    await context.env.DB.prepare(
+      'INSERT INTO quiz_requests (id, user_id, date, status, created_at) VALUES (?, ?, ?, ?, ?)'
+    ).bind(id, userId, today, 'pending', Math.floor(Date.now() / 1000)).run();
 
     return new Response(JSON.stringify({
       ok: true,
