@@ -121,7 +121,7 @@ export default function DailyView() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
-      <Header userId={userId || ''} />
+      <Header userId={userId || ''} showBack />
 
       {/* Date navigation */}
       <div className="max-w-2xl mx-auto px-4 pt-6 pb-2">
