@@ -41,10 +41,15 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     }
 
     // Check for duplicate requests within last 10 minutes
-    const tenMinAgo = Math.floor(Date.now() / 1000) - 600;
-    const recentReq = await context.env.DB.prepare(
-      'SELECT COUNT(*) as cnt FROM quiz_requests WHERE user_id = ? AND date = ? AND created_at > ?'
-    ).bind(userId, today, tenMinAgo).first<{ cnt: number }>();
+    let recentReq: { cnt: number } | null = null;
+    try {
+      const tenMinAgo = Math.floor(Date.now() / 1000) - 600;
+      recentReq = await context.env.DB.prepare(
+        'SELECT COUNT(*) as cnt FROM quiz_requests WHERE user_id = ? AND date = ? AND created_at > ?'
+      ).bind(userId, today, tenMinAgo).first<{ cnt: number }>();
+    } catch {
+      // quiz_requests table may not exist yet, ignore
+    }
 
     if ((recentReq?.cnt || 0) > 0) {
       return new Response(JSON.stringify({
@@ -56,11 +61,37 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       });
     }
 
-    // Insert request record
-    const id = crypto.randomUUID();
-    await context.env.DB.prepare(
-      'INSERT INTO quiz_requests (id, user_id, date, status, created_at) VALUES (?, ?, ?, ?, ?)'
-    ).bind(id, userId, today, 'pending', Math.floor(Date.now() / 1000)).run();
+    // Record request in DB (best effort)
+    try {
+      const id = crypto.randomUUID();
+      await context.env.DB.prepare(
+        'INSERT INTO quiz_requests (id, user_id, date, status, created_at) VALUES (?, ?, ?, ?, ?)'
+      ).bind(id, userId, today, 'pending', Math.floor(Date.now() / 1000)).run();
+    } catch {
+      // table may not exist, continue anyway
+    }
+
+    // Send webhook via OpenClaw inbound API
+    const webhookUrl = context.env.WEBHOOK_URL;
+    const webhookToken = context.env.WEBHOOK_TOKEN;
+
+    if (webhookUrl && webhookToken) {
+      const displayName = userId === 'cyan' ? '彤彤' : userId === 'ryan' ? '可可' : userId;
+
+      // OpenClaw inbound webhook format: POST /api/inbound with {token, text}
+      const inboundUrl = webhookUrl.replace(/\/$/, '') + '/api/inbound';
+
+      context.waitUntil(
+        fetch(inboundUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            token: webhookToken,
+            text: `拱卒出题请求：${displayName}在拱卒上点了"出题"按钮，今天（${today}）还没有题目，请尽快为 ${displayName}(${userId}) 出题。`,
+          }),
+        }).catch(() => {})
+      );
+    }
 
     return new Response(JSON.stringify({
       ok: true,
