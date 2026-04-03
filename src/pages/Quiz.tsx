@@ -159,12 +159,12 @@ export default function Quiz() {
       )}
 
       {submitted && (
-        <div className="bg-white dark:bg-gray-800 mx-4 mt-4 rounded-xl shadow-sm p-6 text-center max-w-2xl lg:mx-auto">
-          <div className="text-4xl font-bold mb-2">
-            {score.correct === score.total ? '🎉' : score.correct >= score.total * 0.8 ? '👍' : '💪'}
+        <div className="bg-white dark:bg-gray-800 mx-4 mt-3 rounded-xl shadow-sm px-4 py-3 max-w-2xl lg:mx-auto">
+          <div className="flex items-center justify-center gap-2">
+            <span className="text-2xl">{score.correct === score.total ? '🎉' : score.correct >= score.total * 0.8 ? '👍' : '💪'}</span>
+            <span className="text-xl font-bold text-gray-900 dark:text-gray-100">{score.correct}/{score.total}</span>
+            <span className="text-sm text-gray-500 dark:text-gray-400">正确率 {Math.round((score.correct / score.total) * 100)}%</span>
           </div>
-          <div className="text-3xl font-bold text-gray-900 dark:text-gray-100">{score.correct} / {score.total}</div>
-          <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">正确率 {Math.round((score.correct / score.total) * 100)}%</div>
         </div>
       )}
 

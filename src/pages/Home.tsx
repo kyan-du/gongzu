@@ -338,14 +338,12 @@ export default function Home() {
           <div className="flex-1 min-w-0">
             {/* Date label + progress badge / request button */}
             <div className="flex items-baseline justify-between mb-4">
-              <div>
-                <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">
-                  {formatDateLabel(selectedDate, todayStr)}
-                </h2>
-                {selectedDate !== todayStr && (
-                  <p className="text-sm text-gray-500 dark:text-gray-400">{selectedDate}</p>
-                )}
-              </div>
+              <button
+                onClick={() => navigate(`/${userId}/${selectedDate}`)}
+                className="text-lg font-bold text-gray-900 dark:text-gray-100 hover:text-amber-600 dark:hover:text-amber-400 transition"
+              >
+                {formatDateLabel(selectedDate, todayStr)} →
+              </button>
               <div className="flex items-center gap-2">
                 {totalQuizzes > 0 && (
                   <div className={`text-sm font-medium px-3 py-1 rounded-full ${
