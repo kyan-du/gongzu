@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { ChevronDown, ChevronRight } from 'lucide-react';
+import { ChevronDown, ChevronRight, BookX } from 'lucide-react';
 import Header from '../components/Header';
 
 interface KnowledgePoint {
@@ -162,7 +162,18 @@ export default function Mistakes() {
       <Header userId={userId || ''} />
 
       <div className="max-w-2xl mx-auto px-4 py-6">
-        <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-6">错题本</h2>
+        {/* Title card */}
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-10 h-10 rounded-xl bg-red-50 dark:bg-red-900/30 flex items-center justify-center">
+            <BookX className="w-5 h-5 text-red-500 dark:text-red-400" />
+          </div>
+          <div>
+            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">错题本</h2>
+            <p className="text-xs text-gray-400 dark:text-gray-500">
+              共 {points.length + masteredPoints.length} 个知识点跟踪中
+            </p>
+          </div>
+        </div>
 
         {loading ? (
           <div className="text-center text-gray-400 dark:text-gray-500 py-12">加载中...</div>
