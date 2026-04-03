@@ -170,7 +170,7 @@ export default function ParentDashboard() {
   };
 
   return (
-    <Layout userId="parent">
+    <Layout userId="parent" maxWidth="max-w-3xl">
       {/* Child tabs with avatars */}
         <div className="flex gap-3 mb-6">
           {children.map((child) => (

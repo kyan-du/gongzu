@@ -162,7 +162,7 @@ export default function Mistakes() {
   const upcoming = points.filter(p => p.nextReviewAt && p.nextReviewAt > today);
 
   return (
-    <Layout userId={userId || ''} showBack>
+    <Layout userId={userId || ''} showBack maxWidth="max-w-3xl">
         {/* Title card */}
         <div className="flex items-center gap-3 mb-6">
           <div className="w-10 h-10 rounded-xl bg-red-50 dark:bg-red-900/30 flex items-center justify-center">

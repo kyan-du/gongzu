@@ -110,7 +110,7 @@ export default function Quiz() {
   const totalCount = quiz.questions?.length || 0;
 
   return (
-    <Layout userId={userId || ''} showBack>
+    <Layout userId={userId || ''} showBack maxWidth="max-w-3xl">
       {/* Quiz tag + date subheader */}
       <div className="-mx-4 -mt-6 px-4 py-3 mb-4 flex items-center justify-between border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
         <div className="flex items-center gap-2">

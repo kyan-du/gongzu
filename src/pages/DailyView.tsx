@@ -120,7 +120,7 @@ export default function DailyView() {
   };
 
   return (
-    <Layout userId={userId || ''} showBack>
+    <Layout userId={userId || ''} showBack maxWidth="max-w-3xl">
       {/* Date navigation */}
       <div className="pt-0 pb-2">
         <div className="flex items-center justify-between">
