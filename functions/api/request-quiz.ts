@@ -50,20 +50,22 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     if (webhookUrl && webhookToken) {
       const displayName = userId === 'cyan' ? '彤彤' : userId === 'ryan' ? '可可' : userId;
 
-      fetch(webhookUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${webhookToken}`,
-        },
-        body: JSON.stringify({
-          event: 'quiz_request',
-          userId,
-          displayName,
-          date: today,
-          message: `${displayName}在拱卒上点了"出题"按钮，今天还没有题目，请尽快出题。`,
-        }),
-      }).catch(() => {});
+      context.waitUntil(
+        fetch(webhookUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${webhookToken}`,
+          },
+          body: JSON.stringify({
+            message: `拱卒出题请求：${displayName}在拱卒上点了"出题"按钮，今天（${today}）还没有题目，请尽快为 ${displayName}(${userId}) 出题。`,
+            name: 'GongZu',
+            deliver: true,
+            channel: 'telegram',
+            to: '7958430491',
+          }),
+        }).catch(() => {})
+      );
     }
 
     return new Response(JSON.stringify({
