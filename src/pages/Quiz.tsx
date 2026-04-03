@@ -128,7 +128,11 @@ export default function Quiz() {
               <p className="text-xs text-gray-400 dark:text-gray-500 -mt-0.5">日拱一卒，功不唐捐</p>
             </div>
           </div>
-          <span className="text-sm font-medium text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full">已答 {answeredCount}/{totalCount}</span>
+          <img
+            src={userId === 'cyan' ? '/avatar-cyan.jpg' : userId === 'ryan' ? '/avatar-ryan.jpg' : '/avatar-parent.jpg'}
+            alt=""
+            className="w-8 h-8 rounded-full object-cover"
+          />
         </div>
       </div>
 
