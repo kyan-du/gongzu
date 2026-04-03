@@ -1,3 +1,4 @@
+import { getTag } from '../lib/tags';
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import ChoiceQuestion from '../components/ChoiceQuestion';
@@ -9,7 +10,7 @@ import type { Quiz as QuizType, SubmissionResult } from '../lib/types';
 import { normalizeQuiz, normalizeSubmissionResults } from '../lib/types';
 
 export default function Quiz() {
-  const { userId, date, quizId } = useParams<{ userId: string; date: string; quizId: string }>();
+  const { userId, date, tag } = useParams<{ userId: string; date: string; tag: string }>();
   const navigate = useNavigate();
   const [quiz, setQuiz] = useState<QuizType | null>(null);
   const [loading, setLoading] = useState(true);
@@ -24,7 +25,7 @@ export default function Quiz() {
       try {
         const res = await fetch(`/api/quiz?userId=${userId}&date=${date}`);
         const data = await res.json();
-        const found = data.quizzes?.find((q: any) => q.id === quizId);
+        const found = data.quizzes?.find((q: any) => q.tag === getTag(tag || ''));
         if (!found) {
           setQuiz(null);
           setLoading(false);
@@ -54,7 +55,7 @@ export default function Quiz() {
       }
     };
     fetchQuiz();
-  }, [userId, date, quizId]);
+  }, [userId, date, tag]);
 
   const handleAnswer = (questionId: string, answer: string) => {
     setAnswers((prev) => ({ ...prev, [questionId]: answer }));

@@ -23,8 +23,8 @@ function App() {
         <Route path="/:userId/home" element={<Home />} />
         {/* Mistakes book */}
         <Route path="/:userId/mistakes" element={<Mistakes />} />
-        {/* Quiz by ID */}
-        <Route path="/:userId/:date/:quizId" element={<Quiz />} />
+        {/* Quiz by date + tag slug */}
+        <Route path="/:userId/:date/:tag" element={<Quiz />} />
         {/* Date view (same as home but with date anchor) */}
         <Route path="/:userId/:date" element={<DailyView />} />
         <Route path="/:userId/result/:quizId" element={<Result />} />

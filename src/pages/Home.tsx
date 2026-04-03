@@ -1,3 +1,4 @@
+import { getSlug } from '../lib/tags';
 import { normalizeQuiz } from '../lib/types';
 import { CheckCircle, Clock, BookX, ChevronLeft, ChevronRight, BookOpen, Languages, PenLine } from 'lucide-react';
 import { useState, useEffect, useMemo, useCallback } from 'react';
@@ -383,7 +384,7 @@ export default function Home() {
                 <div className="space-y-3">
                   {sortedQuizzes.map((quiz) => (
                     <button key={quiz.id}
-                      onClick={() => navigate(`/${userId}/${quiz.date}/${quiz.id}`)}
+                      onClick={() => navigate(`/${userId}/${quiz.date}/${getSlug(quiz.tag)}`)}
                       className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition active:scale-[0.98]">
                       <div className="flex items-center gap-3">
                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
