@@ -101,22 +101,39 @@ export default function Home() {
       .catch(() => {});
   }, [userId]);
 
-  // Monthly data with cache
+  // Monthly data with cache — load current + adjacent months for overflow dates
   useEffect(() => {
     const monthKey = toMonthStr(calMonth);
-    if (monthlyCache[monthKey]) { setMonthlyData(monthlyCache[monthKey]); return; }
-    fetch(`/api/status/monthly?userId=${userId}&month=${monthKey}`)
-      .then(r => r.json())
-      .then(data => {
-        const map: Record<string, MonthlyDayData> = {};
-        const days = data.days || {};
-        for (const [date, d] of Object.entries(days) as [string, any][]) {
-          map[date] = { date, ...d };
-        }
-        setMonthlyData(map);
-        setMonthlyCache(prev => ({ ...prev, [monthKey]: map }));
-      })
-      .catch(() => {});
+    const prevMonth = new Date(calMonth.getFullYear(), calMonth.getMonth() - 1, 1);
+    const nextMonth = new Date(calMonth.getFullYear(), calMonth.getMonth() + 1, 1);
+    const prevKey = toMonthStr(prevMonth);
+    const nextKey = toMonthStr(nextMonth);
+    const keysToLoad = [monthKey, prevKey, nextKey].filter(k => !monthlyCache[k]);
+
+    if (keysToLoad.length === 0) {
+      // All cached, merge and set
+      setMonthlyData({ ...monthlyCache[prevKey], ...monthlyCache[monthKey], ...monthlyCache[nextKey] });
+      return;
+    }
+
+    Promise.all(keysToLoad.map(k =>
+      fetch(`/api/status/monthly?userId=${userId}&month=${k}`)
+        .then(r => r.json())
+        .then(data => {
+          const map: Record<string, MonthlyDayData> = {};
+          const days = data.days || {};
+          for (const [date, d] of Object.entries(days) as [string, any][]) {
+            map[date] = { date, ...d };
+          }
+          return { key: k, map };
+        })
+        .catch(() => ({ key: k, map: {} as Record<string, MonthlyDayData> }))
+    )).then(results => {
+      const newCache = { ...monthlyCache };
+      for (const r of results) newCache[r.key] = r.map;
+      setMonthlyCache(newCache);
+      setMonthlyData({ ...newCache[prevKey], ...newCache[monthKey], ...newCache[nextKey] });
+    });
   }, [userId, calMonth, monthlyCache]);
 
   // Calendar grid
