@@ -8,6 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
+    "preview:cf": "npm run build && npx wrangler pages dev dist --d1 DB=3276c058-d699-439b-b586-494dd0e8ef6a",
     "prepare": "husky",
     "deploy": "bash scripts/deploy.sh",
     "check": "tsc --noEmit -p tsconfig.app.json"

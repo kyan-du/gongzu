@@ -3,7 +3,7 @@ import { normalizeQuiz } from '../lib/types';
 import { CheckCircle, Clock, BookX, ChevronLeft, ChevronRight, BookOpen, Languages, PenLine } from 'lucide-react';
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import Header from '../components/Header';
+import Layout from '../components/Layout';
 import ActivityRings from '../components/ActivityRings';
 
 interface Quiz {
@@ -214,11 +214,8 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
-      <Header userId={userId || ''} maxWidth="max-w-3xl" />
-
-      <div className="max-w-3xl mx-auto px-4 py-6">
-        {/* Two-column: left (calendar+mistakes) / right (day content) */}
+    <Layout userId={userId || ''} maxWidth="max-w-3xl">
+      {/* Two-column: left (calendar+mistakes) / right (day content) */}
         {/* On mobile: stacked. On md+: side by side */}
         <div className="flex flex-col md:flex-row gap-6">
 
@@ -429,7 +426,6 @@ export default function Home() {
             )}
           </div>
         </div>
-      </div>
-    </div>
+    </Layout>
   );
 }

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Check, X } from 'lucide-react';
-import RichPassage from './RichPassage';
+import RichPassage from '../RichPassage';
 
 interface ReadingQuestionProps {
   question: any;

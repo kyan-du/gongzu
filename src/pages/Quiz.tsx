@@ -1,10 +1,8 @@
 import { getTag } from '../lib/tags';
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import ChoiceQuestion from '../components/ChoiceQuestion';
-import BlankQuestion from '../components/BlankQuestion';
-import ReadingQuestion from '../components/ReadingQuestion';
-import RewriteQuestion from '../components/RewriteQuestion';
+import { questionRenderers, QuestionCard } from '../components/questions';
+import Header from '../components/Header';
 import RichPassage from '../components/RichPassage';
 import type { Quiz as QuizType, SubmissionResult } from '../lib/types';
 import { normalizeQuiz, normalizeSubmissionResults } from '../lib/types';
@@ -113,32 +111,18 @@ export default function Quiz() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
-      <div className="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-10">
-        <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <button onClick={() => navigate(`/${userId}/${date}`)} className="text-gray-400 dark:text-gray-500 hover:text-blue-500 dark:hover:text-blue-400 transition">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-            </button>
-            <button onClick={() => navigate(`/${userId}/home`)} className="hover:opacity-80 transition">
-              <img src="/logo-night-64.png" alt="拱卒" className="w-7 h-7 rounded-full object-cover dark:hidden" />
-              <img src="/logo-day-64.png" alt="拱卒" className="w-7 h-7 rounded-full object-cover hidden dark:block" />
-            </button>
-            <div className="text-left">
-              <span className="text-lg font-bold text-gray-900 dark:text-gray-100">拱卒</span>
-              <p className="text-xs text-gray-400 dark:text-gray-500 -mt-0.5">日拱一卒，功不唐捐</p>
-            </div>
-          </div>
-          <img
-            src={userId === 'cyan' ? '/avatar-cyan.jpg' : userId === 'ryan' ? '/avatar-ryan.jpg' : '/avatar-parent.jpg'}
-            alt=""
-            className="w-8 h-8 rounded-full object-cover"
-          />
-        </div>
-      </div>
+      <Header userId={userId || ''} showBack={false} />
 
       {/* Quiz tag + date subheader */}
-      <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between border-b border-gray-100 dark:border-gray-700">
+      <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
         <div className="flex items-center gap-2">
+          <button
+            onClick={() => navigate(`/${userId}/${date}`)}
+            className="p-1 -ml-1 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+            aria-label="返回"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500 dark:text-gray-400"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
           <span className="text-sm font-medium text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 px-2.5 py-0.5 rounded-full">
             {quiz.tag}
           </span>
@@ -186,66 +170,35 @@ export default function Quiz() {
 
       <div className="max-w-2xl mx-auto px-4 py-4 space-y-4">
         {quiz.questions?.map((q: any, i: number) => {
-          let questionComponent = null;
-          if (q.type === 'choice') {
-            questionComponent = (
-              <ChoiceQuestion
-                key={`${q.id}-${submitted}`}
-                question={q}
-                index={i}
-                onAnswer={(answer: string) => handleAnswer(q.id, answer)}
-                submitted={submitted}
-                result={getResult(q.id)}
-                initialAnswer={answers[q.id]}
-              />
-            );
-          } else if (q.type === 'blank') {
-            questionComponent = (
-              <BlankQuestion
-                key={`${q.id}-${submitted}`}
-                question={q}
-                index={i}
-                onAnswer={(answer: string) => handleAnswer(q.id, answer)}
-                submitted={submitted}
-                result={getResult(q.id)}
-                initialAnswer={answers[q.id]}
-              />
-            );
-          } else if (q.type === 'reading') {
-            questionComponent = (
-              <ReadingQuestion
-                key={`${q.id}-${submitted}`}
-                question={q}
-                index={i}
-                onAnswer={(answer: string) => handleAnswer(q.id, answer)}
-                submitted={submitted}
-                result={getResult(q.id)}
-                initialAnswer={answers[q.id]}
-              />
-            );
-          } else if (q.type === 'rewrite') {
-            questionComponent = (
-              <RewriteQuestion
-                key={`${q.id}-${submitted}`}
-                question={q}
-                index={i}
-                value={answers[q.id] || ''}
-                onChange={(answer: string) => handleAnswer(q.id, answer)}
-                submitted={submitted}
-                result={getResult(q.id)}
-              />
-            );
-          }
-          if (!questionComponent) return null;
+          const QuestionRenderer = questionRenderers[q.type];
+          if (!QuestionRenderer) return null;
+
+          const commonProps = {
+            key: `${q.id}-${submitted}`,
+            question: q,
+            index: i,
+            submitted,
+            result: getResult(q.id),
+          };
+
+          const questionComponent = q.type === 'rewrite' ? (
+            <QuestionRenderer
+              {...commonProps}
+              value={answers[q.id] || ''}
+              onChange={(answer: string) => handleAnswer(q.id, answer)}
+            />
+          ) : (
+            <QuestionRenderer
+              {...commonProps}
+              onAnswer={(answer: string) => handleAnswer(q.id, answer)}
+              initialAnswer={answers[q.id]}
+            />
+          );
+
           return (
-            <div key={q.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4">
-              <div className="flex items-start gap-2">
-                <span className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">{i + 1}</span>
-                <div className="flex-1">
-                  {questionComponent}
-                </div>
-              </div>
-            </div>
+            <QuestionCard key={q.id} index={i + 1}>
+              {questionComponent}
+            </QuestionCard>
           );
         })}
 

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { CheckCircle, Target, BookOpen } from 'lucide-react';
-import Header from '../components/Header';
+import Layout from '../components/Layout';
+import { getAllUsers } from '../lib/users';
 
 interface DayData {
   date: string;
@@ -23,10 +24,8 @@ interface ParentData {
   byTag: TagData[];
 }
 
-const children = [
-  { id: 'cyan', name: '彤彤', avatar: '/avatar-cyan.jpg' },
-  { id: 'ryan', name: '可可', avatar: '/avatar-ryan.jpg' },
-];
+// Get children (non-parent users)
+const getChildren = () => getAllUsers().filter(u => u.id !== 'parent');
 
 function TrendChart({ data, range }: { data: DayData[]; range: 'week' | 'month' }) {
   if (data.length === 0) {
@@ -135,7 +134,8 @@ function TrendChart({ data, range }: { data: DayData[]; range: 'week' | 'month' 
 }
 
 export default function ParentDashboard() {
-  const [activeChild, setActiveChild] = useState('cyan');
+  const children = getChildren();
+  const [activeChild, setActiveChild] = useState(children[0]?.id || 'cyan');
   const [data, setData] = useState<ParentData | null>(null);
   const [loading, setLoading] = useState(true);
   const [range, setRange] = useState<'week' | 'month'>('week');
@@ -170,11 +170,8 @@ export default function ParentDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
-      <Header userId="parent" />
-
-      <div className="max-w-2xl mx-auto px-4 py-6">
-        {/* Child tabs with avatars */}
+    <Layout userId="parent">
+      {/* Child tabs with avatars */}
         <div className="flex gap-3 mb-6">
           {children.map((child) => (
             <button
@@ -278,7 +275,6 @@ export default function ParentDashboard() {
         ) : (
           <div className="text-center text-gray-400 dark:text-gray-500 py-12">加载失败</div>
         )}
-      </div>
-    </div>
+    </Layout>
   );
 }

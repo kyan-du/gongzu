@@ -1,5 +1,6 @@
 import { LogOut, ChevronDown, ChevronLeft, Sun, Moon, Monitor, Users, Palette, Check, BookX } from 'lucide-react';
 import { getStoredTheme, setStoredTheme } from '../lib/theme';
+import { getUserName, getUserAvatar, getAllUsers } from '../lib/users';
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { logout } from '../lib/api';
@@ -41,8 +42,9 @@ export default function Header({ userId, maxWidth, showBack }: HeaderProps) {
     return null;
   }
 
-  const userName = userId === 'cyan' ? '彤彤' : userId === 'ryan' ? '可可' : userId === 'parent' ? '家长' : userId;
-  const avatarSrc = userId === 'cyan' ? '/avatar-cyan.jpg' : userId === 'ryan' ? '/avatar-ryan.jpg' : '/avatar-parent.jpg';
+  const userName = getUserName(userId);
+  const avatarSrc = getUserAvatar(userId);
+  const allUsers = getAllUsers();
 
   return (
     <div className="bg-white dark:bg-gray-800 shadow-sm">
@@ -110,28 +112,22 @@ export default function Header({ userId, maxWidth, showBack }: HeaderProps) {
               </button>
               {expandedSection === 'user' && (
                 <div className="pl-4">
-                  {userId !== 'cyan' && (
+                  {allUsers.filter(u => u.id !== userId).map(user => (
                     <button
-                      onClick={() => { setShowMenu(false); setExpandedSection(null); navigate('/cyan/home'); }}
+                      key={user.id}
+                      onClick={() => {
+                        setShowMenu(false);
+                        setExpandedSection(null);
+                        navigate(user.id === 'parent' ? '/parent' : `/${user.id}/home`);
+                      }}
                       className="w-full text-left px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
                     >
-                      <span className="flex items-center gap-2.5"><img src="/avatar-cyan.jpg" alt="彤彤" className="w-5 h-5 rounded-full object-cover" />彤彤</span>
+                      <span className="flex items-center gap-2.5">
+                        <img src={user.avatar} alt={user.name} className="w-5 h-5 rounded-full object-cover" />
+                        {user.name}
+                      </span>
                     </button>
-                  )}
-                  {userId !== 'ryan' && (
-                    <button
-                      onClick={() => { setShowMenu(false); setExpandedSection(null); navigate('/ryan/home'); }}
-                      className="w-full text-left px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
-                    >
-                      <span className="flex items-center gap-2.5"><img src="/avatar-ryan.jpg" alt="可可" className="w-5 h-5 rounded-full object-cover" />可可</span>
-                    </button>
-                  )}
-                  <button
-                    onClick={() => { setShowMenu(false); setExpandedSection(null); navigate('/parent'); }}
-                    className="w-full text-left px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
-                  >
-                    <span className="flex items-center gap-2.5"><img src="/avatar-parent.jpg" alt="家长" className="w-5 h-5 rounded-full object-cover" />家长</span>
-                  </button>
+                  ))}
                 </div>
               )}
               {/* Theme group */}
