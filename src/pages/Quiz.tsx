@@ -123,7 +123,7 @@ export default function Quiz() {
               <p className="text-xs text-gray-400 dark:text-gray-500 -mt-0.5">日拱一卒，功不唐捐</p>
             </div>
           </div>
-          <span className="text-sm font-medium text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full">{answeredCount}/{totalCount}</span>
+          <span className="text-sm font-medium text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full">已答 {answeredCount}/{totalCount}</span>
         </div>
       </div>
 
@@ -134,7 +134,7 @@ export default function Quiz() {
             {quiz.tag}
           </span>
           {quiz.title && quiz.title !== quiz.tag && (() => {
-            const sub = quiz.title.replace(quiz.tag, '').replace(/^[·\s]+|[·\s]+$/g, '');
+            const sub = quiz.title.replace(quiz.tag, '').replace(/\s*\(\d+题\)\s*/, '').replace(/^[·\s]+|[·\s]+$/g, '');
             return sub ? (
               <span className="text-sm text-gray-500 dark:text-gray-400">{sub}</span>
             ) : null;
