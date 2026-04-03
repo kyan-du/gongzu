@@ -402,7 +402,15 @@ export default function Home() {
                         </div>
                         <div className="text-left">
                           <div className="font-medium text-gray-900 dark:text-gray-100">{quiz.tag}</div>
-                          <div className="text-sm text-gray-500 dark:text-gray-400">{quiz.questions?.length || 0} 题</div>
+                          <div className="text-sm text-gray-500 dark:text-gray-400">
+                            {quiz.questions?.length || 0} 题
+                            {(() => {
+                              const reviewCount = (quiz.questions || []).filter((q: any) => q.tags?.includes('review')).length;
+                              return reviewCount > 0 ? (
+                                <span className="ml-1.5 text-blue-500 dark:text-blue-400">· {reviewCount} 题复习</span>
+                              ) : null;
+                            })()}
+                          </div>
                         </div>
                       </div>
                       {quizStatus[quiz.id]?.completed ? (
