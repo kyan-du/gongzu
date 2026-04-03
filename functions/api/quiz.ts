@@ -104,9 +104,10 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     }
 
     const quizId = crypto.randomUUID();
+    const passage = body.passage || null;
     await context.env.DB.prepare(
-      'INSERT INTO daily_quizzes (id, user_id, date, tag, title, question_ids, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)'
-    ).bind(quizId, userId, date, tag, title || `${tag}每日练习`, JSON.stringify(questionIds), Date.now()).run();
+      'INSERT INTO daily_quizzes (id, user_id, date, tag, title, question_ids, passage, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
+    ).bind(quizId, userId, date, tag, title || `${tag}每日练习`, JSON.stringify(questionIds), passage, Date.now()).run();
 
     return new Response(JSON.stringify({ quizId, questionCount: questions.length }), {
       status: 201,

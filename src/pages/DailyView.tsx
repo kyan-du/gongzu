@@ -10,6 +10,7 @@ interface Quiz {
   tag: string;
   title: string;
   date: string;
+  passage?: string | null;
   questions: any[];
 }
 

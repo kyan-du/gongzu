@@ -15,6 +15,7 @@ export interface Quiz {
   date: string;
   tag: string;
   title: string;
+  passage?: string | null;
   questions: Question[];
 }
 

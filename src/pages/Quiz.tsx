@@ -124,10 +124,28 @@ export default function Quiz() {
       </div>
 
       {/* Quiz tag + date subheader */}
-      <div className="max-w-2xl mx-auto px-4 py-2 flex items-center justify-between">
-        <span className="text-base font-semibold text-gray-700 dark:text-gray-300">{quiz.tag}</span>
+      <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between border-b border-gray-100 dark:border-gray-700">
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-medium text-white bg-blue-500 px-2.5 py-0.5 rounded-full">{quiz.tag}</span>
+          {quiz.title && quiz.title !== quiz.tag && (
+            <span className="text-sm text-gray-500 dark:text-gray-400">{quiz.title}</span>
+          )}
+        </div>
         <span className="text-sm text-gray-400 dark:text-gray-500">{date}</span>
       </div>
+
+      {/* Passage / reading material */}
+      {quiz.passage && (
+        <div className="max-w-2xl mx-auto px-4 py-4">
+          <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-xl p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-base">📖</span>
+              <span className="text-sm font-semibold text-amber-800 dark:text-amber-300">阅读材料</span>
+            </div>
+            <div className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">{quiz.passage}</div>
+          </div>
+        </div>
+      )}
 
       {submitted && (
         <div className="bg-white dark:bg-gray-800 mx-4 mt-4 rounded-xl shadow-sm p-6 text-center max-w-2xl lg:mx-auto">
