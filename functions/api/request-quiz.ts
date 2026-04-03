@@ -29,13 +29,26 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       'SELECT COUNT(*) as cnt FROM daily_quizzes WHERE user_id = ? AND date = ?'
     ).bind(userId, today).first<{ cnt: number }>();
 
-    // Fire webhook to notify the assistant to generate quizzes
+    const quizCount = existing?.cnt || 0;
+
+    // If quizzes already exist, don't send webhook — just tell user to refresh
+    if (quizCount > 0) {
+      return new Response(JSON.stringify({
+        ok: true,
+        alreadyExists: true,
+        quizCount,
+        message: `今天已有 ${quizCount} 套题，请刷新页面查看`,
+      }), {
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    // No quizzes yet — fire webhook to notify the assistant
     const webhookUrl = context.env.WEBHOOK_URL;
     const webhookToken = context.env.WEBHOOK_TOKEN;
 
     if (webhookUrl && webhookToken) {
       const displayName = userId === 'cyan' ? '彤彤' : userId === 'ryan' ? '可可' : userId;
-      const quizCount = existing?.cnt || 0;
 
       fetch(webhookUrl, {
         method: 'POST',
@@ -48,10 +61,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
           userId,
           displayName,
           date: today,
-          existingQuizCount: quizCount,
-          message: quizCount > 0
-            ? `${displayName}在拱卒上点了"出题"按钮，今天已有 ${quizCount} 套题，可能想要更多练习。`
-            : `${displayName}在拱卒上点了"出题"按钮，今天还没有题目，请尽快出题。`,
+          message: `${displayName}在拱卒上点了"出题"按钮，今天还没有题目，请尽快出题。`,
         }),
       }).catch(() => {});
     }

@@ -170,11 +170,16 @@ export default function Home() {
   const handleRequestQuiz = async () => {
     setRequesting(true);
     try {
-      await fetch('/api/request-quiz', {
+      const res = await fetch('/api/request-quiz', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId }),
       });
+      const data = await res.json();
+      if (data.alreadyExists) {
+        // Quizzes exist — just refresh the day data
+        await fetchDayData(selectedDate);
+      }
       setRequested(true);
     } catch (e) {
       console.error('Failed to request quiz:', e);
