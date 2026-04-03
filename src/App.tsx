@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
 import SelectUser from './pages/SelectUser';
@@ -16,8 +16,8 @@ function App() {
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/login/select" element={<SelectUser />} />
-        <Route path="/cyan" element={<Home />} />
-        <Route path="/ryan" element={<Home />} />
+        <Route path="/cyan" element={<Navigate to="/cyan/home" replace />} />
+        <Route path="/ryan" element={<Navigate to="/ryan/home" replace />} />
         {/* Main view: today or specific date */}
         <Route path="/:userId/today" element={<DailyView />} />
         <Route path="/:userId/home" element={<Home />} />
