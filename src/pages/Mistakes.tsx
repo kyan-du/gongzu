@@ -23,7 +23,7 @@ export default function Mistakes() {
     if (!userId) return;
     fetch(`/api/review?userId=${userId}`)
       .then(r => r.json())
-      .then(data => setItems(data.items || []))
+      .then(data => setItems(data.points || data.items || []))
       .catch(() => {})
       .finally(() => setLoading(false));
   }, [userId]);
