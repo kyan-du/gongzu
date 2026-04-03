@@ -138,8 +138,13 @@ export default function Quiz() {
           <span className="text-sm font-medium text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 px-2.5 py-0.5 rounded-full">
             {quiz.tag}
           </span>
-          {quiz.title && quiz.title !== quiz.tag && (() => {
-            const sub = quiz.title.replace(quiz.tag, '').replace(/\s*\(\d+题\)\s*/, '').replace(/^[·\s]+|[·\s]+$/g, '');
+          {quiz.title && (() => {
+            // Remove tag text, question count, and leading/trailing punctuation
+            const sub = quiz.title
+              .replace(quiz.tag, '')
+              .replace(/\s*[·\-]\s*/g, ' ')
+              .replace(/\s*\(\d+题\)\s*/, '')
+              .trim();
             return sub ? (
               <span className="text-sm text-gray-500 dark:text-gray-400">{sub}</span>
             ) : null;
