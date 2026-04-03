@@ -4,6 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import ChoiceQuestion from '../components/ChoiceQuestion';
 import BlankQuestion from '../components/BlankQuestion';
 import ReadingQuestion from '../components/ReadingQuestion';
+import RewriteQuestion from '../components/RewriteQuestion';
 import RichPassage from '../components/RichPassage';
 import type { Quiz as QuizType, SubmissionResult } from '../lib/types';
 import { normalizeQuiz, normalizeSubmissionResults } from '../lib/types';
@@ -208,6 +209,19 @@ export default function Quiz() {
                 submitted={submitted}
                 result={getResult(q.id)}
                 initialAnswer={answers[q.id]}
+              />
+            );
+          }
+          if (q.type === 'rewrite') {
+            return (
+              <RewriteQuestion
+                key={`${q.id}-${submitted}`}
+                question={q}
+                index={i}
+                value={answers[q.id] || ''}
+                onChange={(answer: string) => handleAnswer(q.id, answer)}
+                submitted={submitted}
+                result={getResult(q.id)}
               />
             );
           }

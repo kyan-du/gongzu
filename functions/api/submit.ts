@@ -2,6 +2,7 @@ interface Env {
   DB: D1Database;
   WEBHOOK_URL: string;
   WEBHOOK_TOKEN: string;
+  AI_PROXY_KEY: string;
 }
 
 // 获取今天的日期（CST）
@@ -44,8 +45,9 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       const qAnswer = JSON.parse(question.answer as string);
       const qContent = JSON.parse(question.content as string);
       let correct = false;
-
       let correctAnswer = '';
+      let aiFeedback = '';
+      let aiScore: number | undefined;
 
       if (question.type === 'choice') {
         if (qAnswer.correctIndex !== undefined) {
@@ -83,6 +85,21 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
           userAnswers[i]?.toUpperCase() === exp.toUpperCase()
         );
         correctAnswer = expectedAnswers.join(',');
+      } else if (question.type === 'rewrite') {
+        // AI-powered judging for rewrite questions
+        const { judgeRewrite } = await import('../lib/ai-judge');
+        const expectedAnswer = typeof qAnswer === 'string' ? qAnswer : (qAnswer.answer || qAnswer.answers?.[0] || '');
+        const judgeResult = await judgeRewrite({
+          instruction: qContent.stem || qContent.instruction || '请改写下列句子',
+          original: qContent.original || '',
+          correctAnswer: expectedAnswer,
+          studentAnswer: ans.answer || '',
+        }, { AI_PROXY_KEY: context.env.AI_PROXY_KEY });
+
+        correct = judgeResult.correct;
+        correctAnswer = judgeResult.correctedAnswer || expectedAnswer;
+        aiFeedback = judgeResult.feedback;
+        aiScore = judgeResult.score;
       }
 
       if (correct) correctCount++;
@@ -98,6 +115,8 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
         userAnswer: ans.answer,
         correctAnswer,
         explanation: question.explanation,
+        ...(aiFeedback ? { feedback: aiFeedback } : {}),
+        ...(aiScore !== undefined ? { score: aiScore } : {}),
       });
 
       // 更新知识点掌握记录
@@ -273,6 +292,8 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
           }
         } else if (question.type === 'reading') {
           correctAnswer = Array.isArray(qAnswer) ? qAnswer.join(',') : (qAnswer.answers || []).join(',');
+        } else if (question.type === 'rewrite') {
+          correctAnswer = typeof qAnswer === 'string' ? qAnswer : (qAnswer.answer || qAnswer.answers?.[0] || '');
         }
 
         results.push({
