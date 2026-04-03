@@ -15,21 +15,16 @@ function escapeRegex(s: string) {
 
 type Token = { kind: 'text'; text: string } | { kind: 'blank'; idx: number } | { kind: 'break' };
 
-/**
- * Supports multiple blanks + newlines in stems.
- * Newlines render as actual line breaks.
- * Each ______ (3+) becomes one input.
- */
 export default function BlankQuestion({ question, index, onAnswer, submitted, result, initialAnswer }: BlankQuestionProps) {
   const content = question.content;
   const stem: string = content.stem || '';
   const blanksData: Array<{ hint?: string; answer?: string }> = content.blanks || [];
+  const tags: string[] = question.tags || [];
 
-  // Split stem into segments: text and blank markers
+  // Split stem into segments
   const rawParts = stem.split(/_{3,}/);
   const blankCount = rawParts.length - 1;
 
-  // Parse initial answers
   const initials = (initialAnswer || '').split(/\s+/);
   const [values, setValues] = useState<string[]>(
     Array.from({ length: blankCount }, (_, i) => initials[i] || '')
@@ -54,7 +49,7 @@ export default function BlankQuestion({ question, index, onAnswer, submitted, re
     return part;
   });
 
-  // Extract Chinese instruction prefix as a tag label (strip trailing colon)
+  // Extract Chinese instruction from stem (e.g. "改写句子（改为感叹句）：")
   let instructionLabel = '';
   const firstPart = cleanParts[0];
   const instrMatch = firstPart.match(/^([\u4e00-\u9fff\u3000-\u303f\uff00-\uffef（）]+)[：:]\s*/);
@@ -63,22 +58,25 @@ export default function BlankQuestion({ question, index, onAnswer, submitted, re
     cleanParts[0] = firstPart.slice(instrMatch[0].length);
   }
 
-  // Build token stream: text / blank / break
+  // Fallback: use tags[1] as label if no instruction in stem (e.g. "词性转换")
+  if (!instructionLabel && tags.length > 1) {
+    instructionLabel = tags[1];
+  }
+
+  // Build token stream
   const tokens: Token[] = [];
   cleanParts.forEach((part, i) => {
-    // Split text by newlines, insert break tokens
     const lines = part.split('\n');
     lines.forEach((line, li) => {
       if (li > 0) tokens.push({ kind: 'break' });
       if (line) tokens.push({ kind: 'text', text: line });
     });
-    // After each part except the last, insert a blank
     if (i < cleanParts.length - 1) {
       tokens.push({ kind: 'blank', idx: i });
     }
   });
 
-  // Group tokens into lines (split by 'break')
+  // Group into lines
   const lines: Token[][] = [[]];
   for (const tok of tokens) {
     if (tok.kind === 'break') {
@@ -130,18 +128,20 @@ export default function BlankQuestion({ question, index, onAnswer, submitted, re
 
   return (
     <div className="mb-6 p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm">
-      <div className="flex items-start gap-2 mb-1">
-        <span className="text-sm font-bold text-gray-400 dark:text-gray-500 mt-1">{index + 1}.</span>
-        <div className="flex-1 text-base leading-relaxed text-gray-900 dark:text-gray-100">
-          {instructionLabel && (
-            <span className="inline-block text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full mb-1">{instructionLabel}</span>
-          )}
-          {lines.map((lineTokens, li) => (
-            <div key={li} className="flex flex-wrap items-center gap-y-1">
-              {lineTokens.map((tok, ti) => renderToken(tok, `${li}-${ti}`))}
-            </div>
-          ))}
-        </div>
+      {/* Header: number + badge on same line */}
+      <div className="flex items-center gap-2 mb-2">
+        <span className="text-sm font-bold text-gray-400 dark:text-gray-500">{index + 1}.</span>
+        {instructionLabel && (
+          <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full">{instructionLabel}</span>
+        )}
+      </div>
+      {/* Stem */}
+      <div className="ml-6 text-base leading-relaxed text-gray-900 dark:text-gray-100">
+        {lines.map((lineTokens, li) => (
+          <div key={li} className="flex flex-wrap items-center gap-y-1">
+            {lineTokens.map((tok, ti) => renderToken(tok, `${li}-${ti}`))}
+          </div>
+        ))}
       </div>
 
       {submitted && (
