@@ -41,15 +41,10 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     }
 
     // Check for duplicate requests within last 10 minutes
-    let recentReq: { cnt: number } | null = null;
-    try {
-      const tenMinAgo = Math.floor(Date.now() / 1000) - 600;
-      recentReq = await context.env.DB.prepare(
-        'SELECT COUNT(*) as cnt FROM quiz_requests WHERE user_id = ? AND date = ? AND created_at > ?'
-      ).bind(userId, today, tenMinAgo).first<{ cnt: number }>();
-    } catch {
-      // quiz_requests table may not exist yet, ignore
-    }
+    const tenMinAgo = Math.floor(Date.now() / 1000) - 600;
+    const recentReq = await context.env.DB.prepare(
+      'SELECT COUNT(*) as cnt FROM quiz_requests WHERE user_id = ? AND date = ? AND created_at > ?'
+    ).bind(userId, today, tenMinAgo).first<{ cnt: number }>();
 
     if ((recentReq?.cnt || 0) > 0) {
       return new Response(JSON.stringify({
@@ -61,15 +56,11 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       });
     }
 
-    // Record request in DB (best effort)
-    try {
-      const id = crypto.randomUUID();
-      await context.env.DB.prepare(
-        'INSERT INTO quiz_requests (id, user_id, date, status, created_at) VALUES (?, ?, ?, ?, ?)'
-      ).bind(id, userId, today, 'pending', Math.floor(Date.now() / 1000)).run();
-    } catch {
-      // table may not exist, continue anyway
-    }
+    // Record request in DB
+    const id = crypto.randomUUID();
+    await context.env.DB.prepare(
+      'INSERT INTO quiz_requests (id, user_id, date, status, created_at) VALUES (?, ?, ?, ?, ?)'
+    ).bind(id, userId, today, 'pending', Math.floor(Date.now() / 1000)).run();
 
     // Send webhook via OpenClaw inbound API
     const webhookUrl = context.env.WEBHOOK_URL;
