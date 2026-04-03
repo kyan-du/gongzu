@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Header from '../components/Header';
+import { ChevronRight } from 'lucide-react';
 
 interface MasteryItem {
   id: string;
@@ -40,7 +41,7 @@ export default function Mistakes() {
     if (diffDays === 0) return '今天';
     if (diffDays === 1) return '明天';
     if (diffDays === -1) return '昨天';
-    if (diffDays < 0) return `${-diffDays}天前到期`;
+    if (diffDays < 0) return `${-diffDays}天前`;
     return `${diffDays}天后`;
   };
 
@@ -53,38 +54,30 @@ export default function Mistakes() {
     setItems(prev => prev.map(i => i.id === id ? { ...i, mastered: true } : i));
   };
 
-  const renderItem = (item: MasteryItem, accent: 'red' | 'gray' | 'green') => (
-    <div key={item.id} className={`bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 border-l-4 ${
-      accent === 'red' ? 'border-l-red-500' :
-      accent === 'green' ? 'border-l-green-400' :
-      'border-l-gray-200 dark:border-l-gray-600'
-    }`}>
-      <div className="flex items-start justify-between gap-3">
+  const renderItem = (item: MasteryItem) => (
+    <div key={item.id} className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 px-4 py-3">
+      <div className="flex items-center justify-between gap-3">
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <span className="font-medium text-gray-900 dark:text-gray-100 truncate">{item.knowledgePoint}</span>
-            <span className="text-xs text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded shrink-0">{item.category}</span>
+          <div className="flex items-center gap-2 mb-0.5">
+            <span className="font-bold text-gray-900 dark:text-gray-100">{item.knowledgePoint}</span>
+            <span className="text-xs text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded">{item.category}</span>
           </div>
           <div className="text-sm text-gray-500 dark:text-gray-400">
-            错 {item.errorCount} 次{item.mastered ? '' : ` · 复习 ${formatRelative(item.nextReviewAt)}`}
+            错 {item.errorCount} 次 · {item.mastered ? '已掌握' : `下次复习 ${formatRelative(item.nextReviewAt)}`}
           </div>
         </div>
-        {!item.mastered && (
-          <button
-            onClick={() => handleMastered(item.id)}
-            className="text-xs text-green-600 dark:text-green-400 border border-green-300 dark:border-green-700 px-2.5 py-1 rounded-full hover:bg-green-50 dark:hover:bg-green-900/20 transition whitespace-nowrap shrink-0"
-          >
-            我会了
-          </button>
-        )}
+        <div className="flex items-center gap-1 shrink-0">
+          {!item.mastered && (
+            <button
+              onClick={() => handleMastered(item.id)}
+              className="text-sm text-green-600 dark:text-green-400 border border-green-300 dark:border-green-700 px-3 py-1 rounded-full hover:bg-green-50 dark:hover:bg-green-900/20 transition"
+            >
+              我会了
+            </button>
+          )}
+          <ChevronRight className="w-4 h-4 text-gray-300 dark:text-gray-600" />
+        </div>
       </div>
-    </div>
-  );
-
-  const SectionHeader = ({ label, count, color }: { label: string; count: number; color: string }) => (
-    <div className="flex items-center gap-2 mb-2">
-      <span className={`text-sm font-medium ${color}`}>{label}</span>
-      <span className="text-xs text-gray-400 dark:text-gray-500">{count}</span>
     </div>
   );
 
@@ -104,22 +97,22 @@ export default function Mistakes() {
           <div className="space-y-6">
             {overdue.length > 0 && (
               <div>
-                <SectionHeader label="需要复习" count={overdue.length} color="text-red-600 dark:text-red-400" />
-                <div className="space-y-2">{overdue.map(i => renderItem(i, 'red'))}</div>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">需要复习（{overdue.length}）</p>
+                <div className="space-y-2">{overdue.map(renderItem)}</div>
               </div>
             )}
 
             {upcoming.length > 0 && (
               <div>
-                <SectionHeader label="即将复习" count={upcoming.length} color="text-gray-500 dark:text-gray-400" />
-                <div className="space-y-2">{upcoming.map(i => renderItem(i, 'gray'))}</div>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">即将复习（{upcoming.length}）</p>
+                <div className="space-y-2">{upcoming.map(renderItem)}</div>
               </div>
             )}
 
             {mastered.length > 0 && (
               <div>
-                <SectionHeader label="已掌握" count={mastered.length} color="text-green-600 dark:text-green-400" />
-                <div className="space-y-2 opacity-50">{mastered.map(i => renderItem(i, 'green'))}</div>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">已掌握（{mastered.length}）</p>
+                <div className="space-y-2 opacity-50">{mastered.map(renderItem)}</div>
               </div>
             )}
           </div>
