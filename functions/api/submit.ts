@@ -48,8 +48,15 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       let correctAnswer = '';
 
       if (question.type === 'choice') {
-        correct = ans.answer?.toUpperCase() === qAnswer.answer?.toUpperCase();
-        correctAnswer = qAnswer.answer || '';
+        if (qAnswer.correctIndex !== undefined) {
+          // correctIndex is 0-based → convert to letter (0=A, 1=B, 2=C, 3=D)
+          const correctLetter = String.fromCharCode(65 + qAnswer.correctIndex);
+          correct = ans.answer?.toUpperCase() === correctLetter;
+          correctAnswer = correctLetter;
+        } else {
+          correct = ans.answer?.toUpperCase() === qAnswer.answer?.toUpperCase();
+          correctAnswer = qAnswer.answer || '';
+        }
       } else if (question.type === 'blank') {
         const userAns = (ans.answer || '').trim().toLowerCase();
         const accepts = qContent.blanks?.[0]?.accepts || [qAnswer.answers?.[0]];
@@ -238,7 +245,11 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
         const qAnswer = JSON.parse(question.answer as string);
         let correctAnswer = '';
         if (question.type === 'choice') {
-          correctAnswer = qAnswer.answer || '';
+          if (qAnswer.correctIndex !== undefined) {
+            correctAnswer = String.fromCharCode(65 + qAnswer.correctIndex);
+          } else {
+            correctAnswer = qAnswer.answer || '';
+          }
         } else if (question.type === 'blank') {
           correctAnswer = qAnswer.answers?.[0] || '';
         } else if (question.type === 'reading') {
