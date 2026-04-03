@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 
 interface BlankQuestionProps {
   question: any;
@@ -57,15 +57,12 @@ export default function BlankQuestion({ question, index, onAnswer, submitted, re
     return part;
   });
 
-  const handleChange = useCallback((blankIndex: number, v: string) => {
-    setValues(prev => {
-      const next = [...prev];
-      next[blankIndex] = v;
-      // Emit joined answer
-      onAnswer(next.join(' ').trim());
-      return next;
-    });
-  }, [onAnswer]);
+  const handleChange = (blankIndex: number, v: string) => {
+    const next = [...values];
+    next[blankIndex] = v;
+    setValues(next);
+    onAnswer(next.join(' ').trim());
+  };
 
   return (
     <div className="mb-6 p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm">
