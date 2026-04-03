@@ -1,4 +1,3 @@
-import { getSlug } from '../lib/tags';
 import { normalizeQuiz } from '../lib/types';
 import { CheckCircle, ChevronLeft, ChevronRight, BookOpen, Languages, PenLine, Clock, BookX, RotateCcw } from 'lucide-react';
 import { useState, useEffect } from 'react';
@@ -164,7 +163,7 @@ export default function DailyView() {
             {quizzes.map((quiz) => (
               <button
                 key={quiz.id}
-                onClick={() => navigate(`/${userId}/${quiz.date}/${getSlug(quiz.tag)}`)}
+                onClick={() => navigate(`/${userId}/${quiz.date}/${quiz.id}`)}
                 className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition active:scale-[0.98]"
               >
                 <div className="flex items-center gap-3">
