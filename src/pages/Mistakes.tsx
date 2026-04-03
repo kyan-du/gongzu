@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Header from '../components/Header';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, BookX } from 'lucide-react';
 
 interface MasteryItem {
   id: string;
@@ -84,7 +84,18 @@ export default function Mistakes() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Header userId={userId || ''} />
-      <div className="max-w-lg mx-auto px-4 pb-8">
+      <div className="max-w-2xl mx-auto px-4 pb-8">
+
+        {/* Page title */}
+        <div className="flex items-center gap-2 mt-6 mb-6">
+          <div className="w-9 h-9 rounded-lg bg-red-50 dark:bg-red-900/30 flex items-center justify-center">
+            <BookX className="w-4 h-4 text-red-500 dark:text-red-400" />
+          </div>
+          <div>
+            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">错题本</h2>
+            <p className="text-xs text-gray-400 dark:text-gray-500">共 {items.length} 个知识点跟踪中</p>
+          </div>
+        </div>
 
         {loading ? (
           <div className="text-center py-12 text-gray-400">加载中...</div>
