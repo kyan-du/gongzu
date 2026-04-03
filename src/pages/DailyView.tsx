@@ -144,14 +144,17 @@ export default function DailyView() {
       {/* Header */}
       <div className="bg-white dark:bg-gray-800 shadow-sm">
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+          <button
+            onClick={() => navigate(`/${userId}/home`)}
+            className="flex items-center gap-3 hover:opacity-80 transition"
+          >
             <img src="/logo-night-64.png" alt="拱卒" className="w-8 h-8 dark:hidden" />
             <img src="/logo-day-64.png" alt="拱卒" className="w-8 h-8 hidden dark:block" />
             <div>
               <span className="text-lg font-bold text-gray-900 dark:text-gray-100">拱卒</span>
               <p className="text-xs text-gray-400 dark:text-gray-500 -mt-0.5">日拱一卒，功不唐捐</p>
             </div>
-          </div>
+          </button>
           <div className="relative" ref={menuRef}>
             <button
               onClick={() => setShowMenu(!showMenu)}
