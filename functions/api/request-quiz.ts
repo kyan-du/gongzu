@@ -102,17 +102,22 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
     if (webhookUrl && webhookToken) {
       const displayName = userId === 'cyan' ? '彤彤' : userId === 'ryan' ? '可可' : userId;
-      const inboundUrl = webhookUrl.replace(/\/$/, '') + '/api/inbound';
+      const hookUrl = webhookUrl.replace(/\/$/, '') + '/hooks/agent';
 
       context.waitUntil(
-        fetch(inboundUrl, {
+        fetch(hookUrl, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${webhookToken}`,
+          },
           body: JSON.stringify({
-            token: webhookToken,
-            text: replace
+            message: replace
               ? `拱卒重新出题请求：${displayName}点了"重新出题"，今天（${today}）的旧题已清除，请重新为 ${displayName}(${userId}) 出题。`
               : `拱卒出题请求：${displayName}在拱卒上点了"出题"按钮，今天（${today}）还没有题目，请尽快为 ${displayName}(${userId}) 出题。`,
+            name: '拱卒',
+            deliver: true,
+            channel: 'telegram',
           }),
         }).catch(() => {})
       );
