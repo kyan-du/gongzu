@@ -44,6 +44,13 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       return new Response(JSON.stringify({ submissions: rows.results }), { headers: { 'Content-Type': 'application/json' } });
     }
 
+    if (action === 'pending-requests') {
+      const rows = await context.env.DB.prepare(
+        "SELECT * FROM quiz_requests WHERE status = 'pending' ORDER BY created_at DESC LIMIT 10"
+      ).all();
+      return new Response(JSON.stringify({ requests: rows.results }), { headers: { 'Content-Type': 'application/json' } });
+    }
+
     if (action === 'backup') {
       const tables = ['questions', 'daily_quizzes', 'submissions', 'knowledge_mastery', 'quiz_requests'];
       const data: Record<string, any[]> = {};
@@ -59,7 +66,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       });
     }
 
-    return new Response(JSON.stringify({ error: 'Unknown action. Use: quizzes, submissions, backup' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+    return new Response(JSON.stringify({ error: 'Unknown action. Use: quizzes, submissions, pending-requests, backup' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
   } catch (e: any) {
     return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: { 'Content-Type': 'application/json' } });
   }
@@ -74,6 +81,15 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   try {
     const body = await context.request.json() as Record<string, any>;
     const action = body.action;
+
+    if (action === 'update-request-status') {
+      const { requestId, status } = body;
+      if (!requestId || !status) {
+        return new Response(JSON.stringify({ error: 'requestId and status required' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+      }
+      await context.env.DB.prepare('UPDATE quiz_requests SET status = ? WHERE id = ?').bind(status, requestId).run();
+      return new Response(JSON.stringify({ action: 'update-request-status', requestId, status }), { headers: { 'Content-Type': 'application/json' } });
+    }
 
     if (action === 'reset-date') {
       const { userId, date } = body;
@@ -191,7 +207,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       return new Response(JSON.stringify({ action: 'restore', restored: results }), { headers: { 'Content-Type': 'application/json' } });
     }
 
-    return new Response(JSON.stringify({ error: 'Unknown action. Use: reset-date, restore' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+    return new Response(JSON.stringify({ error: 'Unknown action. Use: update-request-status, reset-date, restore' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
   } catch (e: any) {
     return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: { 'Content-Type': 'application/json' } });
   }
