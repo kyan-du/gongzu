@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { isLoggedIn, getUser } from '../lib/api';
 
@@ -7,12 +7,21 @@ export default function Landing() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [muted, setMuted] = useState(true);
 
-  const handleEnter = () => {
-    // Already logged in? Go directly to home
+  // Auto-redirect if already logged in
+  useEffect(() => {
     if (isLoggedIn()) {
       const user = getUser();
       if (user) {
-        navigate(`/${user}/today`);
+        navigate(`/${user}/home`, { replace: true });
+      }
+    }
+  }, [navigate]);
+
+  const handleEnter = () => {
+    if (isLoggedIn()) {
+      const user = getUser();
+      if (user) {
+        navigate(`/${user}/home`);
         return;
       }
       navigate('/login/select');
