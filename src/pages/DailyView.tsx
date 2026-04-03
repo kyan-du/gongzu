@@ -205,31 +205,33 @@ export default function DailyView() {
 
 
   const getDayStatus = (date: Date): { status: string; hasData: boolean; answered: number } => {
-    if (!monthlyData) return { status: 'default', hasData: false, answered: 0 };
+    if (!monthlyData) return { status: 'no-quiz', hasData: false, answered: 0 };
     const dateStr = toDateStr(date);
     const dayData = monthlyData.days[dateStr];
-
-    if (!dayData || dayData.quizCount === 0) return { status: 'default', hasData: false, answered: 0 };
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const checkDate = new Date(date);
     checkDate.setHours(0, 0, 0, 0);
 
-    if (checkDate > today) return { status: 'future', hasData: true, answered: 0 };
+    if (checkDate > today) return { status: 'future', hasData: false, answered: 0 };
 
-    // Past day with data
+    // No quiz data for this day
+    if (!dayData || dayData.quizCount === 0) return { status: 'no-quiz', hasData: false, answered: 0 };
+
+    // Past day with quiz data
     if (dayData.allCompleted && (dayData.accuracy === null || dayData.accuracy >= 80)) {
-      return { status: 'completed-high', hasData: true, answered: dayData.quizCount }; // Green dot
+      return { status: 'completed-high', hasData: true, answered: dayData.quizCount }; // Green border
     } else if (dayData.allCompleted && dayData.accuracy !== null && dayData.accuracy < 80) {
-      return { status: 'completed-low', hasData: true, answered: dayData.quizCount }; // Amber dot
+      return { status: 'completed-low', hasData: true, answered: dayData.quizCount }; // Amber border
     } else if (!dayData.allCompleted && dayData.quizCount > 0) {
-      // Check if no answers at all
-      const answered = 0; // We don't have this data, so assume incomplete means some answered
-      return { status: 'incomplete', hasData: true, answered }; // Red or amber dot
+      // Has quiz but not completed - check if any answers
+      // We assume incomplete with quizCount > 0 means some answers
+      const hasAnswers = dayData.accuracy !== null; // If accuracy exists, there were answers
+      return { status: hasAnswers ? 'incomplete' : 'no-answers', hasData: true, answered: 0 };
     }
 
-    return { status: 'default', hasData: true, answered: 0 };
+    return { status: 'no-quiz', hasData: false, answered: 0 };
   };
 
   const selectDate = (date: Date) => {
@@ -378,45 +380,52 @@ export default function DailyView() {
       {/* Week Strip */}
       <div className="max-w-2xl mx-auto px-4 pt-4">
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-3">
-          <div className="flex items-center justify-between gap-1">
+          <div className="flex items-center justify-between gap-2">
             {weekDays.map((day, idx) => {
               const statusData = getDayStatus(day);
               const isSelected = isSameDay(day, currentDate);
               const isTodayDate = isToday(day);
 
-              let bgClass = 'bg-gray-100 dark:bg-gray-700';
+              let bgClass = 'bg-transparent';
               let textClass = 'text-gray-700 dark:text-gray-300';
               let borderClass = '';
-              let dotColor = '';
+              let shadowClass = '';
 
               // Future dates
               if (statusData.status === 'future') {
-                bgClass = 'bg-gray-50 dark:bg-gray-800';
-                textClass = 'text-gray-400 dark:text-gray-600 opacity-40';
+                bgClass = 'bg-transparent';
+                textClass = 'text-gray-300 dark:text-gray-600 opacity-50';
               }
-              // Today - solid amber fill
+              // Today - solid amber fill with shadow
               else if (isTodayDate) {
                 bgClass = 'bg-amber-500';
                 textClass = 'text-white';
+                shadowClass = 'shadow-sm';
               }
-              // Selected (not today) - amber border
+              // Selected (not today) - amber background
               else if (isSelected) {
-                bgClass = 'bg-white dark:bg-gray-800';
-                borderClass = 'ring-2 ring-amber-500';
-                textClass = 'text-gray-700 dark:text-gray-300';
+                bgClass = 'bg-amber-100 dark:bg-amber-900/30';
+                textClass = 'text-amber-600 dark:text-amber-400';
               }
-              // Past days with status dots
-              else if (statusData.hasData && statusData.status !== 'default') {
-                bgClass = 'bg-gray-100 dark:bg-gray-700';
+              // Past days with status shown via bottom border
+              else if (statusData.hasData) {
+                bgClass = 'bg-transparent';
                 textClass = 'text-gray-700 dark:text-gray-300';
 
                 if (statusData.status === 'completed-high') {
-                  dotColor = 'bg-green-500';
+                  borderClass = 'border-b-2 border-green-500';
                 } else if (statusData.status === 'completed-low') {
-                  dotColor = 'bg-amber-500';
+                  borderClass = 'border-b-2 border-amber-500';
                 } else if (statusData.status === 'incomplete') {
-                  dotColor = statusData.answered === 0 ? 'bg-red-500' : 'bg-amber-500';
+                  borderClass = 'border-b-2 border-amber-500';
+                } else if (statusData.status === 'no-answers') {
+                  borderClass = 'border-b-2 border-red-400';
                 }
+              }
+              // Past with no quiz
+              else if (statusData.status === 'no-quiz') {
+                bgClass = 'bg-transparent';
+                textClass = 'text-gray-400 dark:text-gray-500';
               }
 
               return (
@@ -424,13 +433,10 @@ export default function DailyView() {
                   key={idx}
                   onClick={() => selectDate(day)}
                   disabled={statusData.status === 'future'}
-                  className={`flex-1 aspect-square rounded-full flex flex-col items-center justify-center transition hover:scale-105 disabled:hover:scale-100 disabled:cursor-default ${bgClass} ${borderClass}`}
+                  className={`flex-1 min-w-[40px] py-2 rounded-lg flex flex-col items-center justify-center transition hover:scale-105 disabled:hover:scale-100 disabled:cursor-default ${bgClass} ${borderClass} ${shadowClass}`}
                 >
-                  <div className={`text-xs ${textClass} opacity-70`}>{weekDayNames[idx]}</div>
-                  <div className={`text-lg font-bold ${textClass}`}>{day.getDate()}</div>
-                  {dotColor && (
-                    <div className={`w-1 h-1 rounded-full ${dotColor} mt-0.5`} />
-                  )}
+                  <div className={`text-xs ${textClass} mb-0.5`}>{weekDayNames[idx]}</div>
+                  <div className={`text-base font-bold ${textClass}`}>{day.getDate()}</div>
                 </button>
               );
             })}
@@ -447,10 +453,10 @@ export default function DailyView() {
       {/* Expandable Month Calendar */}
       <div
         className={`max-w-2xl mx-auto px-4 transition-all duration-300 overflow-hidden ${
-          calendarExpanded ? 'max-h-96 opacity-100 mt-3' : 'max-h-0 opacity-0'
+          calendarExpanded ? 'max-h-[280px] opacity-100 mt-3' : 'max-h-0 opacity-0'
         }`}
       >
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 overflow-y-auto max-h-[280px]">
           <div className="flex items-center justify-between mb-3">
             <button
               onClick={() => changeCalendarMonth(-1)}
@@ -482,42 +488,47 @@ export default function DailyView() {
               const isTodayDate = isToday(day);
               const isCurrentMonth = day.getMonth() === calendarMonth.getMonth();
 
-              let bgClass = 'bg-gray-100 dark:bg-gray-700';
+              let bgClass = 'bg-transparent';
               let textClass = 'text-gray-700 dark:text-gray-300';
               let borderClass = '';
-              let dotColor = '';
 
               if (!isCurrentMonth) {
-                textClass = 'text-gray-300 dark:text-gray-600';
+                textClass = 'text-gray-300 dark:text-gray-700 opacity-30';
               } else {
                 // Future dates
                 if (statusData.status === 'future') {
-                  bgClass = 'bg-gray-50 dark:bg-gray-800';
+                  bgClass = 'bg-transparent';
                   textClass = 'text-gray-400 dark:text-gray-600 opacity-40';
                 }
-                // Today - solid amber fill
+                // Today - solid amber fill pill
                 else if (isTodayDate) {
                   bgClass = 'bg-amber-500';
                   textClass = 'text-white';
                 }
-                // Selected (not today) - amber border
+                // Selected (not today) - amber background
                 else if (isSelected) {
-                  bgClass = 'bg-white dark:bg-gray-800';
-                  borderClass = 'ring-2 ring-amber-500';
-                  textClass = 'text-gray-700 dark:text-gray-300';
+                  bgClass = 'bg-amber-100 dark:bg-amber-900/30';
+                  textClass = 'text-amber-600 dark:text-amber-400';
                 }
-                // Past days with status dots
-                else if (statusData.hasData && statusData.status !== 'default') {
-                  bgClass = 'bg-gray-100 dark:bg-gray-700';
+                // Past days with data - show bottom border
+                else if (statusData.hasData) {
+                  bgClass = 'bg-transparent';
                   textClass = 'text-gray-700 dark:text-gray-300';
 
                   if (statusData.status === 'completed-high') {
-                    dotColor = 'bg-green-500';
+                    borderClass = 'border-b-2 border-green-500';
                   } else if (statusData.status === 'completed-low') {
-                    dotColor = 'bg-amber-500';
+                    borderClass = 'border-b-2 border-amber-500';
                   } else if (statusData.status === 'incomplete') {
-                    dotColor = statusData.answered === 0 ? 'bg-red-500' : 'bg-amber-500';
+                    borderClass = 'border-b-2 border-amber-500';
+                  } else if (statusData.status === 'no-answers') {
+                    borderClass = 'border-b-2 border-red-400';
                   }
+                }
+                // Past without data
+                else if (statusData.status === 'no-quiz') {
+                  bgClass = 'bg-transparent';
+                  textClass = 'text-gray-400 dark:text-gray-500';
                 }
               }
 
@@ -525,18 +536,20 @@ export default function DailyView() {
                 <button
                   key={idx}
                   onClick={() => selectDate(day)}
-                  disabled={statusData.status === 'future'}
-                  className={`aspect-square rounded-full flex flex-col items-center justify-center transition hover:scale-105 disabled:hover:scale-100 disabled:cursor-default ${bgClass} ${borderClass}`}
+                  disabled={statusData.status === 'future' || !isCurrentMonth}
+                  className={`w-[34px] h-[34px] rounded-lg flex items-center justify-center transition hover:scale-105 disabled:hover:scale-100 disabled:cursor-default ${bgClass} ${borderClass}`}
                 >
                   <div className={`text-sm font-medium ${textClass}`}>{day.getDate()}</div>
-                  {dotColor && (
-                    <div className={`w-1 h-1 rounded-full ${dotColor} mt-0.5`} />
-                  )}
                 </button>
               );
             })}
           </div>
         </div>
+      </div>
+
+      {/* Separator between calendar and content */}
+      <div className="max-w-2xl mx-auto px-4 pt-4">
+        <div className="h-px bg-gray-200 dark:bg-gray-700" />
       </div>
 
       {/* Date Title */}
@@ -547,11 +560,11 @@ export default function DailyView() {
       </div>
 
       {/* Quiz list */}
-      <div className="max-w-2xl mx-auto px-4 py-4">
+      <div className="max-w-2xl mx-auto px-4 py-4 mb-4">
         {loading ? (
           <div className="text-center text-gray-400 dark:text-gray-500 py-12">加载中...</div>
         ) : quizzes.length === 0 ? (
-          <div className="bg-white dark:bg-gray-800 rounded-xl border-2 border-dashed border-gray-200 dark:border-gray-700 text-center py-8">
+          <div className="bg-white dark:bg-gray-800 rounded-xl border-2 border-dashed border-gray-200 dark:border-gray-700 text-center py-6">
             <div className="text-3xl mb-3">📝</div>
             <p className="text-gray-500 dark:text-gray-400">今天暂无作业</p>
           </div>
