@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 
 interface BlankQuestionProps {
   question: any;
@@ -13,27 +13,59 @@ function escapeRegex(s: string) {
   return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
+/**
+ * Supports multiple blanks in a single stem.
+ * Each ______ (3+ underscores) becomes one input.
+ * Answers are joined with " " (space) for single-answer grading.
+ *
+ * Hint text "(word)" right after a blank is extracted and shown as placeholder.
+ */
 export default function BlankQuestion({ question, index, onAnswer, submitted, result, initialAnswer }: BlankQuestionProps) {
-  const [value, setValue] = useState(initialAnswer || '');
   const content = question.content;
-  const stem = content.stem || '';
-  const hint = content.blanks?.[0]?.hint || '';
+  const stem: string = content.stem || '';
+  const blanksData: Array<{ hint?: string; answer?: string }> = content.blanks || [];
 
-  const handleChange = (v: string) => {
-    setValue(v);
-    onAnswer(v);
-  };
+  // Split by 3+ underscores
+  const parts = stem.split(/_{3,}/);
+  const blankCount = parts.length - 1;
 
-  const parts = stem.split(/_____+/);
+  // Parse initial answers (space-separated)
+  const initials = (initialAnswer || '').split(/\s+/);
+  const [values, setValues] = useState<string[]>(
+    Array.from({ length: blankCount }, (_, i) => initials[i] || '')
+  );
 
-  // Strip hint text like "(nine)" from the part after each blank, since it's shown as placeholder
+  // Extract hints: either from blanks array, or from "(word)" pattern after each blank
+  const hints: string[] = [];
   const cleanParts = parts.map((part: string, i: number) => {
-    if (i > 0 && hint) {
-      const pattern = new RegExp(`^\\s*\\(${escapeRegex(hint)}\\)`);
+    if (i === 0) return part;
+    // Try blanks[i-1].hint first
+    const blankHint = blanksData[i - 1]?.hint || '';
+    if (blankHint) {
+      // Strip "(hint)" from beginning of part
+      const pattern = new RegExp(`^\\s*\\(${escapeRegex(blankHint)}\\)`);
+      hints.push(blankHint);
       return part.replace(pattern, '');
     }
+    // Try extracting "(word)" from the part itself
+    const m = part.match(/^\s*\(([^)]+)\)/);
+    if (m) {
+      hints.push(m[1]);
+      return part.replace(/^\s*\([^)]+\)/, '');
+    }
+    hints.push('');
     return part;
   });
+
+  const handleChange = useCallback((blankIndex: number, v: string) => {
+    setValues(prev => {
+      const next = [...prev];
+      next[blankIndex] = v;
+      // Emit joined answer
+      onAnswer(next.join(' ').trim());
+      return next;
+    });
+  }, [onAnswer]);
 
   return (
     <div className="mb-6 p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm">
@@ -50,15 +82,15 @@ export default function BlankQuestion({ question, index, onAnswer, submitted, re
                       ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
                       : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 line-through'
                   }`}>
-                    {value || '—'}
+                    {values[i] || '—'}
                   </span>
                 ) : (
                   <input
                     type="text"
-                    value={value}
-                    onChange={(e) => handleChange(e.target.value)}
-                    className="inline-block mx-1 w-28 border-b-2 border-blue-400 dark:border-blue-500 bg-transparent text-center text-blue-700 dark:text-blue-300 font-medium focus:outline-none focus:border-blue-600 dark:focus:border-blue-400"
-                    placeholder={hint || '___'}
+                    value={values[i]}
+                    onChange={(e) => handleChange(i, e.target.value)}
+                    className="inline-block mx-1 w-24 border-b-2 border-blue-400 dark:border-blue-500 bg-transparent text-center text-blue-700 dark:text-blue-300 font-medium placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:border-blue-600 dark:focus:border-blue-400"
+                    placeholder={hints[i] || ''}
                     autoComplete="off"
                     autoCapitalize="off"
                   />
