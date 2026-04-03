@@ -6,9 +6,10 @@ import { logout } from '../lib/api';
 
 interface HeaderProps {
   userId: string;
+  maxWidth?: string;
 }
 
-export default function Header({ userId }: HeaderProps) {
+export default function Header({ userId, maxWidth }: HeaderProps) {
   const navigate = useNavigate();
   const [showMenu, setShowMenu] = useState(false);
   const [theme, setTheme] = useState(getStoredTheme);
@@ -44,7 +45,7 @@ export default function Header({ userId }: HeaderProps) {
 
   return (
     <div className="bg-white dark:bg-gray-800 shadow-sm">
-      <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div className={`${maxWidth || 'max-w-2xl'} mx-auto px-4 py-3 flex items-center justify-between`}>
         <button
           onClick={() => navigate(`/${userId}/home`)}
           className="flex items-center gap-3 hover:opacity-80 transition"

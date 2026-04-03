@@ -176,9 +176,9 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
-      <Header userId={userId || ''} />
+      <Header userId={userId || ''} maxWidth="max-w-3xl" />
 
-      <div className="max-w-5xl mx-auto px-4 py-6">
+      <div className="max-w-3xl mx-auto px-4 py-6">
         {/* Two-column: left (calendar+mistakes) / right (day content) */}
         {/* On mobile: stacked. On md+: side by side */}
         <div className="flex flex-col md:flex-row gap-6">
