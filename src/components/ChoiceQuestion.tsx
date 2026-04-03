@@ -14,6 +14,19 @@ export default function ChoiceQuestion({ question, index, onAnswer, submitted, r
   const [selected, setSelected] = useState(initialAnswer || '');
   const content = question.content;
 
+  // Normalize: support both content.options [{label, text}] and content.choices [string]
+  const options = useMemo(() => {
+    if (content.options?.length) return content.options;
+    if (content.choices?.length) {
+      const labels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+      return content.choices.map((text: string, i: number) => ({
+        label: labels[i] || String(i + 1),
+        text,
+      }));
+    }
+    return [];
+  }, [content.options, content.choices]);
+
   const handleSelect = (label: string) => {
     if (submitted) return;
     setSelected(label);
@@ -22,9 +35,8 @@ export default function ChoiceQuestion({ question, index, onAnswer, submitted, r
 
   // Use 2-column layout if all options are short (≤12 chars)
   const useGrid = useMemo(() => {
-    const options = content.options || [];
     return options.length >= 2 && options.every((opt: any) => opt.text.length <= 12);
-  }, [content.options]);
+  }, [options]);
 
   return (
     <div className="mb-6 p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm">
@@ -34,7 +46,7 @@ export default function ChoiceQuestion({ question, index, onAnswer, submitted, r
       </div>
 
       <div className={`ml-5 ${useGrid ? 'grid grid-cols-2 gap-2' : 'space-y-2'}`}>
-        {content.options?.map((opt: any) => {
+        {options.map((opt: any) => {
           const isSelected = selected === opt.label;
           const isCorrect = result?.correctAnswer === opt.label;
           const isWrong = submitted && isSelected && !result?.correct;

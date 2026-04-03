@@ -117,10 +117,16 @@ export default function Quiz() {
               <img src="/logo-night-64.png" alt="拱卒" className="w-7 h-7 rounded-full object-cover dark:hidden" />
               <img src="/logo-day-64.png" alt="拱卒" className="w-7 h-7 rounded-full object-cover hidden dark:block" />
             </button>
-            <span className="font-bold text-gray-900 dark:text-gray-100">{quiz.tag}</span>
+            <span className="font-bold text-gray-900 dark:text-gray-100">拱卒</span>
           </div>
           <span className="text-sm font-medium text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full">{answeredCount}/{totalCount}</span>
         </div>
+      </div>
+
+      {/* Quiz tag + date subheader */}
+      <div className="max-w-2xl mx-auto px-4 py-2 flex items-center justify-between">
+        <span className="text-base font-semibold text-gray-700 dark:text-gray-300">{quiz.tag}</span>
+        <span className="text-sm text-gray-400 dark:text-gray-500">{date}</span>
       </div>
 
       {submitted && (
