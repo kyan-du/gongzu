@@ -1,7 +1,11 @@
 import { useNavigate } from 'react-router-dom';
+import { getAllUsers } from '../lib/users';
+
+const colorClasses = ['text-blue-600', 'text-green-600', 'text-purple-600'];
 
 export default function SelectUser() {
   const navigate = useNavigate();
+  const users = getAllUsers();
 
   return (
     <div className="relative h-dvh flex items-center justify-center p-4 overflow-hidden">
@@ -23,41 +27,22 @@ export default function SelectUser() {
         </div>
 
         <div className="grid grid-cols-3 gap-4">
-          <button
-            onClick={() => navigate('/cyan/today')}
-            className="flex flex-col items-center bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-5 hover:bg-white/90 transition active:scale-95"
-          >
-            <img
-              src="/avatar-cyan.jpg"
-              alt="彤彤"
-              className="w-20 h-20 rounded-full object-cover shadow-md mb-3"
-            />
-            <span className="text-lg font-bold text-blue-600">彤彤</span>
-          </button>
-
-          <button
-            onClick={() => navigate('/ryan/today')}
-            className="flex flex-col items-center bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-5 hover:bg-white/90 transition active:scale-95"
-          >
-            <img
-              src="/avatar-ryan.jpg"
-              alt="可可"
-              className="w-20 h-20 rounded-full object-cover shadow-md mb-3"
-            />
-            <span className="text-lg font-bold text-green-600">可可</span>
-          </button>
-
-          <button
-            onClick={() => navigate('/parent')}
-            className="flex flex-col items-center bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-5 hover:bg-white/90 transition active:scale-95"
-          >
-            <img
-              src="/avatar-parent.jpg"
-              alt="家长"
-              className="w-20 h-20 rounded-full object-cover shadow-md mb-3"
-            />
-            <span className="text-lg font-bold text-purple-600">家长</span>
-          </button>
+          {users.map((user, index) => (
+            <button
+              key={user.id}
+              onClick={() => navigate(user.id === 'parent' ? '/parent' : `/${user.id}/home`)}
+              className="flex flex-col items-center bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-5 hover:bg-white/90 transition active:scale-95"
+            >
+              <img
+                src={user.avatar}
+                alt={user.name}
+                className="w-20 h-20 rounded-full object-cover shadow-md mb-3"
+              />
+              <span className={`text-lg font-bold ${colorClasses[index % colorClasses.length]}`}>
+                {user.name}
+              </span>
+            </button>
+          ))}
         </div>
       </div>
     </div>

@@ -18,7 +18,7 @@ export default function Login() {
     if (isLoggedIn()) {
       if (userId) {
         setUser(userId);
-        navigate(`/${userId}/today`, { replace: true });
+        navigate(`/${userId}/home`, { replace: true });
       } else {
         navigate('/login/select', { replace: true });
       }
@@ -33,7 +33,7 @@ export default function Login() {
     try {
       await login(passphrase, userId);
       if (userId) {
-        navigate(`/${userId}/today`);
+        navigate(`/${userId}/home`);
       } else {
         navigate('/login/select');
       }

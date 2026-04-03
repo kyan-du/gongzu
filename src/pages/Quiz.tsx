@@ -2,7 +2,7 @@ import { getTag } from '../lib/tags';
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { questionRenderers, QuestionCard } from '../components/questions';
-import Header from '../components/Header';
+import Layout from '../components/Layout';
 import RichPassage from '../components/RichPassage';
 import type { Quiz as QuizType, SubmissionResult } from '../lib/types';
 import { normalizeQuiz, normalizeSubmissionResults } from '../lib/types';
@@ -110,19 +110,10 @@ export default function Quiz() {
   const totalCount = quiz.questions?.length || 0;
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
-      <Header userId={userId || ''} showBack={false} />
-
+    <Layout userId={userId || ''} showBack>
       {/* Quiz tag + date subheader */}
-      <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
+      <div className="-mx-4 -mt-6 px-4 py-3 mb-4 flex items-center justify-between border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => navigate(`/${userId}/${date}`)}
-            className="p-1 -ml-1 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition"
-            aria-label="返回"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500 dark:text-gray-400"><path d="m15 18-6-6 6-6"/></svg>
-          </button>
           <span className="text-sm font-medium text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 px-2.5 py-0.5 rounded-full">
             {quiz.tag}
           </span>
@@ -143,7 +134,7 @@ export default function Quiz() {
 
       {/* Passage / reading material */}
       {quiz.passage && (
-        <div className="max-w-2xl mx-auto px-4 py-4">
+        <div className="py-4">
           <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-xl p-4">
             <div className="flex items-center gap-2 mb-3">
               <span className="text-base">📖</span>
@@ -157,7 +148,7 @@ export default function Quiz() {
       )}
 
       {submitted && (
-        <div className="max-w-2xl mx-auto px-4 mt-3">
+        <div className="mt-3">
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm px-4 py-3">
             <div className="flex items-center justify-center gap-2">
               <span className="text-2xl">{score.correct === score.total ? '🎉' : score.correct >= score.total * 0.8 ? '👍' : '💪'}</span>
@@ -168,7 +159,7 @@ export default function Quiz() {
         </div>
       )}
 
-      <div className="max-w-2xl mx-auto px-4 py-4 space-y-4">
+      <div className="py-4 space-y-4">
         {quiz.questions?.map((q: any, i: number) => {
           const QuestionRenderer = questionRenderers[q.type];
           if (!QuestionRenderer) return null;
@@ -223,6 +214,6 @@ export default function Quiz() {
           </button>
         )}
       </div>
-    </div>
+    </Layout>
   );
 }

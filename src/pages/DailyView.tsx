@@ -3,7 +3,7 @@ import { normalizeQuiz } from '../lib/types';
 import { CheckCircle, ChevronLeft, ChevronRight, BookOpen, Languages, PenLine, Clock, BookX, RotateCcw } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import Header from '../components/Header';
+import Layout from '../components/Layout';
 
 interface Quiz {
   id: string;
@@ -111,20 +111,18 @@ export default function DailyView() {
     const d = new Date(currentDate);
     d.setDate(d.getDate() + 1);
     setCurrentDate(d);
-    navigate(isToday(d) ? `/${userId}/today` : `/${userId}/${toDateStr(d)}`, { replace: true });
+    navigate(isToday(d) ? `/${userId}/home` : `/${userId}/${toDateStr(d)}`, { replace: true });
   };
 
   const goToday = () => {
     setCurrentDate(new Date());
-    navigate(`/${userId}/today`, { replace: true });
+    navigate(`/${userId}/home`, { replace: true });
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
-      <Header userId={userId || ''} showBack />
-
+    <Layout userId={userId || ''} showBack>
       {/* Date navigation */}
-      <div className="max-w-2xl mx-auto px-4 pt-6 pb-2">
+      <div className="pt-0 pb-2">
         <div className="flex items-center justify-between">
           <button onClick={goPrev} className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition text-gray-500 dark:text-gray-400">
             <ChevronLeft className="w-5 h-5" />
@@ -150,7 +148,7 @@ export default function DailyView() {
       </div>
 
       {/* Quiz list */}
-      <div className="max-w-2xl mx-auto px-4 py-4">
+      <div className="py-4">
         {loading ? (
           <div className="text-center text-gray-400 dark:text-gray-500 py-12">加载中...</div>
         ) : quizzes.length === 0 ? (
@@ -250,6 +248,6 @@ export default function DailyView() {
 
         )}
       </div>
-    </div>
+    </Layout>
   );
 }
