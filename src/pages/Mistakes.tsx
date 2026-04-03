@@ -157,6 +157,10 @@ export default function Mistakes() {
     </div>
   );
 
+  const today = new Date().toISOString().split('T')[0];
+  const overdue = points.filter(p => !p.nextReviewAt || p.nextReviewAt <= today);
+  const upcoming = points.filter(p => p.nextReviewAt && p.nextReviewAt > today);
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
       <Header userId={userId || ''} />
@@ -179,10 +183,17 @@ export default function Mistakes() {
           <div className="text-center text-gray-400 dark:text-gray-500 py-12">加载中...</div>
         ) : (
           <>
-            {points.length > 0 && (
+            {overdue.length > 0 && (
               <div className="mb-6">
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3 px-1">需要复习（{points.length}）</p>
-                <div className="space-y-3">{points.map(renderPointCard)}</div>
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3 px-1">需要复习（{overdue.length}）</p>
+                <div className="space-y-3">{overdue.map(renderPointCard)}</div>
+              </div>
+            )}
+
+            {upcoming.length > 0 && (
+              <div className="mb-6">
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3 px-1">即将复习（{upcoming.length}）</p>
+                <div className="space-y-3">{upcoming.map(renderPointCard)}</div>
               </div>
             )}
 
