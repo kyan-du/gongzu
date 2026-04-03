@@ -237,23 +237,23 @@ export default function Home() {
                   // Build rings: only include rings with meaningful data
                   const ringDefs: { value: number; color: string }[] = [];
                   if (hasData && !d.isFuture) {
-                    // Outer: completion (red-coral)
+                    // Outer: completion (Apple red/pink)
                     ringDefs.push({
                       value: md.completedCount / md.quizCount,
-                      color: '#FF6B6B',
+                      color: '#FA114F',
                     });
-                    // Middle: accuracy (green) — only if answered anything
+                    // Middle: accuracy (Apple green)
                     if (md.answeredQuestions > 0) {
                       ringDefs.push({
                         value: md.correctAnswers / md.answeredQuestions,
-                        color: '#51CF66',
+                        color: '#92E82A',
                       });
                     }
-                    // Inner: review (blue) — only if there were reviews due
+                    // Inner: review (Apple cyan/teal)
                     if (md.reviewDue > 0) {
                       ringDefs.push({
                         value: md.reviewDone / md.reviewDue,
-                        color: '#339AF0',
+                        color: '#00E5CC',
                       });
                     }
                   }
