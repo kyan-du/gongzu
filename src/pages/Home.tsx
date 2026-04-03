@@ -234,10 +234,29 @@ export default function Home() {
                   const hasData = !!md && md.quizCount > 0;
                   const isDimmed = !d.isCurrentMonth;
 
-                  // Ring values: 0-1
-                  const completion = hasData ? md.completedCount / md.quizCount : 0;
-                  const accuracy = hasData && md.answeredQuestions > 0 ? md.correctAnswers / md.answeredQuestions : 0;
-                  const reviewVal = hasData && md.reviewDue > 0 ? md.reviewDone / md.reviewDue : (hasData ? 1 : 0);
+                  // Build rings: only include rings with meaningful data
+                  const ringDefs: { value: number; color: string }[] = [];
+                  if (hasData && !d.isFuture) {
+                    // Outer: completion (red-coral)
+                    ringDefs.push({
+                      value: md.completedCount / md.quizCount,
+                      color: '#FF6B6B',
+                    });
+                    // Middle: accuracy (green) — only if answered anything
+                    if (md.answeredQuestions > 0) {
+                      ringDefs.push({
+                        value: md.correctAnswers / md.answeredQuestions,
+                        color: '#51CF66',
+                      });
+                    }
+                    // Inner: review (blue) — only if there were reviews due
+                    if (md.reviewDue > 0) {
+                      ringDefs.push({
+                        value: md.reviewDone / md.reviewDue,
+                        color: '#339AF0',
+                      });
+                    }
+                  }
 
                   return (
                     <button key={i} disabled={!isClickable}
@@ -252,15 +271,12 @@ export default function Home() {
                         ${isClickable && !isSelected ? 'hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer' : ''}
                         ${!isClickable ? 'cursor-default' : ''}
                       `}>
-                      {hasData && !d.isFuture && (
+                      {ringDefs.length > 0 && (
                         <ActivityRings
-                          completion={completion}
-                          accuracy={accuracy}
-                          review={reviewVal}
-                          hasData={true}
+                          rings={ringDefs}
                           dimmed={isDimmed || isSelected}
-                          size={36}
-                          strokeWidth={2.5}
+                          size={32}
+                          strokeWidth={2}
                         />
                       )}
                       <span className="relative z-10">{d.day}</span>
