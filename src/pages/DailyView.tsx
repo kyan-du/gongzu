@@ -1,6 +1,6 @@
 import { getSlug } from '../lib/tags';
 import { normalizeQuiz } from '../lib/types';
-import { LogOut, CheckCircle, ChevronLeft, ChevronRight, ChevronDown, BookOpen, Languages, PenLine, Clock, Sun, Moon, Monitor, Users, Palette, Check, BookX, RotateCcw } from 'lucide-react';
+import { LogOut, CheckCircle, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, BookOpen, Languages, PenLine, Clock, Sun, Moon, Monitor, Users, Palette, Check, BookX, RotateCcw } from 'lucide-react';
 import { getStoredTheme, setStoredTheme } from '../lib/theme';
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -12,6 +12,19 @@ interface Quiz {
   title: string;
   date: string;
   questions: any[];
+}
+
+interface DayStatus {
+  quizCount: number;
+  allCompleted: boolean;
+  accuracy: number | null;
+}
+
+interface MonthlyData {
+  userId: string;
+  month: string;
+  days: Record<string, DayStatus>;
+  streak: number;
 }
 
 function formatDate(d: Date) {
@@ -28,8 +41,62 @@ function toDateStr(d: Date) {
   return `${y}-${m}-${day}`;
 }
 
+function toMonthStr(d: Date) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  return `${y}-${m}`;
+}
+
 function isToday(d: Date) {
   return toDateStr(d) === toDateStr(new Date());
+}
+
+function isSameDay(d1: Date, d2: Date) {
+  return toDateStr(d1) === toDateStr(d2);
+}
+
+function getWeekDays(date: Date): Date[] {
+  const day = date.getDay();
+  const monday = new Date(date);
+  monday.setDate(date.getDate() - (day === 0 ? 6 : day - 1));
+
+  const week: Date[] = [];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+    week.push(d);
+  }
+  return week;
+}
+
+function getMonthDays(year: number, month: number): Date[] {
+  const firstDay = new Date(year, month - 1, 1);
+  const lastDay = new Date(year, month, 0);
+  const days: Date[] = [];
+
+  // Add padding days from previous month to start on Monday
+  const firstDayOfWeek = firstDay.getDay();
+  const paddingDays = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
+
+  for (let i = paddingDays; i > 0; i--) {
+    const d = new Date(year, month - 1, 1 - i);
+    days.push(d);
+  }
+
+  // Add all days of the month
+  for (let i = 1; i <= lastDay.getDate(); i++) {
+    days.push(new Date(year, month - 1, i));
+  }
+
+  // Add padding days from next month to complete the grid
+  const remainingDays = 7 - (days.length % 7);
+  if (remainingDays < 7) {
+    for (let i = 1; i <= remainingDays; i++) {
+      days.push(new Date(year, month, i));
+    }
+  }
+
+  return days;
 }
 
 export default function DailyView() {
@@ -52,6 +119,9 @@ export default function DailyView() {
   const [mistakesCount, setMistakesCount] = useState<number>(0);
   const [redoLoading, setRedoLoading] = useState(false);
   const [hasRedoToday, setHasRedoToday] = useState(false);
+  const [monthlyData, setMonthlyData] = useState<MonthlyData | null>(null);
+  const [calendarExpanded, setCalendarExpanded] = useState(false);
+  const [calendarMonth, setCalendarMonth] = useState(() => new Date());
 
   const userName = userId === 'cyan' ? '彤彤' : userId === 'ryan' ? '可可' : userId;
   const avatarSrc = userId === 'cyan' ? '/avatar-cyan.jpg' : '/avatar-ryan.jpg';
@@ -105,6 +175,21 @@ export default function DailyView() {
     fetchMistakesCount();
   }, [userId]);
 
+  // Fetch monthly data when month changes
+  useEffect(() => {
+    const fetchMonthlyData = async () => {
+      try {
+        const monthStr = toMonthStr(currentDate);
+        const res = await fetch(`/api/status/monthly?userId=${userId}&month=${monthStr}`);
+        const data = await res.json();
+        setMonthlyData(data);
+      } catch (e) {
+        console.error("Failed to fetch monthly data:", e);
+      }
+    };
+    fetchMonthlyData();
+  }, [userId, currentDate]);
+
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
@@ -119,25 +204,49 @@ export default function DailyView() {
 
 
 
-  const goPrev = () => {
-    const d = new Date(currentDate);
-    d.setDate(d.getDate() - 1);
-    setCurrentDate(d);
-    navigate(`/${userId}/${toDateStr(d)}`, { replace: true });
+  const getDayStatus = (date: Date): string => {
+    if (!monthlyData) return 'default';
+    const dateStr = toDateStr(date);
+    const dayData = monthlyData.days[dateStr];
+
+    if (!dayData || dayData.quizCount === 0) return 'default';
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const checkDate = new Date(date);
+    checkDate.setHours(0, 0, 0, 0);
+
+    if (checkDate > today) return 'future';
+
+    if (dayData.allCompleted && (dayData.accuracy === null || dayData.accuracy >= 80)) {
+      return 'completed'; // Green
+    } else if (dayData.allCompleted && dayData.accuracy !== null && dayData.accuracy < 80) {
+      return 'low-accuracy'; // Yellow/Amber
+    } else if (!dayData.allCompleted && dayData.quizCount > 0) {
+      return 'incomplete'; // Red border
+    }
+
+    return 'default';
   };
 
-  const goNext = () => {
-    if (isToday(currentDate)) return;
-    const d = new Date(currentDate);
-    d.setDate(d.getDate() + 1);
-    setCurrentDate(d);
-    navigate(isToday(d) ? `/${userId}/today` : `/${userId}/${toDateStr(d)}`, { replace: true });
+  const selectDate = (date: Date) => {
+    setCurrentDate(date);
+    const dateStr = toDateStr(date);
+    navigate(isToday(date) ? `/${userId}/today` : `/${userId}/${dateStr}`, { replace: true });
+    if (calendarExpanded) {
+      setCalendarExpanded(false);
+    }
   };
 
-  const goToday = () => {
-    setCurrentDate(new Date());
-    navigate(`/${userId}/today`, { replace: true });
+  const changeCalendarMonth = (delta: number) => {
+    const newMonth = new Date(calendarMonth);
+    newMonth.setMonth(calendarMonth.getMonth() + delta);
+    setCalendarMonth(newMonth);
   };
+
+  const weekDays = getWeekDays(currentDate);
+  const monthDays = getMonthDays(calendarMonth.getFullYear(), calendarMonth.getMonth() + 1);
+  const weekDayNames = ['一', '二', '三', '四', '五', '六', '日'];
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
@@ -263,30 +372,148 @@ export default function DailyView() {
         </div>
       </div>
 
-      {/* Date navigation */}
-      <div className="max-w-2xl mx-auto px-4 pt-6 pb-2">
-        <div className="flex items-center justify-between">
-          <button onClick={goPrev} className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition text-gray-500 dark:text-gray-400">
-            <ChevronLeft className="w-5 h-5" />
-          </button>
-          <div className="flex items-center gap-2">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
-              {isToday(currentDate) ? '今天' : ''} {formatDate(currentDate)}
-            </h2>
-            {!isToday(currentDate) && (
-              <button onClick={goToday} className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium ml-1">
-                回到今天
-              </button>
-            )}
+      {/* Week Strip */}
+      <div className="max-w-2xl mx-auto px-4 pt-4">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-3">
+          <div className="flex items-center justify-between gap-1">
+            {weekDays.map((day, idx) => {
+              const status = getDayStatus(day);
+              const isSelected = isSameDay(day, currentDate);
+              const isTodayDate = isToday(day);
+
+              let bgClass = 'bg-gray-100 dark:bg-gray-700';
+              let textClass = 'text-gray-700 dark:text-gray-300';
+              let borderClass = '';
+
+              if (status === 'completed') {
+                bgClass = 'bg-green-500 dark:bg-green-600';
+                textClass = 'text-white';
+              } else if (status === 'low-accuracy') {
+                bgClass = 'bg-amber-500 dark:bg-amber-600';
+                textClass = 'text-white';
+              } else if (status === 'incomplete') {
+                bgClass = 'bg-white dark:bg-gray-800';
+                borderClass = 'ring-2 ring-red-500 dark:ring-red-400';
+                textClass = 'text-gray-700 dark:text-gray-300';
+              } else if (status === 'future') {
+                textClass = 'text-gray-400 dark:text-gray-600';
+              }
+
+              if (isTodayDate && !isSelected) {
+                borderClass += ' ring-2 ring-blue-500 dark:ring-blue-400';
+              }
+
+              if (isSelected) {
+                borderClass += ' ring-2 ring-blue-600 dark:ring-blue-500';
+              }
+
+              return (
+                <button
+                  key={idx}
+                  onClick={() => selectDate(day)}
+                  className={`flex-1 aspect-square rounded-full flex flex-col items-center justify-center transition hover:scale-105 ${bgClass} ${borderClass}`}
+                >
+                  <div className={`text-xs ${textClass} opacity-70`}>{weekDayNames[idx]}</div>
+                  <div className={`text-lg font-bold ${textClass}`}>{day.getDate()}</div>
+                </button>
+              );
+            })}
           </div>
           <button
-            onClick={goNext}
-            disabled={isToday(currentDate)}
-            className={`w-9 h-9 flex items-center justify-center rounded-full transition ${isToday(currentDate) ? 'text-gray-300 dark:text-gray-600 cursor-not-allowed' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'}`}
+            onClick={() => setCalendarExpanded(!calendarExpanded)}
+            className="w-full mt-2 py-1 flex items-center justify-center text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition"
           >
-            <ChevronRight className="w-5 h-5" />
+            {calendarExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           </button>
         </div>
+      </div>
+
+      {/* Expandable Month Calendar */}
+      <div
+        className={`max-w-2xl mx-auto px-4 transition-all duration-300 overflow-hidden ${
+          calendarExpanded ? 'max-h-96 opacity-100 mt-3' : 'max-h-0 opacity-0'
+        }`}
+      >
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4">
+          <div className="flex items-center justify-between mb-3">
+            <button
+              onClick={() => changeCalendarMonth(-1)}
+              className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+            >
+              <ChevronLeft className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+            </button>
+            <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+              {calendarMonth.getFullYear()}年{calendarMonth.getMonth() + 1}月
+            </div>
+            <button
+              onClick={() => changeCalendarMonth(1)}
+              className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+            >
+              <ChevronRight className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+            </button>
+          </div>
+          <div className="grid grid-cols-7 gap-1 mb-2">
+            {weekDayNames.map((name) => (
+              <div key={name} className="text-center text-xs text-gray-400 dark:text-gray-500 py-1">
+                {name}
+              </div>
+            ))}
+          </div>
+          <div className="grid grid-cols-7 gap-1">
+            {monthDays.map((day, idx) => {
+              const status = getDayStatus(day);
+              const isSelected = isSameDay(day, currentDate);
+              const isTodayDate = isToday(day);
+              const isCurrentMonth = day.getMonth() === calendarMonth.getMonth();
+
+              let bgClass = 'bg-gray-100 dark:bg-gray-700';
+              let textClass = 'text-gray-700 dark:text-gray-300';
+              let borderClass = '';
+
+              if (!isCurrentMonth) {
+                textClass = 'text-gray-300 dark:text-gray-600';
+              } else {
+                if (status === 'completed') {
+                  bgClass = 'bg-green-500 dark:bg-green-600';
+                  textClass = 'text-white';
+                } else if (status === 'low-accuracy') {
+                  bgClass = 'bg-amber-500 dark:bg-amber-600';
+                  textClass = 'text-white';
+                } else if (status === 'incomplete') {
+                  bgClass = 'bg-white dark:bg-gray-800';
+                  borderClass = 'ring-2 ring-red-500 dark:ring-red-400';
+                } else if (status === 'future') {
+                  textClass = 'text-gray-400 dark:text-gray-600';
+                }
+
+                if (isTodayDate && !isSelected) {
+                  borderClass += ' ring-2 ring-blue-500 dark:ring-blue-400';
+                }
+
+                if (isSelected) {
+                  borderClass += ' ring-2 ring-blue-600 dark:ring-blue-500';
+                }
+              }
+
+              return (
+                <button
+                  key={idx}
+                  onClick={() => selectDate(day)}
+                  className={`aspect-square rounded-full flex items-center justify-center transition hover:scale-105 ${bgClass} ${borderClass}`}
+                >
+                  <div className={`text-sm font-medium ${textClass}`}>{day.getDate()}</div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Date Title */}
+      <div className="max-w-2xl mx-auto px-4 pt-4 pb-2">
+        <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
+          {isToday(currentDate) ? '今天 ' : ''}{formatDate(currentDate)}
+        </h2>
       </div>
 
       {/* Quiz list */}
@@ -329,66 +556,77 @@ export default function DailyView() {
                 )}
               </button>
             ))}
-
-            {/* 错题本入口 */}
-            {mistakesCount > 0 && (
-              <div className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition">
-                <button
-                  onClick={() => navigate(`/${userId}/mistakes`)}
-                  className="flex items-center gap-3 flex-1 active:scale-[0.98] transition"
-                >
-                  <div className="w-10 h-10 rounded-xl bg-red-50 dark:bg-red-900/30 flex items-center justify-center">
-                    <BookX className="w-5 h-5 text-red-500 dark:text-red-400" />
-                  </div>
-                  <div className="text-left">
-                    <div className="font-medium text-gray-900 dark:text-gray-100">错题本</div>
-                    <div className="text-sm text-gray-400 dark:text-gray-500">{mistakesCount}个知识点待复习</div>
-                  </div>
-                </button>
-                <div className="flex items-center gap-2">
-                  {isToday(currentDate) && !hasRedoToday && (
-                    <button
-                      onClick={async (e) => {
-                        e.stopPropagation();
-                        if (redoLoading) return;
-                        setRedoLoading(true);
-                        try {
-                          const res = await fetch('/api/mistakes/redo', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ userId, count: 5 }),
-                          });
-                          if (res.ok) {
-                            // Refresh quiz list
-                            const dateStr = toDateStr(currentDate);
-                            const quizRes = await fetch(`/api/quiz?userId=${userId}&date=${dateStr}`);
-                            const data = await quizRes.json();
-                            const allQuizzes = (data.quizzes || []).map(normalizeQuiz);
-                            setQuizzes(allQuizzes);
-                            setHasRedoToday(true);
-                          }
-                        } catch (err) {
-                          console.error('Redo failed:', err);
-                        } finally {
-                          setRedoLoading(false);
-                        }
-                      }}
-                      className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 rounded-lg hover:bg-amber-100 dark:hover:bg-amber-900/50 transition active:scale-95"
-                    >
-                      <RotateCcw className={`w-3.5 h-3.5 ${redoLoading ? 'animate-spin' : ''}`} />
-                      {redoLoading ? '生成中...' : '错题重做'}
-                    </button>
-                  )}
-                  {hasRedoToday && isToday(currentDate) && (
-                    <span className="text-xs text-gray-400 dark:text-gray-500">今日已重做</span>
-                  )}
-                  <ChevronRight size={20} className="text-gray-400 dark:text-gray-500" />
-                </div>
-              </div>
-            )}
           </div>
-
         )}
+      </div>
+
+      {/* Always-visible mistakes summary */}
+      <div className="max-w-2xl mx-auto px-4 pb-6">
+        <div className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition">
+          <button
+            onClick={() => navigate(`/${userId}/mistakes`)}
+            className="flex items-center gap-3 flex-1 active:scale-[0.98] transition"
+          >
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+              mistakesCount > 0
+                ? 'bg-red-50 dark:bg-red-900/30'
+                : 'bg-green-50 dark:bg-green-900/30'
+            }`}>
+              <BookX className={`w-5 h-5 ${
+                mistakesCount > 0
+                  ? 'text-red-500 dark:text-red-400'
+                  : 'text-green-500 dark:text-green-400'
+              }`} />
+            </div>
+            <div className="text-left">
+              <div className="font-medium text-gray-900 dark:text-gray-100">错题本</div>
+              <div className="text-sm text-gray-400 dark:text-gray-500">
+                {mistakesCount > 0
+                  ? `${mistakesCount}个知识点待复习`
+                  : '暂无错题，继续加油💪'}
+              </div>
+            </div>
+          </button>
+          <div className="flex items-center gap-2">
+            {isToday(currentDate) && mistakesCount > 0 && !hasRedoToday && (
+              <button
+                onClick={async (e) => {
+                  e.stopPropagation();
+                  if (redoLoading) return;
+                  setRedoLoading(true);
+                  try {
+                    const res = await fetch('/api/mistakes/redo', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ userId, count: 5 }),
+                    });
+                    if (res.ok) {
+                      // Refresh quiz list
+                      const dateStr = toDateStr(currentDate);
+                      const quizRes = await fetch(`/api/quiz?userId=${userId}&date=${dateStr}`);
+                      const data = await quizRes.json();
+                      const allQuizzes = (data.quizzes || []).map(normalizeQuiz);
+                      setQuizzes(allQuizzes);
+                      setHasRedoToday(true);
+                    }
+                  } catch (err) {
+                    console.error('Redo failed:', err);
+                  } finally {
+                    setRedoLoading(false);
+                  }
+                }}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 rounded-lg hover:bg-amber-100 dark:hover:bg-amber-900/50 transition active:scale-95"
+              >
+                <RotateCcw className={`w-3.5 h-3.5 ${redoLoading ? 'animate-spin' : ''}`} />
+                {redoLoading ? '生成中...' : '错题重做'}
+              </button>
+            )}
+            {hasRedoToday && isToday(currentDate) && (
+              <span className="text-xs text-gray-400 dark:text-gray-500">今日已重做</span>
+            )}
+            <ChevronRight size={20} className="text-gray-400 dark:text-gray-500" />
+          </div>
+        </div>
       </div>
     </div>
   );
