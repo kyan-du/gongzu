@@ -270,14 +270,14 @@ export default function Home() {
                         ${d.isCurrentMonth && d.isFuture ? 'text-gray-300 dark:text-gray-600' : ''}
                         ${d.isCurrentMonth && !d.isFuture && !d.isToday && !isSelected ? 'text-gray-700 dark:text-gray-300' : ''}
                         ${d.isToday && !isSelected ? 'text-amber-600 dark:text-amber-400 font-bold' : ''}
-                        ${isSelected ? 'bg-amber-500 text-white font-bold shadow-sm' : ''}
+                        ${isSelected ? 'ring-2 ring-amber-500 dark:ring-amber-400 text-amber-600 dark:text-amber-400 font-bold' : ''}
                         ${isClickable && !isSelected ? 'hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer' : ''}
                         ${!isClickable ? 'cursor-default' : ''}
                       `}>
                       {ringDefs.length > 0 && (
                         <ActivityRings
                           rings={ringDefs}
-                          dimmed={isDimmed || isSelected}
+                          dimmed={isDimmed}
                           size={32}
                           animationMs={500}
                           bgOpacity={0.2}
