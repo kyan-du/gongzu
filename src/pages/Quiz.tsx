@@ -4,6 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import ChoiceQuestion from '../components/ChoiceQuestion';
 import BlankQuestion from '../components/BlankQuestion';
 import ReadingQuestion from '../components/ReadingQuestion';
+import RichPassage from '../components/RichPassage';
 import type { Quiz as QuizType, SubmissionResult } from '../lib/types';
 import { normalizeQuiz, normalizeSubmissionResults } from '../lib/types';
 
@@ -117,7 +118,10 @@ export default function Quiz() {
               <img src="/logo-night-64.png" alt="拱卒" className="w-7 h-7 rounded-full object-cover dark:hidden" />
               <img src="/logo-day-64.png" alt="拱卒" className="w-7 h-7 rounded-full object-cover hidden dark:block" />
             </button>
-            <span className="text-lg font-bold text-gray-900 dark:text-gray-100">拱卒</span>
+            <div className="text-left">
+              <span className="text-lg font-bold text-gray-900 dark:text-gray-100">拱卒</span>
+              <p className="text-xs text-gray-400 dark:text-gray-500 -mt-0.5">日拱一卒，功不唐捐</p>
+            </div>
           </div>
           <span className="text-sm font-medium text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full">{answeredCount}/{totalCount}</span>
         </div>
@@ -125,9 +129,17 @@ export default function Quiz() {
 
       {/* Quiz tag + date subheader */}
       <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between border-b border-gray-100 dark:border-gray-700">
-        <span className="text-sm font-medium text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 px-2.5 py-0.5 rounded-full">
-          {quiz.title || quiz.tag}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-medium text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 px-2.5 py-0.5 rounded-full">
+            {quiz.tag}
+          </span>
+          {quiz.title && quiz.title !== quiz.tag && (() => {
+            const sub = quiz.title.replace(quiz.tag, '').replace(/^[·\s]+|[·\s]+$/g, '');
+            return sub ? (
+              <span className="text-sm text-gray-500 dark:text-gray-400">{sub}</span>
+            ) : null;
+          })()}
+        </div>
         <span className="text-sm text-gray-400 dark:text-gray-500">{date}</span>
       </div>
 
@@ -139,7 +151,9 @@ export default function Quiz() {
               <span className="text-base">📖</span>
               <span className="text-sm font-semibold text-amber-800 dark:text-amber-300">阅读材料</span>
             </div>
-            <div className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">{quiz.passage}</div>
+            <div className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+              <RichPassage passage={quiz.passage} />
+            </div>
           </div>
         </div>
       )}
