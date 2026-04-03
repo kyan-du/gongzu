@@ -340,9 +340,9 @@ export default function Home() {
             <div className="flex items-baseline justify-between mb-4">
               <button
                 onClick={() => navigate(`/${userId}/${selectedDate}`)}
-                className="text-lg font-bold text-gray-900 dark:text-gray-100 hover:text-amber-600 dark:hover:text-amber-400 transition"
+                className="text-lg font-bold text-gray-900 dark:text-gray-100 underline decoration-gray-300 dark:decoration-gray-600 underline-offset-4 hover:decoration-amber-500 dark:hover:decoration-amber-400 transition"
               >
-                {formatDateLabel(selectedDate, todayStr)} →
+                {formatDateLabel(selectedDate, todayStr)}
               </button>
               <div className="flex items-center gap-2">
                 {totalQuizzes > 0 && (
