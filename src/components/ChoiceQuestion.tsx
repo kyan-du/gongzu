@@ -76,7 +76,7 @@ export default function ChoiceQuestion({ question, index, onAnswer, submitted, r
         })}
       </div>
 
-      {submitted && !result?.correct && question.explanation && (
+      {submitted && question.explanation && (
         <div className="mt-3 ml-5 text-sm text-gray-500 dark:text-gray-400">
           💡 {question.explanation}
         </div>

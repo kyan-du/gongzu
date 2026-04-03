@@ -69,9 +69,11 @@ export default function BlankQuestion({ question, index, onAnswer, submitted, re
         </div>
       </div>
 
-      {submitted && !result?.correct && (
+      {submitted && (
         <div className="mt-2 ml-6 text-sm">
-          <span className="text-green-700 dark:text-green-300 font-medium">✅ {result?.correctAnswer}</span>
+          {!result?.correct && (
+            <span className="text-green-700 dark:text-green-300 font-medium">✅ {result?.correctAnswer}</span>
+          )}
           {question.explanation && (
             <p className="text-gray-500 dark:text-gray-400 mt-1">💡 {question.explanation}</p>
           )}

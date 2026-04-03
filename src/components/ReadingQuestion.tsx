@@ -106,7 +106,7 @@ export default function ReadingQuestion({ question, index, onAnswer, submitted, 
                 );
               })}
             </div>
-            {submitted && !isSubCorrect && sq.explanation && (
+            {submitted && sq.explanation && (
               <div className="mt-2 ml-5 text-sm text-gray-500 dark:text-gray-400">
                 💡 {sq.explanation}
               </div>
