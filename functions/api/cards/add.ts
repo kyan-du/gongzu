@@ -57,19 +57,20 @@ async function callAI(env: Env, messages: any[], maxTokens = 3000, vision = fals
 }
 
 async function extractWords(env: Env, text?: string, images?: string[], userPrompt?: string): Promise<any[]> {
-  const systemPrompt = `You are an AI that extracts English vocabulary words for a Chinese student.
+  const systemPrompt = `You are an AI that extracts English vocabulary for a Chinese student.
 
-From the given text or image(s), extract English words following these rules:
-- If it's a vocabulary list / word table: extract ALL words in the list, no exceptions
+From the given text or image(s), extract English words AND phrases following these rules:
+- If it's a vocabulary list / word table: extract ALL items in the list, no exceptions
 - If it's a test paper / exam: focus on words from INCORRECT answers or marked/circled items
 - If it's a text passage: extract all noteworthy English words and phrases
-- When in doubt, include the word rather than skip it
+- When in doubt, include the word/phrase rather than skip it
+- IMPORTANT: Include phrases and collocations such as "both...and...", "look forward to", "be famous for", "not only...but also...", etc. These are as important as single words.
 
-For each word, provide:
-- front: the English word or phrase
-- back: Chinese meaning with part of speech (e.g. "美丽的 adj.")
-- phonetic: IPA pronunciation
-- example: a simple example sentence (bold the word with **word**)
+For each item, provide:
+- front: the English word or phrase (for patterns use "..." as placeholder, e.g. "both...and...")
+- back: Chinese meaning with part of speech (e.g. "美丽的 adj." or "两者都…… conj.")
+- phonetic: IPA pronunciation (for phrases, leave empty string "")
+- example: a simple example sentence (bold the key word/phrase with **...**)
 - exampleCn: Chinese translation of the example
 
 Return a JSON array. If no words found, return [].
