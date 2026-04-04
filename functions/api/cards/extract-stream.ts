@@ -222,6 +222,12 @@ Output words one per line. No array brackets, no commas between objects. Just on
       await writer.write(encoder.encode(`data: ${JSON.stringify({ type: 'error', error: e.message })}\n\n`));
     } finally {
       clearTimeout(timer);
+      // Clean up R2 temp images
+      if (imageKeys?.length) {
+        for (const key of imageKeys) {
+          try { await context.env.R2.delete(key); } catch { /* best effort */ }
+        }
+      }
       await writer.close();
     }
   })();
