@@ -280,14 +280,12 @@ export default function Home() {
                     ringDefs.push({
                       filledPercentage: md.completedCount / md.quizCount,
                       color: '#FA114F',
-                      ringWidth: 4,
                     });
                     // Middle: accuracy (Apple green)
                     if (md.answeredQuestions > 0) {
                       ringDefs.push({
                         filledPercentage: md.correctAnswers / md.answeredQuestions,
                         color: '#92E82A',
-                        ringWidth: 4,
                       });
                     }
                     // Inner: review (Apple cyan/teal)
@@ -295,7 +293,6 @@ export default function Home() {
                       ringDefs.push({
                         filledPercentage: md.reviewDone / md.reviewDue,
                         color: '#00E5CC',
-                        ringWidth: 4,
                       });
                     }
                   }

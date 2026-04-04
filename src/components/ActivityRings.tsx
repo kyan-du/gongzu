@@ -36,18 +36,24 @@ export default function ActivityRings({
   const [animated, setAnimated] = useState(animationMs === 0);
   const ref = useRef<SVGSVGElement>(null);
 
+  // Auto-compute ringWidth based on size and ring count
+  const effectiveWidth = useMemo(() => {
+    const numRings = rings.length || 1;
+    // Each ring needs: width + gap(1px). Total available = radius - 2px padding
+    const available = (size / 2) - 2;
+    const w = Math.max(2, Math.floor(available / (numRings * 1.5)));
+    return Math.min(w, 6); // cap at 6
+  }, [rings.length, size]);
+
   const arcs = useMemo((): ArcData[] => {
     if (rings.length === 0) return [];
 
-    const defaultWidth = 4;
     const result: ArcData[] = [];
-    
-    // Build from outermost to innermost
-    let currentRadius = (size / 2) - 1; // start near edge
+    let currentRadius = (size / 2) - 1;
     
     for (let i = 0; i < rings.length; i++) {
       const ring = rings[i];
-      const w = ring.ringWidth ?? defaultWidth;
+      const w = ring.ringWidth ?? effectiveWidth;
       const r = currentRadius - w / 2;
       if (r <= 0) break;
       
@@ -63,11 +69,11 @@ export default function ActivityRings({
         width: w,
       });
       
-      currentRadius = r - w / 2 - 1; // gap between rings
+      currentRadius = r - w / 2 - 1;
     }
     
     return result;
-  }, [rings, size]);
+  }, [rings, size, effectiveWidth]);
 
   // Trigger animation after mount
   useEffect(() => {
@@ -84,9 +90,7 @@ export default function ActivityRings({
   return (
     <svg
       ref={ref}
-      width={size}
-      height={size}
-      className="absolute inset-0 m-auto pointer-events-none"
+      className="absolute inset-0 w-full h-full pointer-events-none"
       viewBox={`0 0 ${size} ${size}`}
     >
       {arcs.map((arc, i) => (
