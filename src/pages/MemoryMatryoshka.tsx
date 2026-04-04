@@ -41,8 +41,16 @@ function shuffle<T>(arr: T[]): T[] {
 
 // 生成套娃规则的卡片
 function generateCards(): Card[] {
-  const cardCount = 6 + Math.floor(Math.random() * 3); // 6-8 张明牌
-  const positions = shuffle([...Array(12).keys()]).slice(0, cardCount);
+  const cardCount = 6; // 每列最多一张（同列上下不能同时有），6列最多6张
+
+  // 为每列随机选上排(0-5)或下排(6-11)
+  const positions: number[] = [];
+  for (let col = 0; col < 6; col++) {
+    const row = Math.random() < 0.5 ? 0 : 1;
+    positions.push(row * 6 + col);
+  }
+  // 随机打乱顺序用于颜色链分配
+  const shuffledPositions = shuffle([...positions]);
 
   const cards: Card[] = [];
   const usedColors = shuffle([...COLORS]);
@@ -53,7 +61,7 @@ function generateCards(): Card[] {
 
     cards.push({
       id: `card-${i}`,
-      position: positions[i],
+      position: shuffledPositions[i],
       number: 1 + Math.floor(Math.random() * 9),
       textColor: textColor.text,
       borderColor: borderColor.border,
