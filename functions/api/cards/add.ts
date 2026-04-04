@@ -22,31 +22,38 @@ function getAIConfig(env: Env, vision = false) {
 
 async function callAI(env: Env, messages: any[], maxTokens = 3000, vision = false): Promise<string> {
   const cfg = getAIConfig(env, vision);
-  const resp = await fetch(cfg.url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${cfg.key}`,
-    },
-    body: JSON.stringify({
-      model: cfg.model,
-      messages,
-      temperature: 0.2,
-      max_tokens: maxTokens,
-    }),
-  });
-  if (!resp.ok) {
-    const errText = await resp.text();
-    throw new Error(`AI API ${resp.status}: ${errText.slice(0, 200)}`);
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 55000); // 55s timeout
+  try {
+    const resp = await fetch(cfg.url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${cfg.key}`,
+      },
+      signal: controller.signal,
+      body: JSON.stringify({
+        model: cfg.model,
+        messages,
+        temperature: 0.2,
+        max_tokens: maxTokens,
+      }),
+    });
+    if (!resp.ok) {
+      const errText = await resp.text();
+      throw new Error(`AI API ${resp.status}: ${errText.slice(0, 200)}`);
+    }
+    const data = await resp.json() as any;
+    let content = data.choices?.[0]?.message?.content || '';
+    content = content.trim();
+    if (content.startsWith('```')) {
+      content = content.split('\n').slice(1).join('\n');
+      content = content.replace(/```\s*$/, '').trim();
+    }
+    return content;
+  } finally {
+    clearTimeout(timer);
   }
-  const data = await resp.json() as any;
-  let content = data.choices?.[0]?.message?.content || '';
-  content = content.trim();
-  if (content.startsWith('```')) {
-    content = content.split('\n').slice(1).join('\n');
-    content = content.replace(/```\s*$/, '').trim();
-  }
-  return content;
 }
 
 async function extractWords(env: Env, text?: string, images?: string[], userPrompt?: string): Promise<any[]> {

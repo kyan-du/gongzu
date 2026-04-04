@@ -94,7 +94,7 @@ export default function AddWords() {
 
     try {
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 45000);
+      const timeout = setTimeout(() => controller.abort(), 90000);
 
       const resp = await fetch('/api/cards/add', {
         method: 'POST',
