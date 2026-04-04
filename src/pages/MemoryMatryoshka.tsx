@@ -256,7 +256,13 @@ export default function MemoryMatryoshka() {
         </div>
 
         <div className="text-center mb-8">
-          <p className="text-gray-500 dark:text-gray-400">记住卡片的位置和颜色</p>
+          <p className="text-gray-500 dark:text-gray-400 mb-3">记住卡片的位置和颜色</p>
+          <button
+            onClick={() => setPhase('answer')}
+            className="px-5 py-2 rounded-full bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 text-sm font-medium hover:bg-violet-200 dark:hover:bg-violet-900/50 transition"
+          >
+            记好了，开始答题 →
+          </button>
         </div>
 
         {/* 2×6 网格 */}
