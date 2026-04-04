@@ -44,8 +44,8 @@ function shuffle<T>(arr: T[]): T[] {
 function generateCards(): { cards: Card[]; decoys: Card[]; chainMode: ChainMode } {
   const cardCount = 6;
 
-  // 随机选择模式：独立配色 / 框→字链 / 字→框链
-  const modes: ChainMode[] = ['independent', 'border-to-text', 'text-to-border'];
+  // 随机选择模式：框→字链 / 字→框链
+  const modes: ChainMode[] = ['border-to-text', 'text-to-border'];
   const chainMode = modes[Math.floor(Math.random() * modes.length)];
 
   // 为每列随机选上排(0-5)或下排(6-11)，保证上下各至少2张
