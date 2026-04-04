@@ -161,14 +161,15 @@ export default function Vocab() {
     } catch (e) { /* ignore */ }
 
     setSubmitting(false);
-    // Delay before advancing — give time to see result & tap "斩"
+    // Correct → advance immediately; wrong → pause to review
+    const delay = correct ? 0 : 2500;
     setTimeout(() => {
       if (currentIndex < total - 1) {
         setCurrentIndex(prev => prev + 1);
       } else {
         setFinished(true);
       }
-    }, correct ? 2000 : 2500);
+    }, delay);
   }, [current, currentIndex, total, userId, submitting]);
 
   const handleMaster = useCallback(async () => {
