@@ -31,6 +31,28 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       });
     }
 
+    // Prevent duplicate submission — if already submitted, return existing results
+    const existingSubs = await context.env.DB.prepare(
+      'SELECT question_id, answer, correct FROM submissions WHERE user_id = ? AND quiz_id = ?'
+    ).bind(userId, quizId).all();
+
+    if (existingSubs.results.length > 0) {
+      // Already submitted — return existing results without re-notifying
+      const existingResults = existingSubs.results.map((s: any) => ({
+        questionId: s.question_id,
+        correct: !!s.correct,
+        userAnswer: s.answer,
+      }));
+      const correctCount = existingSubs.results.filter((s: any) => s.correct).length;
+      return Response.json({
+        success: true,
+        duplicate: true,
+        results: existingResults,
+        score: correctCount,
+        total: existingSubs.results.length,
+      });
+    }
+
     const results = [];
     let correctCount = 0;
     const today = todayCST();
