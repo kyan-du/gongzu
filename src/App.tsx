@@ -11,6 +11,7 @@ import Home from './pages/Home';
 import Vocab from './pages/Vocab';
 import AddWords from './pages/AddWords';
 import WordList from './pages/WordList';
+import MemoryMatryoshka from './pages/MemoryMatryoshka';
 
 function App() {
   return (
@@ -33,6 +34,8 @@ function App() {
         <Route path="/:userId/vocab/list" element={<WordList />} />
         {/* Mistakes book */}
         <Route path="/:userId/mistakes" element={<Mistakes />} />
+        {/* Memory games */}
+        <Route path="/:userId/memory/matryoshka" element={<MemoryMatryoshka />} />
         {/* Quiz by date + tag slug */}
         <Route path="/:userId/:date/:tag" element={<Quiz />} />
         {/* Date view (same as home but with date anchor) */}
