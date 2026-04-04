@@ -79,9 +79,15 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     LIMIT 30
   `).bind(userId, today).all();
 
-  // 2. New words
+  // 2. New words — use user settings
+  const settingsRow = await db.prepare(
+    `SELECT daily_new_words, daily_total_limit FROM card_settings WHERE user_id = ?`
+  ).bind(userId).first() as any;
+  const dailyNewWords = settingsRow?.daily_new_words ?? 15;
+  const dailyTotalLimit = settingsRow?.daily_total_limit ?? 20;
+
   const reviewCount = reviewWords.results?.length || 0;
-  const newLimit = Math.max(5, 15 - reviewCount);
+  const newLimit = Math.max(0, Math.min(dailyNewWords, dailyTotalLimit - reviewCount));
 
   const newWords = await db.prepare(`
     SELECT q.id, q.content

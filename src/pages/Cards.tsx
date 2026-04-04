@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { CheckCircle, RotateCcw, Zap, RefreshCw } from 'lucide-react';
+import { CheckCircle, RotateCcw, Zap, RefreshCw, Settings } from 'lucide-react';
 import Layout from '../components/Layout';
 import WordCard from '../components/WordCard';
 
@@ -58,6 +58,10 @@ export default function Cards() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [results, setResults] = useState<Record<string, boolean>>({});
   const [loading, setLoading] = useState(true);
+  const [showSettings, setShowSettings] = useState(false);
+  const [dailyNewWords, setDailyNewWords] = useState(15);
+  const [dailyTotalLimit, setDailyTotalLimit] = useState(20);
+  const [savingSettings, setSavingSettings] = useState(false);
   const [finished, setFinished] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
@@ -72,7 +76,35 @@ export default function Cards() {
         setLoading(false);
       })
       .catch(() => setLoading(false));
+    // Fetch settings
+    fetch(`/api/cards/settings?userId=${userId}`)
+      .then(r => r.json())
+      .then(d => {
+        setDailyNewWords(d.dailyNewWords ?? 15);
+        setDailyTotalLimit(d.dailyTotalLimit ?? 20);
+      })
+      .catch(() => {});
   }, [userId]);
+
+  const saveSettings = useCallback(async () => {
+    if (!userId) return;
+    setSavingSettings(true);
+    try {
+      await fetch('/api/cards/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, dailyNewWords, dailyTotalLimit }),
+      });
+      setShowSettings(false);
+      // Refresh word list with new settings
+      const r = await fetch(`/api/cards?userId=${userId}`);
+      const data = await r.json();
+      setWords(data.words || []);
+      setStats(data.stats || null);
+    } finally {
+      setSavingSettings(false);
+    }
+  }, [userId, dailyNewWords, dailyTotalLimit]);
 
   const current = words[currentIndex];
   const total = words.length;
@@ -178,14 +210,59 @@ export default function Cards() {
         <Layout userId={userId || ''} showBack backTo={`/${userId}/home`} maxWidth="max-w-3xl"
           title={`单词本（${totalW} 词）`}
           rightAction={
-            <button
-              onClick={() => navigate(`/${userId}/cards/add`)}
-              className="px-3 py-1 rounded-full border border-dashed border-gray-300 dark:border-gray-600 text-xs text-gray-400 dark:text-gray-500 hover:border-gray-400 hover:text-gray-500 transition"
-            >
-              +添加
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setShowSettings(!showSettings)}
+                className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+              >
+                <Settings className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => navigate(`/${userId}/cards/add`)}
+                className="px-3 py-1 rounded-full border border-dashed border-gray-300 dark:border-gray-600 text-xs text-gray-400 dark:text-gray-500 hover:border-gray-400 hover:text-gray-500 transition"
+              >
+                +添加
+              </button>
+            </div>
           }
         >
+          {/* Settings panel */}
+          {showSettings && (
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-5 mb-4 border border-gray-100 dark:border-gray-700">
+              <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-4">学习设置</h4>
+              <div className="space-y-4">
+                <div>
+                  <label className="text-xs text-gray-500 dark:text-gray-400 mb-1.5 block">每日新词数量</label>
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="range" min="1" max="50" value={dailyNewWords}
+                      onChange={e => setDailyNewWords(Number(e.target.value))}
+                      className="flex-1 accent-violet-500"
+                    />
+                    <span className="text-sm font-medium text-gray-900 dark:text-gray-100 w-8 text-right">{dailyNewWords}</span>
+                  </div>
+                </div>
+                <div>
+                  <label className="text-xs text-gray-500 dark:text-gray-400 mb-1.5 block">每日总量上限（新词+复习）</label>
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="range" min="1" max="100" value={dailyTotalLimit}
+                      onChange={e => setDailyTotalLimit(Number(e.target.value))}
+                      className="flex-1 accent-violet-500"
+                    />
+                    <span className="text-sm font-medium text-gray-900 dark:text-gray-100 w-8 text-right">{dailyTotalLimit}</span>
+                  </div>
+                </div>
+                <button
+                  onClick={saveSettings}
+                  disabled={savingSettings}
+                  className="w-full py-2 bg-violet-600 text-white text-sm font-medium rounded-lg hover:bg-violet-700 transition disabled:opacity-50"
+                >
+                  {savingSettings ? '保存中...' : '保存'}
+                </button>
+              </div>
+            </div>
+          )}
           {/* Stats cards */}
           <div className="grid grid-cols-3 gap-3 mb-5">
             <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-xl p-4 text-center">
