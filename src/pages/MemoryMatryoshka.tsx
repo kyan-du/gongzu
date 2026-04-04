@@ -20,7 +20,7 @@ type GamePhase = 'prepare' | 'memorize' | 'answer' | 'result';
 interface Card {
   id: string;
   position: number; // 0-11
-  number: number; // 1-9
+  number: number | string; // 1-9 或 A-K
   textColor: string;
   borderColor: string;
 }
@@ -55,8 +55,12 @@ function generateCards(): Card[] {
   const cards: Card[] = [];
   const usedColors = shuffle([...COLORS]);
 
-  // 生成不重复的数字（6张卡片，从1-9中取6个不重复的）
-  const numbers = shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9]).slice(0, cardCount);
+  // 随机选择本题使用数字还是字母
+  const useLetters = Math.random() < 0.5;
+  const pool = useLetters
+    ? ['A','B','C','D','E','F','G','H','J','K'] // 去掉 I 避免和 1 混淆
+    : [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  const symbols = shuffle([...pool]).slice(0, cardCount);
 
   for (let i = 0; i < cardCount; i++) {
     const textColor = usedColors[i % usedColors.length];
@@ -65,7 +69,7 @@ function generateCards(): Card[] {
     cards.push({
       id: `card-${i}`,
       position: shuffledPositions[i],
-      number: numbers[i],
+      number: symbols[i],
       textColor: textColor.text,
       borderColor: borderColor.border,
     });
@@ -131,6 +135,7 @@ export default function MemoryMatryoshka() {
   // 拖拽处理
   const handlePointerDown = (e: React.PointerEvent, cardId: string) => {
     e.preventDefault();
+    e.stopPropagation();
     const target = e.currentTarget as HTMLElement;
     const rect = target.getBoundingClientRect();
     dragOffsetRef.current = {
@@ -139,49 +144,57 @@ export default function MemoryMatryoshka() {
     };
     setDraggedCard(cardId);
     setDragPosition({ x: e.clientX, y: e.clientY });
-    target.setPointerCapture(e.pointerId);
+    // 不使用 setPointerCapture，改为全局监听
   };
 
-  const handlePointerMove = (e: React.PointerEvent) => {
-    if (draggedCard) {
+  useEffect(() => {
+    if (!draggedCard) return;
+
+    const onMove = (e: PointerEvent) => {
+      e.preventDefault();
       setDragPosition({ x: e.clientX, y: e.clientY });
-    }
-  };
+    };
 
-  const handlePointerUp = (e: React.PointerEvent) => {
-    if (!draggedCard || !gridRef.current) {
+    const onUp = (e: PointerEvent) => {
+      if (!gridRef.current) {
+        setDraggedCard(null);
+        setDragPosition(null);
+        return;
+      }
+
+      const cells = gridRef.current.querySelectorAll('[data-position]');
+      let targetPosition: number | null = null;
+      cells.forEach((cell) => {
+        const rect = cell.getBoundingClientRect();
+        if (
+          e.clientX >= rect.left &&
+          e.clientX <= rect.right &&
+          e.clientY >= rect.top &&
+          e.clientY <= rect.bottom
+        ) {
+          targetPosition = Number(cell.getAttribute('data-position'));
+        }
+      });
+
+      if (targetPosition !== null && cards.find(c => c.position === targetPosition)) {
+        setUserAnswers(prev => {
+          const newAnswers = prev.filter(a => a.position !== targetPosition);
+          newAnswers.push({ position: targetPosition!, cardId: draggedCard });
+          return newAnswers;
+        });
+      }
+
       setDraggedCard(null);
       setDragPosition(null);
-      return;
-    }
+    };
 
-    const cells = gridRef.current.querySelectorAll('[data-position]');
-
-    let targetPosition: number | null = null;
-    cells.forEach((cell) => {
-      const rect = cell.getBoundingClientRect();
-      if (
-        e.clientX >= rect.left &&
-        e.clientX <= rect.right &&
-        e.clientY >= rect.top &&
-        e.clientY <= rect.bottom
-      ) {
-        targetPosition = Number(cell.getAttribute('data-position'));
-      }
-    });
-
-    if (targetPosition !== null && cards.find(c => c.position === targetPosition)) {
-      // 移除该位置的旧答案
-      const newAnswers = userAnswers.filter(a => a.position !== targetPosition);
-      // 添加新答案
-      newAnswers.push({ position: targetPosition, cardId: draggedCard });
-      setUserAnswers(newAnswers);
-      setSelectedCard(null);
-    }
-
-    setDraggedCard(null);
-    setDragPosition(null);
-  };
+    document.addEventListener('pointermove', onMove, { passive: false });
+    document.addEventListener('pointerup', onUp);
+    return () => {
+      document.removeEventListener('pointermove', onMove);
+      document.removeEventListener('pointerup', onUp);
+    };
+  }, [draggedCard, cards]);
 
   // 点击选择卡片
   const handleCardClick = (cardId: string) => {
@@ -325,8 +338,6 @@ export default function MemoryMatryoshka() {
         <div
           ref={gridRef}
           className="grid grid-cols-6 gap-3 max-w-3xl mx-auto mb-8"
-          onPointerMove={handlePointerMove}
-          onPointerUp={handlePointerUp}
         >
           {[...Array(12)].map((_, idx) => {
             const isTarget = cards.some(c => c.position === idx);
