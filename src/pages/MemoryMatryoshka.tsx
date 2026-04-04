@@ -16,6 +16,7 @@ const COLORS = [
 ];
 
 type GamePhase = 'prepare' | 'memorize' | 'answer' | 'result';
+type ChainMode = 'independent' | 'border-to-text' | 'text-to-border';
 
 interface Card {
   id: string;
@@ -40,8 +41,12 @@ function shuffle<T>(arr: T[]): T[] {
 }
 
 // 生成套娃规则的卡片
-function generateCards(): { cards: Card[]; decoys: Card[] } {
+function generateCards(): { cards: Card[]; decoys: Card[]; chainMode: ChainMode } {
   const cardCount = 6;
+
+  // 随机选择模式：独立配色 / 框→字链 / 字→框链
+  const modes: ChainMode[] = ['independent', 'border-to-text', 'text-to-border'];
+  const chainMode = modes[Math.floor(Math.random() * modes.length)];
 
   // 为每列随机选上排(0-5)或下排(6-11)，保证上下各至少2张
   let positions: number[] = [];
@@ -58,14 +63,7 @@ function generateCards(): { cards: Card[]; decoys: Card[] } {
       else bottomCount++;
     }
   } while (topCount < 2 || bottomCount < 2);
-  // 按行优先阅读顺序排列（上排左→右，下排左→右）
   positions.sort((a, b) => a - b);
-
-  // 每张卡片分配独立的边框色和文字色，保证不重复
-  const shuffledColors = shuffle([...COLORS]);
-  const borderColors = shuffledColors.slice(0, cardCount);
-  // 文字色：旋转一位，保证每张卡片文字色≠自己的边框色
-  const textColors = [...borderColors.slice(1), borderColors[0]];
 
   // 随机选择本题使用数字还是字母
   const useLetters = Math.random() < 0.5;
@@ -74,22 +72,60 @@ function generateCards(): { cards: Card[]; decoys: Card[] } {
     : [1, 2, 3, 4, 5, 6, 7, 8, 9];
   const symbols = shuffle([...pool]).slice(0, cardCount);
 
+  // 选足够多的颜色
+  const shuffledColors = shuffle([...COLORS]);
+
   const cards: Card[] = [];
-  for (let i = 0; i < cardCount; i++) {
-    cards.push({
-      id: `card-${i}`,
-      position: positions[i],
-      number: symbols[i],
-      textColor: textColors[i].text,
-      borderColor: borderColors[i].border,
-    });
+
+  if (chainMode === 'border-to-text') {
+    // card[i].borderColor === card[i+1].textColor
+    // 需要 cardCount 种边框色 + 第一张卡的文字色（独立）
+    const borderPalette = shuffledColors.slice(0, cardCount);
+    // 第一张卡的文字色用一个不在边框色中的颜色（或旋转）
+    const firstTextColor = shuffledColors[cardCount] || shuffledColors[0];
+    for (let i = 0; i < cardCount; i++) {
+      cards.push({
+        id: `card-${i}`,
+        position: positions[i],
+        number: symbols[i],
+        borderColor: borderPalette[i].border,
+        // 文字色 = 前一张卡的边框色；第一张用独立色
+        textColor: i === 0 ? firstTextColor.text : borderPalette[i - 1].text,
+      });
+    }
+  } else if (chainMode === 'text-to-border') {
+    // card[i].textColor === card[i+1].borderColor
+    const textPalette = shuffledColors.slice(0, cardCount);
+    const firstBorderColor = shuffledColors[cardCount] || shuffledColors[0];
+    for (let i = 0; i < cardCount; i++) {
+      cards.push({
+        id: `card-${i}`,
+        position: positions[i],
+        number: symbols[i],
+        textColor: textPalette[i].text,
+        // 边框色 = 前一张卡的文字色；第一张用独立色
+        borderColor: i === 0 ? firstBorderColor.border : textPalette[i - 1].border,
+      });
+    }
+  } else {
+    // 独立模式：每张卡片边框色和文字色独立，仅保证自己的不同
+    const borderColors = shuffledColors.slice(0, cardCount);
+    const textColors = [...borderColors.slice(1), borderColors[0]];
+    for (let i = 0; i < cardCount; i++) {
+      cards.push({
+        id: `card-${i}`,
+        position: positions[i],
+        number: symbols[i],
+        textColor: textColors[i].text,
+        borderColor: borderColors[i].border,
+      });
+    }
   }
 
   // 为每张正确卡片生成 1 个迷惑项（同数字/字母，但颜色组合不同）
   const decoys: Card[] = [];
   for (let i = 0; i < cards.length; i++) {
     const original = cards[i];
-    // 随机选不同的颜色对
     const otherTextColors = COLORS.filter(c => c.text !== original.textColor);
     const otherBorderColors = COLORS.filter(c => c.border !== original.borderColor);
     const decoyText = otherTextColors[Math.floor(Math.random() * otherTextColors.length)];
@@ -97,7 +133,7 @@ function generateCards(): { cards: Card[]; decoys: Card[] } {
 
     decoys.push({
       id: `decoy-${i}`,
-      position: -1, // 不在网格中
+      position: -1,
       number: original.number,
       textColor: decoyText.text,
       borderColor: decoyBorder.border,
@@ -107,6 +143,7 @@ function generateCards(): { cards: Card[]; decoys: Card[] } {
   return {
     cards: cards.sort((a, b) => a.position - b.position),
     decoys,
+    chainMode,
   };
 }
 
@@ -117,6 +154,7 @@ export default function MemoryMatryoshka() {
   const [phase, setPhase] = useState<GamePhase>('prepare');
   const [cards, setCards] = useState<Card[]>([]);
   const [allChoices, setAllChoices] = useState<Card[]>([]);
+  const [chainMode, setChainMode] = useState<ChainMode>('independent');
   const [countdown, setCountdown] = useState(3);
   const [memorizeTime, setMemorizeTime] = useState(30);
   const [answerTime, setAnswerTime] = useState(30);
@@ -148,9 +186,10 @@ export default function MemoryMatryoshka() {
 
   // 初始化游戏
   useEffect(() => {
-    const { cards: newCards, decoys: newDecoys } = generateCards();
+    const { cards: newCards, decoys: newDecoys, chainMode: newMode } = generateCards();
     setCards(newCards);
     setAllChoices(shuffle([...newCards, ...newDecoys]));
+    setChainMode(newMode);
   }, []);
 
   // 准备阶段倒计时
@@ -325,7 +364,11 @@ export default function MemoryMatryoshka() {
             <div className="text-8xl font-bold text-violet-500 mb-2">
               {countdown}
             </div>
-            <p className="text-gray-500 dark:text-gray-400">准备好，记住所有卡片的位置</p>
+            <p className="text-gray-500 dark:text-gray-400">
+              {chainMode === 'border-to-text' ? '🔗 框→字模式：前一张的框色 = 后一张的字色' :
+               chainMode === 'text-to-border' ? '🔗 字→框模式：前一张的字色 = 后一张的框色' :
+               '准备好，记住所有卡片的位置'}
+            </p>
           </div>
         </div>
       </Layout>
@@ -347,7 +390,11 @@ export default function MemoryMatryoshka() {
         </div>
 
         <div className="text-center mb-4">
-          <p className="text-gray-500 dark:text-gray-400">记住卡片的位置和颜色</p>
+          <p className="text-gray-500 dark:text-gray-400">
+            {chainMode === 'border-to-text' ? '🔗 前一张的框色 = 后一张的字色' :
+             chainMode === 'text-to-border' ? '🔗 前一张的字色 = 后一张的框色' :
+             '记住卡片的位置和颜色'}
+          </p>
         </div>
 
         {/* 2×6 网格 */}
@@ -695,9 +742,10 @@ export default function MemoryMatryoshka() {
         <div className="flex justify-center gap-4">
           <button
             onClick={() => {
-              const { cards: newCards, decoys: newDecoys } = generateCards();
+              const { cards: newCards, decoys: newDecoys, chainMode: newMode } = generateCards();
               setCards(newCards);
               setAllChoices(shuffle([...newCards, ...newDecoys]));
+              setChainMode(newMode);
               setUserAnswers([]);
               setSubmitted(false);
               setStartTime(0);
