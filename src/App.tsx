@@ -8,7 +8,7 @@ import Result from './pages/Result';
 import ParentDashboard from './pages/ParentDashboard';
 import Mistakes from './pages/Mistakes';
 import Home from './pages/Home';
-import Cards from './pages/Cards';
+import Vocab from './pages/Vocab';
 import AddWords from './pages/AddWords';
 import WordList from './pages/WordList';
 
@@ -25,10 +25,10 @@ function App() {
         <Route path="/:userId/today" element={<DailyView />} />
         <Route path="/:userId/home" element={<Home />} />
         {/* Cards / vocabulary — daily (with date) */}
-        <Route path="/:userId/:date/vocab" element={<Cards />} />
-        <Route path="/:userId/:date/vocab/learn" element={<Cards />} />
+        <Route path="/:userId/:date/vocab" element={<Vocab />} />
+        <Route path="/:userId/:date/vocab/learn" element={<Vocab />} />
         {/* Cards / vocabulary — global (no date) */}
-        <Route path="/:userId/vocab" element={<Cards />} />
+        <Route path="/:userId/vocab" element={<Vocab />} />
         <Route path="/:userId/vocab/add" element={<AddWords />} />
         <Route path="/:userId/vocab/list" element={<WordList />} />
         {/* Mistakes book */}

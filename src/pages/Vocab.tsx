@@ -46,7 +46,7 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
-export default function Cards() {
+export default function Vocab() {
   const { userId, date } = useParams<{ userId: string; date: string }>();
   const navigate = useNavigate();
   const location = useLocation();
