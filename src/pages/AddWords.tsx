@@ -89,10 +89,20 @@ export default function AddWords() {
   };
 
   // Send to AI for extraction
+  const [extractPhase, setExtractPhase] = useState(0);
+
   const handleExtract = async () => {
     if ((!text.trim() && images.length === 0) || extracting) return;
     setExtracting(true);
+    setExtractPhase(0);
     setError(null);
+
+    // Phased loading text timers
+    const phaseTimers = [
+      setTimeout(() => setExtractPhase(1), 2000),
+      setTimeout(() => setExtractPhase(2), 10000),
+      setTimeout(() => setExtractPhase(3), 25000),
+    ];
 
     try {
       const controller = new AbortController();
@@ -129,6 +139,7 @@ export default function AddWords() {
         setError('提取失败，请重试');
       }
     }
+    phaseTimers.forEach(clearTimeout);
     setExtracting(false);
   };
 
@@ -276,7 +287,22 @@ export default function AddWords() {
           {extracting && (
             <div className="text-center py-12">
               <Loader2 className="w-8 h-8 text-violet-500 animate-spin mx-auto mb-3" />
-              <p className="text-sm text-gray-500 dark:text-gray-400">AI 正在提取单词…</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 animate-pulse">
+                {images.length > 0 ? (
+                  <>
+                    {extractPhase === 0 && '压缩图片中…'}
+                    {extractPhase === 1 && '识别图片中，请稍候…'}
+                    {extractPhase === 2 && 'AI 正在分析，马上就好…'}
+                    {extractPhase === 3 && '快好了，正在整理结果…'}
+                  </>
+                ) : (
+                  <>
+                    {extractPhase < 2 && 'AI 正在提取单词…'}
+                    {extractPhase === 2 && 'AI 正在分析，马上就好…'}
+                    {extractPhase === 3 && '快好了，正在整理结果…'}
+                  </>
+                )}
+              </p>
             </div>
           )}
 
