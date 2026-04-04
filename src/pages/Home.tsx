@@ -436,7 +436,7 @@ export default function Home() {
                 {/* Vocabulary card entry — only show on today */}
                 {selectedDate === todayStr && (
                   <button
-                    onClick={() => navigate(cardCount > 0 ? `/${userId}/cards` : `/${userId}/cards/add`)}
+                    onClick={() => navigate(cardCount > 0 ? `/${userId}/${todayStr}/cards` : `/${userId}/${todayStr}/cards/add`)}
                     className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition active:scale-[0.98] mt-3">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-violet-50 dark:bg-violet-900/30">

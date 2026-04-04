@@ -65,7 +65,8 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   // Full mode: fetch actual words
   // 1. Review words due
   const reviewWords = await db.prepare(`
-    SELECT q.id, q.content, cr.interval_days
+    SELECT q.id, q.content, cr.interval_days,
+    (SELECT COUNT(*) FROM card_reviews cr3 WHERE cr3.question_id = q.id AND cr3.user_id = cr.user_id) as review_count
     FROM card_reviews cr
     JOIN questions q ON q.id = cr.question_id
     WHERE cr.user_id = ? AND cr.next_review_at <= ? AND cr.interval_days < 60
@@ -104,7 +105,6 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 
   const buildWord = (r: any, isReview: boolean) => {
     const content = JSON.parse(r.content);
-    // Pick 3 random distractors from other words
     const others = meaningPool.filter(m => m.id !== r.id);
     const shuffled = others.sort(() => Math.random() - 0.5);
     const distractors = shuffled.slice(0, 3).map(m => m.back);
@@ -118,6 +118,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       exampleCn: content.exampleCn || null,
       distractors,
       isReview,
+      reviewCount: r.review_count || 0,
     };
   };
 

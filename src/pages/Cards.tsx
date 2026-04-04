@@ -1,8 +1,21 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { CheckCircle, RotateCcw, Zap, RefreshCw } from 'lucide-react';
 import Layout from '../components/Layout';
 import WordCard from '../components/WordCard';
+
+// Simple similarity: shared character bigrams / total bigrams
+function similarity(a: string, b: string): number {
+  if (a === b) return 1;
+  const bigramsA = new Set<string>();
+  const bigramsB = new Set<string>();
+  for (let i = 0; i < a.length - 1; i++) bigramsA.add(a.slice(i, i + 2));
+  for (let i = 0; i < b.length - 1; i++) bigramsB.add(b.slice(i, i + 2));
+  if (bigramsA.size === 0 || bigramsB.size === 0) return 0;
+  let shared = 0;
+  bigramsA.forEach(bg => { if (bigramsB.has(bg)) shared++; });
+  return (2 * shared) / (bigramsA.size + bigramsB.size);
+}
 
 interface CardWord {
   id: string;
@@ -13,6 +26,7 @@ interface CardWord {
   exampleCn?: string | null;
   isReview?: boolean;
   distractors?: string[];
+  reviewCount?: number;
 }
 
 interface Stats {
@@ -33,14 +47,17 @@ function shuffle<T>(arr: T[]): T[] {
 }
 
 export default function Cards() {
-  const { userId } = useParams<{ userId: string }>();
+  const { userId, date } = useParams<{ userId: string; date: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
+  const isLearnMode = location.pathname.endsWith('/learn');
+  const todayDate = new Date().toISOString().split('T')[0];
+  const currentDate = date || todayDate;
   const [words, setWords] = useState<CardWord[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [results, setResults] = useState<Record<string, boolean>>({});
   const [loading, setLoading] = useState(true);
-  const [started, setStarted] = useState(false);
   const [finished, setFinished] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
@@ -73,6 +90,31 @@ export default function Cards() {
     return shuffle([current.back, ...distractors.slice(0, 3)]);
   }, [current, words]);
 
+  // Cycle mode per word based on review count — ensures all types get covered
+  const modes = ['en2cn', 'cn2en', 'spell'] as const;
+  const cardMode = useMemo(() => {
+    if (!current) return 'en2cn' as const;
+    const reviewCount = current.reviewCount || 0;
+    return modes[reviewCount % modes.length];
+  }, [current?.id]);
+
+  // Build confuser words for cn2en mode (similar looking words)
+  const confuserWords = useMemo(() => {
+    if (!current || cardMode !== 'cn2en') return [];
+    const w = current.front.toLowerCase();
+    // Find words with similar length or shared prefix/suffix
+    const candidates = words
+      .filter(c => c.id !== current.id)
+      .map(c => ({
+        word: c.front,
+        score: similarity(w, c.front.toLowerCase())
+      }))
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 3)
+      .map(c => c.word);
+    return candidates;
+  }, [current, words, cardMode]);
+
   const handleResult = useCallback(async (correct: boolean) => {
     if (!current || submitting) return;
     setSubmitting(true);
@@ -87,11 +129,14 @@ export default function Cards() {
     } catch (e) { /* ignore */ }
 
     setSubmitting(false);
-    if (currentIndex < total - 1) {
-      setCurrentIndex(prev => prev + 1);
-    } else {
-      setFinished(true);
-    }
+    // Delay before advancing — give time to see result & tap "斩"
+    setTimeout(() => {
+      if (currentIndex < total - 1) {
+        setCurrentIndex(prev => prev + 1);
+      } else {
+        setFinished(true);
+      }
+    }, correct ? 2000 : 2500);
   }, [current, currentIndex, total, userId, submitting]);
 
   const handleMaster = useCallback(async () => {
@@ -110,7 +155,7 @@ export default function Cards() {
 
   if (loading) {
     return (
-      <Layout userId={userId || ''} showBack maxWidth="max-w-3xl">
+      <Layout userId={userId || ''} showBack backTo={`/${userId}/${currentDate}`} maxWidth="max-w-3xl">
         <div className="flex items-center justify-center py-20">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-violet-500" />
         </div>
@@ -119,18 +164,26 @@ export default function Cards() {
   }
 
   // Dashboard — show before starting
-  if (!started) {
+  if (!isLearnMode) {
     const progress = stats ? Math.round((stats.learnedCount / Math.max(stats.totalWords, 1)) * 100) : 0;
     return (
-      <Layout userId={userId || ''} showBack maxWidth="max-w-3xl"
+      <Layout userId={userId || ''} showBack backTo={`/${userId}/${currentDate}`} maxWidth="max-w-3xl"
         title="单词记忆"
         rightAction={
-          <button
-            onClick={() => navigate(`/${userId}/cards/add`)}
-            className="px-3 py-1 rounded-full border border-dashed border-gray-300 dark:border-gray-600 text-xs text-gray-400 dark:text-gray-500 hover:border-gray-400 hover:text-gray-500 transition"
-          >
-            +添加生词
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={() => navigate(`/${userId}/${currentDate}/cards/list`)}
+              className="px-3 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-xs text-gray-500 dark:text-gray-400 hover:border-gray-400 hover:text-gray-600 transition"
+            >
+              生词本
+            </button>
+            <button
+              onClick={() => navigate(`/${userId}/${currentDate}/cards/add`)}
+              className="px-3 py-1 rounded-full border border-dashed border-gray-300 dark:border-gray-600 text-xs text-gray-400 dark:text-gray-500 hover:border-gray-400 hover:text-gray-500 transition"
+            >
+              +添加
+            </button>
+          </div>
         }
       >
           {/* Progress ring / bar */}
@@ -178,7 +231,7 @@ export default function Cards() {
           {/* Start button */}
           {total > 0 ? (
             <button
-              onClick={() => setStarted(true)}
+              onClick={() => navigate(`/${userId}/${currentDate}/cards/learn`)}
               className="w-full py-3.5 rounded-full bg-violet-600 dark:bg-violet-500 text-white font-semibold text-base hover:bg-violet-700 dark:hover:bg-violet-600 transition shadow-sm active:scale-[0.98]"
             >
               开始学习（{total} 词）
@@ -197,7 +250,7 @@ export default function Cards() {
   if (finished) {
     const accuracy = total > 0 ? Math.round((correctCount / total) * 100) : 0;
     return (
-      <Layout userId={userId || ''} showBack maxWidth="max-w-3xl">
+      <Layout userId={userId || ''} showBack backTo={`/${userId}/${currentDate}/cards`} maxWidth="max-w-3xl">
         <div className="text-center py-10">
           <CheckCircle className="w-16 h-16 text-emerald-500 mx-auto mb-4" />
           <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
@@ -228,7 +281,7 @@ export default function Cards() {
 
           <div>
             <button
-              onClick={() => navigate(`/${userId}/home`)}
+              onClick={() => navigate(`/${userId}/${currentDate}`)}
               className="px-5 py-2.5 rounded-full text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
             >
               返回首页
@@ -241,7 +294,7 @@ export default function Cards() {
 
   // Active learning
   return (
-    <Layout userId={userId || ''} showBack maxWidth="max-w-3xl">
+    <Layout userId={userId || ''} showBack backTo={`/${userId}/${currentDate}/cards`} maxWidth="max-w-3xl">
       {/* Progress header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
@@ -270,13 +323,14 @@ export default function Cards() {
 
       {/* Word card */}
       <WordCard
-        key={current.id}
+        key={`${current.id}-${cardMode}`}
         word={current.front}
         phonetic={current.phonetic}
         correctMeaning={current.back}
         options={options}
-        example={current.example}
-        exampleCn={current.exampleCn}
+        example={current.example || undefined}
+        mode={cardMode}
+        confuserWords={confuserWords}
         onResult={handleResult}
         onMaster={handleMaster}
       />

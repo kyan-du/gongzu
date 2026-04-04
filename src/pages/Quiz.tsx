@@ -148,6 +148,26 @@ export default function Quiz() {
           const QuestionRenderer = questionRenderers[q.type];
           if (!QuestionRenderer) return null;
 
+          // Compute label for QuestionCard
+          let label = '';
+          if (q.type === 'choice') {
+            label = '单项选择';
+          } else if (q.type === 'blank') {
+            const stem = q.content?.stem || '';
+            const blanks = q.content?.blanks || [];
+            const hints = blanks.map((b: any) => b?.hint).filter(Boolean);
+            const instrMatch = stem.match(/^([\u4e00-\u9fff\u3000-\u303f\uff00-\uffef（）]+)[：:]\s*/);
+            if (instrMatch) {
+              label = instrMatch[1];
+            } else if (hints.length > 0) {
+              label = '用所给词的适当形式填空';
+            } else if (q.tags?.length > 1) {
+              label = q.tags[1];
+            }
+          } else if (q.type === 'rewrite') {
+            label = q.content?.stem || q.content?.instruction || '请改写下列句子';
+          }
+
           const commonProps = {
             key: `${q.id}-${submitted}`,
             question: q,
@@ -171,7 +191,7 @@ export default function Quiz() {
           );
 
           return (
-            <QuestionCard key={q.id} index={i + 1}>
+            <QuestionCard key={q.id} index={i + 1} label={label}>
               {questionComponent}
             </QuestionCard>
           );

@@ -19,7 +19,6 @@ export default function BlankQuestion({ question, onAnswer, submitted, result, i
   const content = question.content;
   const stem: string = content.stem || '';
   const blanksData: Array<{ hint?: string; answer?: string }> = content.blanks || [];
-  const tags: string[] = question.tags || [];
 
   // Split stem into segments
   // Detect format: stem with ___ vs blanks with before/after
@@ -53,20 +52,11 @@ export default function BlankQuestion({ question, onAnswer, submitted, result, i
     return part;
   });
 
-  // Determine instruction label
-  // 1. From stem (e.g. "改写句子（改为感叹句）：")
-  // 2. If blanks have hints (word form exercise): "用所给词的适当形式填空"  
-  // 3. Fallback: tags[1] if available
-  let instructionLabel = '';
+    // Strip Chinese instruction prefix from stem (e.g. "改写句子（改为感叹句）：")
   const firstPart = cleanParts[0];
   const instrMatch = firstPart.match(/^([\u4e00-\u9fff\u3000-\u303f\uff00-\uffef（）]+)[：:]\s*/);
   if (instrMatch) {
-    instructionLabel = instrMatch[1];
     cleanParts[0] = firstPart.slice(instrMatch[0].length);
-  } else if (hints.some(h => h.length > 0)) {
-    instructionLabel = '用所给词的适当形式填空';
-  } else if (tags.length > 1) {
-    instructionLabel = tags[1];
   }
 
   // Build token stream
@@ -144,12 +134,6 @@ export default function BlankQuestion({ question, onAnswer, submitted, result, i
 
   return (
     <div>
-      {/* Badge */}
-      {instructionLabel && (
-        <div className="mb-2">
-          <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full">{instructionLabel}</span>
-        </div>
-      )}
       {/* Stem */}
       <div className="text-base leading-relaxed text-gray-900 dark:text-gray-100">
         {lines.map((lineTokens, li) => (

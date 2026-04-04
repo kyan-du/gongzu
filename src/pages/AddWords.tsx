@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ImagePlus, Send, X, Loader2, Check, Plus } from 'lucide-react';
+import { Paperclip, ArrowUp, X, Loader2, Check, Plus } from 'lucide-react';
 import Layout from '../components/Layout';
 
 interface ExtractedWord {
@@ -32,7 +32,9 @@ function compressImage(dataUrl: string, maxWidth = 800): Promise<string> {
 }
 
 export default function AddWords() {
-  const { userId } = useParams<{ userId: string }>();
+  const { userId, date } = useParams<{ userId: string; date: string }>();
+  const todayDate = new Date().toISOString().split('T')[0];
+  const currentDate = date || todayDate;
   const navigate = useNavigate();
   const fileRef = useRef<HTMLInputElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -65,6 +67,25 @@ export default function AddWords() {
 
   const removeImage = (idx: number) => {
     setImages(prev => prev.filter((_, i) => i !== idx));
+  };
+
+  const handlePaste = (e: React.ClipboardEvent) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+    for (const item of Array.from(items)) {
+      if (item.type.startsWith('image/')) {
+        e.preventDefault();
+        const file = item.getAsFile();
+        if (!file) continue;
+        const reader = new FileReader();
+        reader.onload = async (ev) => {
+          const raw = ev.target?.result as string;
+          const compressed = await compressImage(raw);
+          setImages(prev => [...prev, compressed]);
+        };
+        reader.readAsDataURL(file);
+      }
+    }
   };
 
   // Send to AI for extraction
@@ -149,7 +170,7 @@ export default function AddWords() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId, words }),
       });
-      navigate(`/${userId}/cards`);
+      navigate(`/${userId}/${currentDate}/cards`);
     } catch (e) { /* ignore */ }
     setSaving(false);
   };
@@ -157,17 +178,94 @@ export default function AddWords() {
   const hasInput = text.trim() || images.length > 0;
 
   return (
-    <Layout userId={userId || ''} showBack maxWidth="max-w-3xl" title="添加生词">
-      <div className="flex flex-col min-h-[calc(100vh-180px)]">
-        {/* Word list area */}
-        <div className="flex-1 py-4">
-          {error && (
-            <div className="mx-auto max-w-sm mb-4 px-4 py-3 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
-              <p className="text-sm text-red-600 dark:text-red-400 text-center">{error}</p>
-              <button onClick={() => setError(null)} className="block mx-auto mt-1 text-xs text-red-400 hover:text-red-500">关闭</button>
+    <Layout userId={userId || ''} showBack backTo={`/${userId}/${currentDate}/cards`} maxWidth="max-w-3xl" title="添加生词">
+      <div className="flex flex-col">
+        {/* Error */}
+        {error && (
+          <div className="mb-4 px-4 py-3 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
+            <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+            <button onClick={() => setError(null)} className="block mt-1 text-xs text-red-400 hover:text-red-500">关闭</button>
+          </div>
+        )}
+
+        {/* Input area — SuperGrok style */}
+        <div className="mb-6 rounded-2xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
+          {/* Image previews — above input */}
+          {images.length > 0 && (
+            <div className="flex gap-3 p-3 pb-0 overflow-x-auto">
+              {images.map((img, i) => (
+                <div key={i} className="relative flex-shrink-0 group">
+                  <img src={img} alt="" className="w-14 h-14 rounded-lg object-cover border border-gray-100 dark:border-gray-700" />
+                  <button
+                    onClick={() => removeImage(i)}
+                    className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              ))}
             </div>
           )}
 
+          {/* Input row: attach + textarea + send */}
+          <div className="flex items-center gap-1 px-2 py-2">
+            {/* Attach button */}
+            <button
+              onClick={() => fileRef.current?.click()}
+              title="附件"
+              className="p-2.5 rounded-full text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition flex-shrink-0"
+            >
+              <Paperclip className="w-5 h-5" />
+            </button>
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/*,.pdf"
+              multiple
+              className="hidden"
+              onChange={handleImageAdd}
+            />
+
+            {/* Text area */}
+            <textarea
+              ref={inputRef}
+              value={text}
+              onChange={e => {
+                setText(e.target.value);
+                e.target.style.height = 'auto';
+                e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
+              }}
+              onKeyDown={e => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  handleExtract();
+                }
+              }}
+              onPaste={handlePaste}
+              placeholder="粘贴英文、截图、或输入单词…"
+              rows={1}
+              className="flex-1 py-2.5 bg-transparent text-base text-gray-900 dark:text-gray-100 focus:outline-none resize-none leading-relaxed placeholder:text-gray-400 dark:placeholder:text-gray-500"
+              style={{ minHeight: '42px', maxHeight: '120px' }}
+            />
+
+            {/* Send button */}
+            <button
+              onClick={handleExtract}
+              disabled={extracting || !hasInput}
+              className={`p-2.5 rounded-full flex-shrink-0 transition ${
+                hasInput && !extracting
+                  ? 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 hover:bg-gray-700 dark:hover:bg-gray-300'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-300 dark:text-gray-500'
+              }`}
+            >
+              {extracting ? <Loader2 className="w-5 h-5 animate-spin" /> : <ArrowUp className="w-5 h-5" />}
+            </button>
+          </div>
+        </div>
+      </div>
+
+        {/* Word list area */}
+        <div className="py-4">
           {words.length === 0 && !extracting && !error && (
             <div className="text-center py-16 text-gray-400 dark:text-gray-500">
               <p className="text-base mb-1">粘贴英文、拍课本、拍卷子</p>
@@ -258,79 +356,6 @@ export default function AddWords() {
           )}
         </div>
 
-        {/* Input area — pinned at bottom, ChatGPT style */}
-        <div className="sticky bottom-0 bg-gray-50 dark:bg-gray-900 pt-3 pb-4 -mx-4 px-4 border-t border-gray-100 dark:border-gray-800">
-          {/* Image previews */}
-          {images.length > 0 && (
-            <div className="flex gap-2 mb-2 overflow-x-auto pb-1">
-              {images.map((img, i) => (
-                <div key={i} className="relative flex-shrink-0">
-                  <img src={img} alt="" className="w-16 h-16 rounded-lg object-cover border border-gray-200 dark:border-gray-700" />
-                  <button
-                    onClick={() => removeImage(i)}
-                    className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-gray-800/70 text-white flex items-center justify-center"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-
-          <div className="flex items-end gap-2">
-            {/* Image button */}
-            <button
-              onClick={() => fileRef.current?.click()}
-              className="p-2.5 rounded-xl text-gray-400 dark:text-gray-500 hover:text-violet-500 dark:hover:text-violet-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition flex-shrink-0"
-            >
-              <ImagePlus className="w-5 h-5" />
-            </button>
-            <input
-              ref={fileRef}
-              type="file"
-              accept="image/*"
-              multiple
-              className="hidden"
-              onChange={handleImageAdd}
-            />
-
-            {/* Text area */}
-            <textarea
-              ref={inputRef}
-              value={text}
-              onChange={e => {
-                setText(e.target.value);
-                // Auto-resize
-                e.target.style.height = 'auto';
-                e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
-              }}
-              onKeyDown={e => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  e.preventDefault();
-                  handleExtract();
-                }
-              }}
-              placeholder="粘贴英文、输入单词、或补充说明…"
-              rows={1}
-              className="flex-1 px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:border-violet-400 dark:focus:border-violet-500 resize-none transition leading-relaxed"
-              style={{ minHeight: '42px', maxHeight: '120px' }}
-            />
-
-            {/* Send button */}
-            <button
-              onClick={handleExtract}
-              disabled={extracting || !hasInput}
-              className={`p-2.5 rounded-xl flex-shrink-0 transition ${
-                hasInput && !extracting
-                  ? 'bg-violet-600 text-white hover:bg-violet-700'
-                  : 'bg-gray-100 dark:bg-gray-800 text-gray-300 dark:text-gray-600'
-              }`}
-            >
-              {extracting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
-            </button>
-          </div>
-        </div>
-      </div>
     </Layout>
   );
 }

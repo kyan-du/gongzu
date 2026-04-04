@@ -9,9 +9,10 @@ interface HeaderProps {
   userId: string;
   maxWidth?: string;
   showBack?: boolean;
+  backTo?: string;
 }
 
-export default function Header({ userId, maxWidth, showBack }: HeaderProps) {
+export default function Header({ userId, maxWidth, showBack, backTo }: HeaderProps) {
   const navigate = useNavigate();
   const [showMenu, setShowMenu] = useState(false);
   const [theme, setTheme] = useState(getStoredTheme);
@@ -52,9 +53,9 @@ export default function Header({ userId, maxWidth, showBack }: HeaderProps) {
         <div className="flex items-center gap-1">
           {showBack && (
             <button
-              onClick={() => navigate(`/${userId}/home`)}
+              onClick={() => navigate(backTo || `/${userId}/home`)}
               className="p-1.5 -ml-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition"
-              aria-label="返回主页"
+              aria-label="返回"
             >
               <ChevronLeft className="w-5 h-5 text-gray-500 dark:text-gray-400" />
             </button>

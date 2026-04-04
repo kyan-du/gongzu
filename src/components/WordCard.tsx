@@ -1,143 +1,291 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback } from 'react';
+
+type CardMode = 'en2cn' | 'cn2en' | 'spell';
 
 interface WordCardProps {
   word: string;
   phonetic?: string;
   correctMeaning: string;
-  options: string[];
-  example?: string | null;
-  exampleCn?: string | null;
+  options: string[];           // cn meanings for en2cn; en words for cn2en
+  example?: string;
+  mode?: CardMode;
+  confuserWords?: string[];    // similar english words for cn2en mode
   onResult: (correct: boolean) => void;
   onMaster?: () => void;
 }
 
-function speak(text: string) {
-  if (!('speechSynthesis' in window)) return;
-  const u = new SpeechSynthesisUtterance(text);
+function shuffle<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function speak(word: string) {
+  const u = new SpeechSynthesisUtterance(word);
   u.lang = 'en-US';
-  u.rate = 0.85;
   speechSynthesis.speak(u);
 }
 
-export default function WordCard({ word, phonetic, correctMeaning, options, example, exampleCn, onResult, onMaster }: WordCardProps) {
-  const [selected, setSelected] = useState<number | null>(null);
-  const correctIndex = useMemo(() => options.indexOf(correctMeaning), [options, correctMeaning]);
+// Generate spelling blanks — remove 2-3 "tricky" letters from middle
+// Returns segments: array of { type: 'text', value } or { type: 'blank', index, answer }
+function makeSpellBlanks(word: string) {
+  const chars = word.split('');
+  if (chars.length <= 3) return { blankedIndices: [] as number[], segments: [{ type: 'text' as const, value: word }] };
+  
+  const candidates = [];
+  for (let i = 1; i < chars.length - 1; i++) {
+    if (/[a-z]/i.test(chars[i])) candidates.push(i);
+  }
+  
+  const numBlanks = Math.min(candidates.length, chars.length <= 5 ? 1 : chars.length <= 8 ? 2 : 3);
+  const shuffled = shuffle(candidates);
+  const blanked = shuffled.slice(0, numBlanks).sort((a, b) => a - b);
+  
+  // Build segments
+  const segments: Array<{ type: 'text'; value: string } | { type: 'blank'; index: number; answer: string }> = [];
+  let textBuf = '';
+  for (let i = 0; i < chars.length; i++) {
+    if (blanked.includes(i)) {
+      if (textBuf) { segments.push({ type: 'text', value: textBuf }); textBuf = ''; }
+      segments.push({ type: 'blank', index: blanked.indexOf(i), answer: chars[i] });
+    } else {
+      textBuf += chars[i];
+    }
+  }
+  if (textBuf) segments.push({ type: 'text', value: textBuf });
+  
+  return { blankedIndices: blanked, segments };
+}
 
-  useEffect(() => {
-    setSelected(null);
+export default function WordCard({
+  word, phonetic, correctMeaning, options, example, mode = 'en2cn',
+  confuserWords, onResult, onMaster
+}: WordCardProps) {
+  const [answered, setAnswered] = useState(false);
+  const [selected, setSelected] = useState<string | null>(null);
+  const [blankInputs, setBlankInputs] = useState<string[]>([]);
+
+  // Spell blanks — must be before isWrong
+  const spellData = useMemo(() => {
+    const data = makeSpellBlanks(word);
+    setBlankInputs(new Array(data.blankedIndices.length).fill(''));
+    return data;
   }, [word]);
 
-  // Auto-pronounce on new word
-  useEffect(() => {
-    speak(word);
-  }, [word]);
+  const isWrong = useMemo(() => {
+    if (!answered) return false;
+    if (mode === 'spell') {
+      return spellData.segments.some(s => 
+        s.type === 'blank' && (blankInputs[s.index] || '').toLowerCase() !== s.answer.toLowerCase()
+      );
+    }
+    if (mode === 'cn2en') return selected !== word;
+    return selected !== correctMeaning;
+  }, [answered, selected, correctMeaning, word, mode, blankInputs, spellData]);
 
-  const handleSelect = useCallback((idx: number) => {
-    if (selected !== null) return;
-    setSelected(idx);
-    const isCorrect = idx === correctIndex;
-    if (!isCorrect) speak(word); // re-pronounce on wrong
-    setTimeout(() => onResult(isCorrect), 1200);
-  }, [selected, correctIndex, word, onResult]);
+  const useGrid = useMemo(() => {
+    const items = mode === 'cn2en' ? (confuserWords || []) : options;
+    return items.every(o => o.length <= 15);
+  }, [options, confuserWords, mode]);
 
-  const answered = selected !== null;
-  const isWrong = answered && selected !== correctIndex;
+  // Shuffled confuser options for cn2en
+  const cn2enOptions = useMemo(() => {
+    if (mode !== 'cn2en') return [];
+    const all = [word, ...(confuserWords || []).slice(0, 3)];
+    return shuffle([...new Set(all)]);
+  }, [word, confuserWords, mode]);
 
-  // Use 2-col grid if all options are short (≤8 chars)
-  const useGrid = useMemo(() => options.every(o => o.length <= 8), [options]);
+  const handleSelect = useCallback((opt: string) => {
+    if (answered) return;
+    setSelected(opt);
+    setAnswered(true);
+    const correct = mode === 'cn2en' ? opt === word : opt === correctMeaning;
+    onResult(correct);
+  }, [answered, correctMeaning, word, mode, onResult]);
 
-  // Render example with bold target word
-  const renderExample = (ex: string) => {
-    const parts = ex.split(/\*\*(.*?)\*\*/);
-    return parts.map((part, i) =>
-      i % 2 === 1
-        ? <strong key={i} className="text-violet-600 dark:text-violet-400">{part}</strong>
-        : <span key={i}>{part}</span>
+  const handleSpellSubmit = useCallback(() => {
+    if (answered) return;
+    setAnswered(true);
+    const correct = spellData.segments.every(s => 
+      s.type === 'text' || (blankInputs[s.index] || '').toLowerCase() === s.answer.toLowerCase()
     );
-  };
+    onResult(correct);
+  }, [answered, blankInputs, spellData, onResult]);
+
+  const currentOptions = mode === 'cn2en' ? cn2enOptions : options;
+  const correctAnswer = mode === 'cn2en' ? word : correctMeaning;
 
   return (
     <div className="w-full max-w-md mx-auto">
-      {/* Word display */}
+      {/* Header area */}
       <div className="text-center mb-6">
-        <div className="flex items-center justify-center gap-2 mb-1">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 tracking-wide">
-            {word}
-          </h1>
-          <button
-            onClick={() => speak(word)}
-            className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition text-gray-400 hover:text-violet-500"
-            title="发音"
-          >
-            🔊
-          </button>
-        </div>
-        {phonetic && (
-          <p className="text-sm text-gray-400 dark:text-gray-500 mb-3">{phonetic}</p>
-        )}
-
-        {/* Example sentence — show before answering too for context */}
-        {example && (
-          <div className="mt-3 text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-            <p className="italic">{renderExample(example)}</p>
-            {answered && exampleCn && (
-              <p className="text-gray-400 dark:text-gray-500 mt-1">{exampleCn}</p>
-            )}
-          </div>
-        )}
-      </div>
-
-      {/* Options */}
-      <div className={useGrid ? 'grid grid-cols-2 gap-2.5' : 'grid grid-cols-1 gap-2.5'}>
-        {options.map((opt, idx) => {
-          const isCorrectOpt = idx === correctIndex;
-          const isSelected = idx === selected;
-
-          let optClass = 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100';
-          if (answered) {
-            if (isCorrectOpt) {
-              optClass = 'bg-emerald-50 dark:bg-emerald-900/40 border-emerald-400 dark:border-emerald-600 text-emerald-700 dark:text-emerald-300';
-            } else if (isSelected && !isCorrectOpt) {
-              optClass = 'bg-red-50 dark:bg-red-900/40 border-red-400 dark:border-red-600 text-red-700 dark:text-red-300';
-            } else {
-              optClass = 'bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-700 text-gray-300 dark:text-gray-600';
-            }
-          }
-
-          return (
-            <button
-              key={idx}
-              onClick={() => handleSelect(idx)}
-              disabled={answered}
-              className={`w-full py-3 px-4 rounded-xl border-2 text-left text-sm font-medium transition-all ${optClass} ${
-                !answered ? 'hover:border-violet-300 dark:hover:border-violet-600 hover:shadow-sm active:scale-[0.98]' : ''
-              }`}
-            >
-              <div className="flex items-center gap-2.5">
-                <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${
-                  answered && isCorrectOpt
-                    ? 'bg-emerald-500 text-white'
-                    : answered && isSelected && !isCorrectOpt
-                      ? 'bg-red-500 text-white'
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
-                }`}>
-                  {answered && isCorrectOpt ? '✓' : answered && isSelected && !isCorrectOpt ? '✗' : String.fromCharCode(65 + idx)}
-                </span>
-                <span>{opt}</span>
+        {mode === 'cn2en' ? (
+          // Chinese → English: show Chinese meaning as prompt
+          <>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+              {correctMeaning}
+            </h1>
+            <p className="text-sm text-gray-400 dark:text-gray-500">选出正确的英文单词</p>
+          </>
+        ) : mode === 'spell' ? (
+          // Spell mode: show word with blanks
+          <>
+            <div className="flex items-baseline justify-center gap-0 mb-2 flex-wrap">
+              {spellData.segments.map((seg, i) =>
+                seg.type === 'text' ? (
+                  <span key={i} className="text-4xl font-bold text-gray-900 dark:text-gray-100 tracking-wide">{seg.value}</span>
+                ) : (
+                  <input
+                    key={i}
+                    type="text"
+                    maxLength={1}
+                    value={blankInputs[seg.index] || ''}
+                    onChange={e => {
+                      const val = e.target.value.slice(-1);
+                      setBlankInputs(prev => {
+                        const next = [...prev];
+                        next[seg.index] = val;
+                        return next;
+                      });
+                      // Auto-focus next blank
+                      if (val) {
+                        const inputs = document.querySelectorAll<HTMLInputElement>('.spell-blank');
+                        const nextIdx = Array.from(inputs).findIndex(el => el === e.target) + 1;
+                        if (nextIdx < inputs.length) inputs[nextIdx].focus();
+                      }
+                    }}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter') handleSpellSubmit();
+                      if (e.key === 'Backspace' && !blankInputs[seg.index]) {
+                        const inputs = document.querySelectorAll<HTMLInputElement>('.spell-blank');
+                        const prevIdx = Array.from(inputs).findIndex(el => el === e.target) - 1;
+                        if (prevIdx >= 0) inputs[prevIdx].focus();
+                      }
+                    }}
+                    disabled={answered}
+                    autoFocus={seg.index === 0}
+                    className={`spell-blank w-8 h-10 mx-0.5 text-center text-3xl font-bold border-b-3 bg-transparent focus:outline-none transition ${
+                      answered
+                        ? (blankInputs[seg.index] || '').toLowerCase() === seg.answer.toLowerCase()
+                          ? 'border-emerald-500 text-emerald-600 dark:text-emerald-400'
+                          : 'border-red-500 text-red-600 dark:text-red-400'
+                        : 'border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:border-violet-500'
+                    }`}
+                  />
+                )
+              )}
+            </div>
+            {phonetic && (
+              <div className="flex items-center justify-center gap-1.5 mb-1">
+                <span className="text-base text-gray-400 dark:text-gray-500">{phonetic}</span>
+                <button onClick={() => speak(word)} className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition text-gray-400 hover:text-violet-500" title="发音">
+                  🔊
+                </button>
               </div>
-            </button>
-          );
-        })}
+            )}
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">{correctMeaning}</p>
+            {answered && isWrong && (
+              <p className="text-sm font-medium text-red-500 mt-2">
+                正确答案：<span className="text-emerald-600 dark:text-emerald-400 font-bold">{word}</span>
+              </p>
+            )}
+          </>
+        ) : (
+          // English → Chinese (default)
+          <>
+            <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100 tracking-wide mb-1">
+              {word}
+            </h1>
+            {phonetic && (
+              <div className="flex items-center justify-center gap-1.5 mb-3">
+                <span className="text-base text-gray-400 dark:text-gray-500">{phonetic}</span>
+                <button onClick={() => speak(word)} className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition text-gray-400 hover:text-violet-500" title="发音">
+                  🔊
+                </button>
+              </div>
+            )}
+            {!phonetic && (
+              <div className="flex items-center justify-center mb-3">
+                <button onClick={() => speak(word)} className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition text-gray-400 hover:text-violet-500" title="发音">
+                  🔊
+                </button>
+              </div>
+            )}
+          </>
+        )}
+
+        {/* Example sentence */}
+        {example && mode !== 'spell' && (
+          <p className="text-sm text-gray-500 dark:text-gray-400 italic">
+            {mode === 'en2cn' && word
+              ? example.split(new RegExp(`(${word})`, 'i')).map((part, i) =>
+                  part.toLowerCase() === word.toLowerCase()
+                    ? <strong key={i} className="text-violet-600 dark:text-violet-400 not-italic">{part}</strong>
+                    : <span key={i}>{part}</span>
+                )
+              : example
+            }
+          </p>
+        )}
       </div>
 
-      {/* "斩" button — only show after correct answer */}
+      {/* Answer area */}
+      {mode === 'spell' ? (
+        // Spell mode: no separate input area needed, inline blanks handle it
+        null
+      ) : (
+        // Choice options (en2cn or cn2en)
+        <div className={useGrid ? 'grid grid-cols-2 gap-2.5' : 'space-y-2.5'}>
+          {currentOptions.map((opt, i) => {
+            const letter = String.fromCharCode(65 + i);
+            const isCorrect = opt === correctAnswer;
+            const isSelected = opt === selected;
+
+            let bg = 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-violet-300 dark:hover:border-violet-600';
+            let letterBg = 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400';
+
+            if (answered) {
+              if (isCorrect) {
+                bg = 'bg-emerald-50 dark:bg-emerald-900/30 border-emerald-300 dark:border-emerald-700';
+                letterBg = 'bg-emerald-500 text-white';
+              } else if (isSelected && !isCorrect) {
+                bg = 'bg-red-50 dark:bg-red-900/30 border-red-300 dark:border-red-700';
+                letterBg = 'bg-red-500 text-white';
+              } else {
+                bg = 'bg-gray-50 dark:bg-gray-800 border-gray-100 dark:border-gray-700 opacity-50';
+              }
+            }
+
+            return (
+              <button
+                key={opt}
+                onClick={() => handleSelect(opt)}
+                disabled={answered}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl border-2 transition-all duration-200 text-left ${bg}`}
+              >
+                <span className={`w-7 h-7 rounded-full text-xs font-bold flex items-center justify-center flex-shrink-0 transition-colors ${letterBg}`}>
+                  {letter}
+                </span>
+                <span className="text-sm text-gray-800 dark:text-gray-200 leading-snug">
+                  {opt}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {/* "斩" button */}
       {answered && !isWrong && onMaster && (
-        <div className="text-center mt-4">
+        <div className="text-center mt-5">
           <button
             onClick={onMaster}
-            className="text-xs text-gray-400 dark:text-gray-500 hover:text-violet-500 dark:hover:text-violet-400 transition underline underline-offset-2"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition"
           >
-            太简单了，斩掉不再复习
+            ⚔️ 太简单，斩
           </button>
         </div>
       )}

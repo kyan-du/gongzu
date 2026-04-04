@@ -9,18 +9,19 @@ interface Env {
   AI_PROXY_KEY: string;
   AI_BASE_URL?: string;
   AI_MODEL?: string;
+  AI_VISION_MODEL?: string;
 }
 
-function getAIConfig(env: Env) {
+function getAIConfig(env: Env, vision = false) {
   return {
     url: (env.AI_BASE_URL || 'https://gru.ai/api/ai-proxy/openai/v1') + '/chat/completions',
-    model: env.AI_MODEL || 'gpt-5.2',
+    model: vision ? (env.AI_VISION_MODEL || env.AI_MODEL || 'gpt-5.2') : (env.AI_MODEL || 'gpt-5.2'),
     key: env.AI_PROXY_KEY,
   };
 }
 
-async function callAI(env: Env, messages: any[], maxTokens = 3000): Promise<string> {
-  const cfg = getAIConfig(env);
+async function callAI(env: Env, messages: any[], maxTokens = 3000, vision = false): Promise<string> {
+  const cfg = getAIConfig(env, vision);
   const resp = await fetch(cfg.url, {
     method: 'POST',
     headers: {
@@ -49,15 +50,16 @@ async function callAI(env: Env, messages: any[], maxTokens = 3000): Promise<stri
 }
 
 async function extractWords(env: Env, text?: string, images?: string[], userPrompt?: string): Promise<any[]> {
-  const systemPrompt = `You are an AI that extracts English vocabulary words for a Chinese 7th grader.
+  const systemPrompt = `You are an AI that extracts English vocabulary words for a Chinese student.
 
-From the given text or image(s), extract English words that are:
-- Study targets / vocabulary list items
-- Marked wrong, circled, or highlighted on test papers
-- Unfamiliar or advanced words worth studying
+From the given text or image(s), extract English words following these rules:
+- If it's a vocabulary list / word table: extract ALL words in the list, no exceptions
+- If it's a test paper / exam: focus on words from INCORRECT answers or marked/circled items
+- If it's a text passage: extract all noteworthy English words and phrases
+- When in doubt, include the word rather than skip it
 
 For each word, provide:
-- front: the English word
+- front: the English word or phrase
 - back: Chinese meaning with part of speech (e.g. "美丽的 adj.")
 - phonetic: IPA pronunciation
 - example: a simple example sentence (bold the word with **word**)
@@ -91,7 +93,8 @@ ONLY return the JSON array, no other text.`;
     { role: 'user', content: userContent },
   ];
 
-  const result = await callAI(env, messages);
+  const hasImages = !!(images?.length);
+  const result = await callAI(env, messages, 3000, hasImages);
   try {
     return JSON.parse(result);
   } catch {
@@ -191,8 +194,17 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   // Legacy: single word save (non-enrichOnly)
   if (word && !enrichOnly) {
     try {
-      const enriched = await enrichWord(context.env, word.trim());
       const front = word.trim().toLowerCase();
+
+      // Check for duplicate
+      const existing = await db.prepare(
+        "SELECT id FROM questions WHERE type = 'card' AND json_extract(content, '$.front') = ?"
+      ).bind(front).first();
+      if (existing) {
+        return Response.json({ success: true, duplicate: true, message: `"${front}" 已在生词本中` });
+      }
+
+      const enriched = await enrichWord(context.env, word.trim());
       const id = crypto.randomUUID();
       const content = JSON.stringify({
         front,

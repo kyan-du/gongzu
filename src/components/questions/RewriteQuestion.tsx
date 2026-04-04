@@ -25,16 +25,11 @@ interface RewriteQuestionProps {
 }
 
 export default function RewriteQuestion({ question, value, onChange, submitted, result }: RewriteQuestionProps) {
-  const { stem, original, instruction } = question.content;
+  const { original } = question.content;
   const [focused, setFocused] = useState(false);
 
   return (
     <div className="space-y-3">
-      {/* Question stem / instruction */}
-      <div className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">
-        {stem || instruction || '请改写下列句子：'}
-      </div>
-
       {/* Original sentence */}
       {original && (
         <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg px-3 py-2">

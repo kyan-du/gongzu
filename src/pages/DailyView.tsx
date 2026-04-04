@@ -48,7 +48,9 @@ export default function DailyView() {
   const [mistakesCount, setMistakesCount] = useState<number>(0);
   const [redoLoading, setRedoLoading] = useState(false);
   const [hasRedoToday, setHasRedoToday] = useState(false);
-  const [cardCount, setCardCount] = useState(0);
+  const [cardStats, setCardStats] = useState<{
+    totalWords: number; reviewedToday: number; learnedToday: number; reviewDue: number;
+  } | null>(null);
 
   useEffect(() => {
     const fetchQuizzes = async () => {
@@ -100,11 +102,16 @@ export default function DailyView() {
   }, [userId]);
 
   useEffect(() => {
-    if (!isToday(currentDate)) { setCardCount(0); return; }
-    fetch(`/api/cards?userId=${userId}`)
+    if (!isToday(currentDate)) { setCardStats(null); return; }
+    fetch(`/api/cards?userId=${userId}&mode=stats`)
       .then(r => r.json())
-      .then(d => setCardCount((d.words || []).length))
-      .catch(() => setCardCount(0));
+      .then(d => setCardStats({
+        totalWords: d.stats?.totalWords || 0,
+        reviewedToday: d.stats?.reviewedToday || 0,
+        learnedToday: d.stats?.newRemaining || 0,
+        reviewDue: d.stats?.reviewDueCount || 0,
+      }))
+      .catch(() => setCardStats(null));
   }, [userId, currentDate]);
 
 
@@ -257,7 +264,10 @@ export default function DailyView() {
             {/* 单词记忆入口 — 仅今天 */}
             {isToday(currentDate) && (
               <button
-                onClick={() => navigate(cardCount > 0 ? `/${userId}/cards` : `/${userId}/cards/add`)}
+                onClick={() => {
+                  const dateStr = toDateStr(currentDate);
+                  navigate(cardStats && cardStats.totalWords > 0 ? `/${userId}/${dateStr}/cards` : `/${userId}/${dateStr}/cards/add`);
+                }}
                 className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition active:scale-[0.98]"
               >
                 <div className="flex items-center gap-3">
@@ -267,13 +277,17 @@ export default function DailyView() {
                   <div className="text-left">
                     <div className="font-medium text-gray-900 dark:text-gray-100">单词记忆</div>
                     <div className="text-sm text-gray-500 dark:text-gray-400">
-                      {cardCount > 0 ? `${cardCount} 个单词待背` : '添加生词开始学习'}
+                      {cardStats && (cardStats.learnedToday + cardStats.reviewDue) > 0
+                        ? `${cardStats.learnedToday + cardStats.reviewDue} 词待学习`
+                        : cardStats && cardStats.reviewedToday > 0
+                          ? `已完成 ${cardStats.reviewedToday} 词 ✅`
+                          : '添加生词开始学习'}
                     </div>
                   </div>
                 </div>
                 <div className="flex items-center gap-1 text-sm text-amber-500 dark:text-amber-400 font-medium">
                   <Clock className="w-3.5 h-3.5" />
-                  {cardCount > 0 ? '开始' : '添加'}
+                  {cardStats && (cardStats.learnedToday + cardStats.reviewDue) > 0 ? '开始' : cardStats && cardStats.totalWords > 0 ? '查看' : '添加'}
                 </div>
               </button>
             )}
