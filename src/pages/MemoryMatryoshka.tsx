@@ -55,6 +55,9 @@ function generateCards(): Card[] {
   const cards: Card[] = [];
   const usedColors = shuffle([...COLORS]);
 
+  // 生成不重复的数字（6张卡片，从1-9中取6个不重复的）
+  const numbers = shuffle([1, 2, 3, 4, 5, 6, 7, 8, 9]).slice(0, cardCount);
+
   for (let i = 0; i < cardCount; i++) {
     const textColor = usedColors[i % usedColors.length];
     const borderColor = i < cardCount - 1 ? usedColors[(i + 1) % usedColors.length] : usedColors[0];
@@ -62,7 +65,7 @@ function generateCards(): Card[] {
     cards.push({
       id: `card-${i}`,
       position: shuffledPositions[i],
-      number: 1 + Math.floor(Math.random() * 9),
+      number: numbers[i],
       textColor: textColor.text,
       borderColor: borderColor.border,
     });
