@@ -11,6 +11,8 @@ interface DayStats {
   correctAnswers: number;
   reviewDue: number;
   reviewDone: number;
+  memoryGames: number;
+  memoryGamesTarget: number;
 }
 
 // GET /api/status/monthly?userId=cyan&month=2026-04
@@ -69,7 +71,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       const completed = submittedSet.size >= questionIds.length;
 
       if (!days[date]) {
-        days[date] = { quizCount: 0, completedCount: 0, totalQuestions: 0, answeredQuestions: 0, correctAnswers: 0, reviewDue: 0, reviewDone: 0 };
+        days[date] = { quizCount: 0, completedCount: 0, totalQuestions: 0, answeredQuestions: 0, correctAnswers: 0, reviewDue: 0, reviewDone: 0, memoryGames: 0, memoryGamesTarget: 5 };
       }
       days[date].quizCount += 1;
       if (completed) days[date].completedCount += 1;
@@ -87,7 +89,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     for (const r of reviews.results) {
       const dueDate = (r.next_review_at as string).slice(0, 10);
       if (!days[dueDate]) {
-        days[dueDate] = { quizCount: 0, completedCount: 0, totalQuestions: 0, answeredQuestions: 0, correctAnswers: 0, reviewDue: 0, reviewDone: 0 };
+        days[dueDate] = { quizCount: 0, completedCount: 0, totalQuestions: 0, answeredQuestions: 0, correctAnswers: 0, reviewDue: 0, reviewDone: 0, memoryGames: 0, memoryGamesTarget: 5 };
       }
       days[dueDate].reviewDue += 1;
       // If last_review_at >= next_review_at, it was reviewed
@@ -96,14 +98,27 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       }
     }
 
-    // 5. Streak calculation
+    // 5. Fetch memory game data for the month
+    const memGames = await context.env.DB.prepare(
+      `SELECT date, COUNT(*) as cnt FROM memory_games WHERE user_id = ? AND date >= ? AND date <= ? GROUP BY date`
+    ).bind(userId, startDate, endDate).all();
+
+    for (const mg of memGames.results) {
+      const date = mg.date as string;
+      if (!days[date]) {
+        days[date] = { quizCount: 0, completedCount: 0, totalQuestions: 0, answeredQuestions: 0, correctAnswers: 0, reviewDue: 0, reviewDone: 0, memoryGames: 0, memoryGamesTarget: 5 };
+      }
+      days[date].memoryGames = mg.cnt as number;
+    }
+
+    // 6. Streak calculation
     const today = new Date().toISOString().split('T')[0];
     let streak = 0;
     const checkDate = new Date(today + 'T00:00:00');
     while (true) {
       const dateStr = checkDate.toISOString().split('T')[0];
       const d = days[dateStr];
-      if (d && d.quizCount > 0 && d.completedCount === d.quizCount) {
+      if (d && ((d.quizCount > 0 && d.completedCount === d.quizCount) || (d.memoryGames >= d.memoryGamesTarget))) {
         streak++;
         checkDate.setDate(checkDate.getDate() - 1);
       } else {

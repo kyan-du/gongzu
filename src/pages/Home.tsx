@@ -32,6 +32,8 @@ interface MonthlyDayData {
   accuracy: number | null;
   reviewDue: number;
   reviewDone: number;
+  memoryGames: number;
+  memoryGamesTarget: number;
 }
 
 function toDateStr(d: Date) {
@@ -284,25 +286,34 @@ export default function Home() {
                   const isClickable = !d.isFuture;
                   const isSelected = d.date === selectedDate;
                   const md = monthlyData[d.date];
-                  const hasData = !!md && md.quizCount > 0;
+                  const hasData = !!md && (md.quizCount > 0 || md.memoryGames > 0);
                   const isDimmed = !d.isCurrentMonth;
 
                   // Build rings: only include rings with meaningful data
                   const ringDefs: { filledPercentage: number; color: string; ringWidth?: number }[] = [];
                   if (hasData && !d.isFuture) {
-                    // Outer: completion (Apple red/pink)
-                    ringDefs.push({
-                      filledPercentage: md.completedCount / md.quizCount,
-                      color: '#FA114F',
-                    });
-                    // Middle: accuracy (Apple green)
+                    // Outer: quiz completion (Apple red/pink) — only if quizzes exist
+                    if (md.quizCount > 0) {
+                      ringDefs.push({
+                        filledPercentage: md.completedCount / md.quizCount,
+                        color: '#FA114F',
+                      });
+                    }
+                    // Memory game progress (Apple amber/orange)
+                    if (md.memoryGames > 0 || md.memoryGamesTarget > 0) {
+                      ringDefs.push({
+                        filledPercentage: Math.min(md.memoryGames / (md.memoryGamesTarget || 5), 1),
+                        color: '#FF9F0A',
+                      });
+                    }
+                    // Accuracy (Apple green)
                     if (md.answeredQuestions > 0) {
                       ringDefs.push({
                         filledPercentage: md.correctAnswers / md.answeredQuestions,
                         color: '#92E82A',
                       });
                     }
-                    // Inner: review (Apple cyan/teal)
+                    // Review (Apple cyan/teal)
                     if (md.reviewDue > 0) {
                       ringDefs.push({
                         filledPercentage: md.reviewDone / md.reviewDue,
