@@ -1,0 +1,179 @@
+# 沪教版牛津英语七年级下册（7B）单词表
+# Oxford English (Shanghai Edition) 7B Vocabulary
+# 格式: front | back | phonetic | unit
+
+# Unit 1 Writing a travel guide
+travel|旅行 n./v.|/ˈtrævl/|1
+guide|指南；导游 n.|/ɡaɪd/|1
+foreign|外国的 adj.|/ˈfɒrɪn/|1
+popular|受欢迎的 adj.|/ˈpɒpjʊlə/|1
+tourist|游客 n.|/ˈtʊərɪst/|1
+exciting|令人兴奋的 adj.|/ɪkˈsaɪtɪŋ/|1
+ancient|古代的 adj.|/ˈeɪnʃənt/|1
+modern|现代的 adj.|/ˈmɒdn/|1
+famous|著名的 adj.|/ˈfeɪməs/|1
+centre|中心 n.|/ˈsentə/|1
+department|部门；百货商店 n.|/dɪˈpɑːtmənt/|1
+sight|风景；视力 n.|/saɪt/|1
+bridge|桥 n.|/brɪdʒ/|1
+palace|宫殿 n.|/ˈpæləs/|1
+tower|塔 n.|/ˈtaʊə/|1
+opposite|在……对面 prep./adj.|/ˈɒpəzɪt/|1
+direction|方向 n.|/dɪˈrekʃn/|1
+natural|自然的 adj.|/ˈnætʃrəl/|1
+beauty|美丽 n.|/ˈbjuːti/|1
+island|岛 n.|/ˈaɪlənd/|1
+
+# Unit 2 Travelling around the world
+explore|探索 v.|/ɪkˈsplɔː/|2
+capital|首都 n.|/ˈkæpɪtl/|2
+huge|巨大的 adj.|/hjuːdʒ/|2
+excellent|优秀的 adj.|/ˈeksələnt/|2
+international|国际的 adj.|/ˌɪntəˈnæʃnəl/|2
+culture|文化 n.|/ˈkʌltʃə/|2
+museum|博物馆 n.|/mjuˈziːəm/|2
+theatre|剧院 n.|/ˈθɪətə/|2
+including|包括 prep.|/ɪnˈkluːdɪŋ/|2
+south|南方 n./adj.|/saʊθ/|2
+north|北方 n./adj.|/nɔːθ/|2
+east|东方 n./adj.|/iːst/|2
+west|西方 n./adj.|/west/|2
+coast|海岸 n.|/kəʊst/|2
+continent|大陆 n.|/ˈkɒntɪnənt/|2
+ocean|海洋 n.|/ˈəʊʃn/|2
+harbour|港口 n.|/ˈhɑːbə/|2
+till|直到 conj./prep.|/tɪl/|2
+somewhere|某处 adv.|/ˈsʌmweə/|2
+perfect|完美的 adj.|/ˈpɜːfɪkt/|2
+
+# Unit 3 A visit to Garden City
+pollution|污染 n.|/pəˈluːʃn/|3
+environment|环境 n.|/ɪnˈvaɪrənmənt/|3
+protect|保护 v.|/prəˈtekt/|3
+recycle|回收 v.|/riːˈsaɪkl/|3
+waste|浪费 v./n.|/weɪst/|3
+rubbish|垃圾 n.|/ˈrʌbɪʃ/|3
+harmful|有害的 adj.|/ˈhɑːmfl/|3
+chemical|化学的 adj.；化学品 n.|/ˈkemɪkl/|3
+factory|工厂 n.|/ˈfæktri/|3
+smoke|烟；吸烟 n./v.|/sməʊk/|3
+produce|生产 v.|/prəˈdjuːs/|3
+noise|噪音 n.|/nɔɪz/|3
+disturb|打扰 v.|/dɪˈstɜːb/|3
+energy|能源；精力 n.|/ˈenədʒi/|3
+electricity|电 n.|/ɪˌlekˈtrɪsəti/|3
+power|电力；力量 n.|/ˈpaʊə/|3
+solar|太阳的 adj.|/ˈsəʊlə/|3
+planet|行星 n.|/ˈplænɪt/|3
+reduce|减少 v.|/rɪˈdjuːs/|3
+reuse|重新使用 v.|/riːˈjuːz/|3
+
+# Unit 4 Save the trees
+root|根 n.|/ruːt/|4
+trunk|树干 n.|/trʌŋk/|4
+branch|树枝 n.|/brɑːntʃ/|4
+leaf|叶子 n.|/liːf/|4
+shade|阴凉处 n.|/ʃeɪd/|4
+oxygen|氧气 n.|/ˈɒksɪdʒən/|4
+furniture|家具 n.|/ˈfɜːnɪtʃə/|4
+rubber|橡胶 n.|/ˈrʌbə/|4
+fight|斗争；打架 v./n.|/faɪt/|4
+against|反对 prep.|/əˈɡenst/|4
+imagine|想象 v.|/ɪˈmædʒɪn/|4
+without|没有 prep.|/wɪˈðaʊt/|4
+although|虽然 conj.|/ɔːlˈðəʊ/|4
+useful|有用的 adj.|/ˈjuːsfl/|4
+material|材料 n.|/məˈtɪəriəl/|4
+purpose|目的 n.|/ˈpɜːpəs/|4
+effect|影响 n.|/ɪˈfekt/|4
+prevent|阻止 v.|/prɪˈvent/|4
+major|主要的 adj.|/ˈmeɪdʒə/|4
+flood|洪水 n.|/flʌd/|4
+
+# Unit 5 Water
+liquid|液体 n./adj.|/ˈlɪkwɪd/|5
+solid|固体 n./adj.|/ˈsɒlɪd/|5
+gas|气体 n.|/ɡæs/|5
+steam|蒸汽 n.|/stiːm/|5
+freeze|结冰 v.|/friːz/|5
+temperature|温度 n.|/ˈtemprətʃə/|5
+degree|度 n.|/dɪˈɡriː/|5
+below|在……下面 prep./adv.|/bɪˈləʊ/|5
+above|在……上面 prep./adv.|/əˈbʌv/|5
+form|形成 v.；形式 n.|/fɔːm/|5
+drop|水滴；下降 n./v.|/drɒp/|5
+cloud|云 n.|/klaʊd/|5
+heat|加热 v.；热 n.|/hiːt/|5
+boil|沸腾 v.|/bɔɪl/|5
+experiment|实验 n.|/ɪkˈsperɪmənt/|5
+pipe|管子 n.|/paɪp/|5
+flow|流动 v./n.|/fləʊ/|5
+tap|水龙头 n.|/tæp/|5
+process|过程 n.|/ˈprəʊses/|5
+supply|供应 v./n.|/səˈplaɪ/|5
+
+# Unit 6 Electricity
+electrical|电的 adj.|/ɪˈlektrɪkl/|6
+appliance|电器 n.|/əˈplaɪəns/|6
+switch|开关 n./v.|/swɪtʃ/|6
+connect|连接 v.|/kəˈnekt/|6
+wire|电线 n.|/ˈwaɪə/|6
+battery|电池 n.|/ˈbætri/|6
+circuit|电路 n.|/ˈsɜːkɪt/|6
+current|电流 n.|/ˈkʌrənt/|6
+safety|安全 n.|/ˈseɪfti/|6
+dangerous|危险的 adj.|/ˈdeɪndʒərəs/|6
+careful|小心的 adj.|/ˈkeəfl/|6
+touch|触摸 v.|/tʌtʃ/|6
+instruction|说明 n.|/ɪnˈstrʌkʃn/|6
+warning|警告 n.|/ˈwɔːnɪŋ/|6
+allow|允许 v.|/əˈlaʊ/|6
+fault|故障 n.|/fɔːlt/|6
+cause|引起 v.；原因 n.|/kɔːz/|6
+shock|电击；震惊 n.|/ʃɒk/|6
+escape|逃跑 v.|/ɪˈskeɪp/|6
+fire|火灾 n.|/ˈfaɪə/|6
+
+# Unit 7 Poems
+poem|诗 n.|/ˈpəʊɪm/|7
+poet|诗人 n.|/ˈpəʊɪt/|7
+express|表达 v.|/ɪkˈspres/|7
+feeling|感觉 n.|/ˈfiːlɪŋ/|7
+beauty|美丽 n.|/ˈbjuːti/|7
+sense|感觉 n.|/sens/|7
+ordinary|普通的 adj.|/ˈɔːdnri/|7
+special|特别的 adj.|/ˈspeʃl/|7
+mood|心情 n.|/muːd/|7
+pattern|模式 n.|/ˈpætn/|7
+rhythm|韵律 n.|/ˈrɪðəm/|7
+rhyme|押韵 v./n.|/raɪm/|7
+describe|描述 v.|/dɪˈskraɪb/|7
+create|创造 v.|/kriˈeɪt/|7
+image|形象 n.|/ˈɪmɪdʒ/|7
+celebrate|庆祝 v.|/ˈselɪbreɪt/|7
+alive|活着的 adj.|/əˈlaɪv/|7
+gentle|温柔的 adj.|/ˈdʒentl/|7
+rise|升起 v.|/raɪz/|7
+whisper|低语 v./n.|/ˈwɪspə/|7
+
+# Unit 8 A more enjoyable school life
+subject|科目 n.|/ˈsʌbdʒɪkt/|8
+timetable|时间表 n.|/ˈtaɪmˌteɪbl/|8
+lesson|课 n.|/ˈlesn/|8
+activity|活动 n.|/ækˈtɪvəti/|8
+club|俱乐部 n.|/klʌb/|8
+organize|组织 v.|/ˈɔːɡənaɪz/|8
+competition|比赛 n.|/ˌkɒmpəˈtɪʃn/|8
+volunteer|志愿者 n.|/ˌvɒlənˈtɪə/|8
+attend|参加 v.|/əˈtend/|8
+achieve|取得 v.|/əˈtʃiːv/|8
+encourage|鼓励 v.|/ɪnˈkʌrɪdʒ/|8
+effort|努力 n.|/ˈefət/|8
+improve|提高 v.|/ɪmˈpruːv/|8
+interview|采访 n./v.|/ˈɪntəvjuː/|8
+experience|经历 n.|/ɪkˈspɪəriəns/|8
+advantage|优势 n.|/ədˈvɑːntɪdʒ/|8
+opportunity|机会 n.|/ˌɒpəˈtjuːnəti/|8
+responsibility|责任 n.|/rɪˌspɒnsəˈbɪləti/|8
+communicate|交流 v.|/kəˈmjuːnɪkeɪt/|8
+confident|自信的 adj.|/ˈkɒnfɪdənt/|8

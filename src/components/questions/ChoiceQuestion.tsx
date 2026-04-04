@@ -10,7 +10,7 @@ interface ChoiceQuestionProps {
   initialAnswer?: string;
 }
 
-export default function ChoiceQuestion({ question, index, onAnswer, submitted, result, initialAnswer }: ChoiceQuestionProps) {
+export default function ChoiceQuestion({ question, onAnswer, submitted, result, initialAnswer }: ChoiceQuestionProps) {
   const [selected, setSelected] = useState(initialAnswer || '');
   const content = question.content;
 
@@ -39,13 +39,10 @@ export default function ChoiceQuestion({ question, index, onAnswer, submitted, r
   }, [options]);
 
   return (
-    <div className="mb-6 p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm">
-      <div className="flex items-start gap-2 mb-4">
-        <span className="text-sm font-bold text-gray-400 dark:text-gray-500 mt-0.5">{index + 1}.</span>
-        <p className="text-base text-gray-900 dark:text-gray-100 leading-relaxed">{content.stem}</p>
-      </div>
+    <div>
+      <p className="text-base text-gray-900 dark:text-gray-100 leading-relaxed mb-4">{content.stem}</p>
 
-      <div className={`ml-5 ${useGrid ? 'grid grid-cols-2 gap-2' : 'space-y-2'}`}>
+      <div className={useGrid ? 'grid grid-cols-2 gap-2' : 'space-y-2'}>
         {options.map((opt: any) => {
           const isSelected = selected === opt.label;
           const isCorrect = result?.correctAnswer === opt.label;
@@ -77,7 +74,7 @@ export default function ChoiceQuestion({ question, index, onAnswer, submitted, r
       </div>
 
       {submitted && question.explanation && (
-        <div className="mt-3 ml-5 text-sm text-gray-500 dark:text-gray-400">
+        <div className="mt-3 text-sm text-gray-500 dark:text-gray-400">
           💡 {question.explanation}
         </div>
       )}

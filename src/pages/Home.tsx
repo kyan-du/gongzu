@@ -60,6 +60,7 @@ export default function Home() {
   const [requesting, setRequesting] = useState(false);
   const [requested, setRequested] = useState(false);
   const [mistakesCount, setMistakesCount] = useState<number>(0);
+  const [cardCount, setCardCount] = useState<number>(0);
   const [calMonth, setCalMonth] = useState(() => new Date());
   const [monthlyData, setMonthlyData] = useState<Record<string, MonthlyDayData>>({});
   const [monthlyCache, setMonthlyCache] = useState<Record<string, Record<string, MonthlyDayData>>>({});
@@ -100,6 +101,15 @@ export default function Home() {
       .then(d => setMistakesCount((d.points || []).length))
       .catch(() => {});
   }, [userId]);
+
+  // Fetch card count for today
+  useEffect(() => {
+    if (selectedDate !== todayStr) { setCardCount(0); return; }
+    fetch(`/api/cards?userId=${userId}`)
+      .then(r => r.json())
+      .then(d => setCardCount((d.words || []).length))
+      .catch(() => setCardCount(0));
+  }, [userId, selectedDate, todayStr]);
 
   // Monthly data with cache — load current + adjacent months for overflow dates
   useEffect(() => {
@@ -422,6 +432,29 @@ export default function Home() {
                     </button>
                   ))}
                 </div>
+
+                {/* Vocabulary card entry — only show on today */}
+                {selectedDate === todayStr && cardCount > 0 && (
+                  <button
+                    onClick={() => navigate(`/${userId}/cards`)}
+                    className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition active:scale-[0.98] mt-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-violet-50 dark:bg-violet-900/30">
+                        <BookOpen className="w-5 h-5 text-violet-500 dark:text-violet-400" />
+                      </div>
+                      <div className="text-left">
+                        <div className="font-medium text-gray-900 dark:text-gray-100">单词打卡</div>
+                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                          {cardCount} 个单词待背
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1 text-sm text-amber-500 dark:text-amber-400 font-medium">
+                      <Clock className="w-3.5 h-3.5" />
+                      开始
+                    </div>
+                  </button>
+                )}
               </>
             )}
           </div>

@@ -8,6 +8,8 @@ import Result from './pages/Result';
 import ParentDashboard from './pages/ParentDashboard';
 import Mistakes from './pages/Mistakes';
 import Home from './pages/Home';
+import Cards from './pages/Cards';
+import AddWords from './pages/AddWords';
 
 function App() {
   return (
@@ -21,6 +23,9 @@ function App() {
         {/* Main view: today or specific date */}
         <Route path="/:userId/today" element={<DailyView />} />
         <Route path="/:userId/home" element={<Home />} />
+        {/* Cards / vocabulary */}
+        <Route path="/:userId/cards" element={<Cards />} />
+        <Route path="/:userId/cards/add" element={<AddWords />} />
         {/* Mistakes book */}
         <Route path="/:userId/mistakes" element={<Mistakes />} />
         {/* Quiz by date + tag slug */}

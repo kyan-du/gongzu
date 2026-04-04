@@ -11,7 +11,7 @@ interface ReadingQuestionProps {
   initialAnswer?: string;
 }
 
-export default function ReadingQuestion({ question, index, onAnswer, submitted, result, initialAnswer }: ReadingQuestionProps) {
+export default function ReadingQuestion({ question, onAnswer, submitted, result, initialAnswer }: ReadingQuestionProps) {
   const content = question.content;
   const passage = content.passage || '';
   const title = content.title || '';
@@ -45,10 +45,7 @@ export default function ReadingQuestion({ question, index, onAnswer, submitted, 
       {/* Passage card */}
       <div className="p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm mb-3">
         <div className="flex items-center justify-between mb-3">
-          <div className="flex items-start gap-2">
-            <span className="text-sm font-bold text-gray-400 dark:text-gray-500 mt-0.5">{index + 1}.</span>
-            <h3 className="text-base font-bold text-gray-900 dark:text-gray-100">📖 {title || '阅读理解'}</h3>
-          </div>
+          <h3 className="text-base font-bold text-gray-900 dark:text-gray-100">📖 {title || '阅读理解'}</h3>
           <button
             onClick={() => setCollapsed(!collapsed)}
             className="text-xs text-blue-500 dark:text-blue-400 hover:underline"
@@ -72,7 +69,7 @@ export default function ReadingQuestion({ question, index, onAnswer, submitted, 
           <div key={qIdx} className="p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm mb-2 ml-2">
             <div className="flex items-start gap-2 mb-3">
               <span className="text-sm font-bold text-gray-400 dark:text-gray-500 mt-0.5">
-                {index + 1}.{qIdx + 1}
+                {qIdx + 1}.
               </span>
               <p className="text-sm text-gray-900 dark:text-gray-100 leading-relaxed">{sq.stem}</p>
             </div>

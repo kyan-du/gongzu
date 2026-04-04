@@ -1,0 +1,1442 @@
+[
+  {
+    "front": "travel",
+    "back": "旅行 n./v.",
+    "phonetic": "/ˈtrævl/",
+    "unit": "1",
+    "example": "We will **travel** to Beijing this summer.",
+    "exampleCn": "今年夏天我们将去北京旅行。",
+    "extraMeanings": "（光/声音/消息）传播；（在体内）扩散"
+  },
+  {
+    "front": "guide",
+    "back": "指南；导游 n.",
+    "phonetic": "/ɡaɪd/",
+    "unit": "1",
+    "example": "Our **guide** showed us the old city.",
+    "exampleCn": "我们的导游带我们参观了老城。",
+    "extraMeanings": "v. 指引；n. 指南手册"
+  },
+  {
+    "front": "foreign",
+    "back": "外国的 adj.",
+    "phonetic": "/ˈfɒrɪn/",
+    "unit": "1",
+    "example": "She can speak a **foreign** language.",
+    "exampleCn": "她会说一门外语。",
+    "extraMeanings": "陌生的；与……无关的（foreign to）"
+  },
+  {
+    "front": "popular",
+    "back": "受欢迎的 adj.",
+    "phonetic": "/ˈpɒpjʊlə/",
+    "unit": "1",
+    "example": "This song is very **popular** with students.",
+    "exampleCn": "这首歌在学生中很受欢迎。",
+    "extraMeanings": "大众的；普及的"
+  },
+  {
+    "front": "tourist",
+    "back": "游客 n.",
+    "phonetic": "/ˈtʊərɪst/",
+    "unit": "1",
+    "example": "Many **tourists** take photos here.",
+    "exampleCn": "很多游客在这里拍照。",
+    "extraMeanings": "旅游的（tourist bus/area）"
+  },
+  {
+    "front": "exciting",
+    "back": "令人兴奋的 adj.",
+    "phonetic": "/ɪkˈsaɪtɪŋ/",
+    "unit": "1",
+    "example": "The football game was **exciting**.",
+    "exampleCn": "这场足球比赛令人兴奋。",
+    "extraMeanings": "使人激动的；刺激的"
+  },
+  {
+    "front": "ancient",
+    "back": "古代的 adj.",
+    "phonetic": "/ˈeɪnʃənt/",
+    "unit": "1",
+    "example": "We visited an **ancient** temple.",
+    "exampleCn": "我们参观了一座古老的寺庙。",
+    "extraMeanings": "很古老的；年代久远的"
+  },
+  {
+    "front": "modern",
+    "back": "现代的 adj.",
+    "phonetic": "/ˈmɒdn/",
+    "unit": "1",
+    "example": "This museum has **modern** art.",
+    "exampleCn": "这个博物馆有现代艺术。",
+    "extraMeanings": "现代化的；时髦的"
+  },
+  {
+    "front": "famous",
+    "back": "著名的 adj.",
+    "phonetic": "/ˈfeɪməs/",
+    "unit": "1",
+    "example": "The Great Wall is **famous** around the world.",
+    "exampleCn": "长城举世闻名。",
+    "extraMeanings": "出名的（for/as）"
+  },
+  {
+    "front": "centre",
+    "back": "中心 n.",
+    "phonetic": "/ˈsentə/",
+    "unit": "1",
+    "example": "The park is in the **centre** of the city.",
+    "exampleCn": "这个公园在市中心。",
+    "extraMeanings": "中心点；（活动/购物）中心"
+  },
+  {
+    "front": "department",
+    "back": "部门；百货商店 n.",
+    "phonetic": "/dɪˈpɑːtmənt/",
+    "unit": "1",
+    "example": "My mom works in the sales **department**.",
+    "exampleCn": "我妈妈在销售部门工作。",
+    "extraMeanings": "（大学）系；（商店）部/柜台"
+  },
+  {
+    "front": "sight",
+    "back": "风景；视力 n.",
+    "phonetic": "/saɪt/",
+    "unit": "1",
+    "example": "The mountain **sight** is beautiful.",
+    "exampleCn": "山景很美。",
+    "extraMeanings": "视力；看见；名胜（sights）"
+  },
+  {
+    "front": "bridge",
+    "back": "桥 n.",
+    "phonetic": "/brɪdʒ/",
+    "unit": "1",
+    "example": "We walked across the **bridge**.",
+    "exampleCn": "我们走过了那座桥。",
+    "extraMeanings": "（鼻梁）鼻梁；（乐器）琴马；v. 架桥/连接"
+  },
+  {
+    "front": "palace",
+    "back": "宫殿 n.",
+    "phonetic": "/ˈpæləs/",
+    "unit": "1",
+    "example": "The king lived in a big **palace**.",
+    "exampleCn": "国王住在一座大宫殿里。",
+    "extraMeanings": "豪华的大建筑（比喻用法）"
+  },
+  {
+    "front": "tower",
+    "back": "塔 n.",
+    "phonetic": "/ˈtaʊə/",
+    "unit": "1",
+    "example": "We can see the city from the **tower**.",
+    "exampleCn": "我们可以从塔上看到城市。",
+    "extraMeanings": "v. 高耸；（人/物）高出"
+  },
+  {
+    "front": "opposite",
+    "back": "在……对面 prep./adj.",
+    "phonetic": "/ˈɒpəzɪt/",
+    "unit": "1",
+    "example": "The bank is **opposite** the school.",
+    "exampleCn": "银行在学校对面。",
+    "extraMeanings": "n. 对立面；对面的人/物"
+  },
+  {
+    "front": "direction",
+    "back": "方向 n.",
+    "phonetic": "/dɪˈrekʃn/",
+    "unit": "1",
+    "example": "Can you tell me the **direction** to the station?",
+    "exampleCn": "你能告诉我去车站的方向吗？",
+    "extraMeanings": "指示；指导；（电影/戏剧）导演工作"
+  },
+  {
+    "front": "natural",
+    "back": "自然的 adj.",
+    "phonetic": "/ˈnætʃrəl/",
+    "unit": "1",
+    "example": "I like **natural** food like fruit and vegetables.",
+    "exampleCn": "我喜欢水果和蔬菜这类天然食物。",
+    "extraMeanings": "天生的；自然的、不做作的"
+  },
+  {
+    "front": "beauty",
+    "back": "美丽 n.",
+    "phonetic": "/ˈbjuːti/",
+    "unit": "1",
+    "example": "We can see the **beauty** of the sunset.",
+    "exampleCn": "我们能看到日落的美丽。",
+    "extraMeanings": "也可指“美人/美好的事物”（a beauty）。"
+  },
+  {
+    "front": "island",
+    "back": "岛 n.",
+    "phonetic": "/ˈaɪlənd/",
+    "unit": "1",
+    "example": "They live on a small **island**.",
+    "exampleCn": "他们住在一个小岛上。",
+    "extraMeanings": "（交通）安全岛；（厨房）中岛台"
+  },
+  {
+    "front": "explore",
+    "back": "探索 v.",
+    "phonetic": "/ɪkˈsplɔː/",
+    "unit": "2",
+    "example": "We will **explore** the forest after lunch.",
+    "exampleCn": "午饭后我们将去探索森林。",
+    "extraMeanings": "探究（想法/问题）；勘探（资源）"
+  },
+  {
+    "front": "capital",
+    "back": "首都 n.",
+    "phonetic": "/ˈkæpɪtl/",
+    "unit": "2",
+    "example": "Beijing is the **capital** of China.",
+    "exampleCn": "北京是中国的首都。",
+    "extraMeanings": "大写字母；资金/资本"
+  },
+  {
+    "front": "huge",
+    "back": "巨大的 adj.",
+    "phonetic": "/hjuːdʒ/",
+    "unit": "2",
+    "example": "That elephant is **huge**.",
+    "exampleCn": "那头大象非常巨大。",
+    "extraMeanings": "非常大的；很大的（数量/程度）"
+  },
+  {
+    "front": "excellent",
+    "back": "优秀的 adj.",
+    "phonetic": "/ˈeksələnt/",
+    "unit": "2",
+    "example": "Your English homework is **excellent**.",
+    "exampleCn": "你的英语作业非常优秀。",
+    "extraMeanings": "极好的；出色的"
+  },
+  {
+    "front": "international",
+    "back": "国际的 adj.",
+    "phonetic": "/ˌɪntəˈnæʃnəl/",
+    "unit": "2",
+    "example": "Our school has an **international** sports day.",
+    "exampleCn": "我们学校有一个国际运动日。",
+    "extraMeanings": "国际性的；涉及多国的"
+  },
+  {
+    "front": "culture",
+    "back": "文化 n.",
+    "phonetic": "/ˈkʌltʃə/",
+    "unit": "2",
+    "example": "I want to learn about Chinese **culture**.",
+    "exampleCn": "我想了解中国文化。",
+    "extraMeanings": "（团体/公司的）文化；（生物）培养"
+  },
+  {
+    "front": "museum",
+    "back": "博物馆 n.",
+    "phonetic": "/mjuˈziːəm/",
+    "unit": "2",
+    "example": "We saw old paintings in the **museum**.",
+    "exampleCn": "我们在博物馆里看到了古老的画。",
+    "extraMeanings": "（也可指）展览馆"
+  },
+  {
+    "front": "theatre",
+    "back": "剧院 n.",
+    "phonetic": "/ˈθɪətə/",
+    "unit": "2",
+    "example": "We watched a play in the **theatre**.",
+    "exampleCn": "我们在剧院看了一场戏剧。",
+    "extraMeanings": "戏剧；（医院）手术室（operating theatre）"
+  },
+  {
+    "front": "including",
+    "back": "包括 prep.",
+    "phonetic": "/ɪnˈkluːdɪŋ/",
+    "unit": "2",
+    "example": "I like many fruits, **including** apples and bananas.",
+    "exampleCn": "我喜欢很多水果，包括苹果和香蕉。",
+    "extraMeanings": "包含在内（用于举例说明）"
+  },
+  {
+    "front": "south",
+    "back": "南方 n./adj.",
+    "phonetic": "/saʊθ/",
+    "unit": "2",
+    "example": "My grandparents live in the **south** of China.",
+    "exampleCn": "我的爷爷奶奶住在中国南方。",
+    "extraMeanings": "南方的；向南"
+  },
+  {
+    "front": "north",
+    "back": "北方 n./adj.",
+    "phonetic": "/nɔːθ/",
+    "unit": "2",
+    "example": "It is colder in the **north** in winter.",
+    "exampleCn": "冬天北方更冷。",
+    "extraMeanings": "北方的；向北"
+  },
+  {
+    "front": "east",
+    "back": "东方 n./adj.",
+    "phonetic": "/iːst/",
+    "unit": "2",
+    "example": "The sun rises in the **east**.",
+    "exampleCn": "太阳从东方升起。",
+    "extraMeanings": "东方的；向东"
+  },
+  {
+    "front": "west",
+    "back": "西方 n./adj.",
+    "phonetic": "/west/",
+    "unit": "2",
+    "example": "My uncle works in the **west** of the city.",
+    "exampleCn": "我叔叔在城市西边工作。",
+    "extraMeanings": "西方的；向西"
+  },
+  {
+    "front": "coast",
+    "back": "海岸 n.",
+    "phonetic": "/kəʊst/",
+    "unit": "2",
+    "example": "We walked along the **coast** and took photos.",
+    "exampleCn": "我们沿着海岸散步并拍照。",
+    "extraMeanings": "沿海地区"
+  },
+  {
+    "front": "continent",
+    "back": "大陆 n.",
+    "phonetic": "/ˈkɒntɪnənt/",
+    "unit": "2",
+    "example": "Asia is the largest **continent**.",
+    "exampleCn": "亚洲是最大的大陆。",
+    "extraMeanings": ""
+  },
+  {
+    "front": "ocean",
+    "back": "海洋 n.",
+    "phonetic": "/ˈəʊʃn/",
+    "unit": "2",
+    "example": "The ship sailed across the **ocean**.",
+    "exampleCn": "那艘船横渡海洋航行。",
+    "extraMeanings": "大量（a/an ocean of...）"
+  },
+  {
+    "front": "harbour",
+    "back": "港口 n.",
+    "phonetic": "/ˈhɑːbə/",
+    "unit": "2",
+    "example": "Many boats are in the **harbour**.",
+    "exampleCn": "港口里有很多船。",
+    "extraMeanings": "庇护；心怀（想法/感情）（v. harbour）"
+  },
+  {
+    "front": "till",
+    "back": "直到 conj./prep.",
+    "phonetic": "/tɪl/",
+    "unit": "2",
+    "example": "We waited **till** the rain stopped.",
+    "exampleCn": "我们一直等到雨停。",
+    "extraMeanings": "收银机；钱箱（n. till）"
+  },
+  {
+    "front": "somewhere",
+    "back": "某处 adv.",
+    "phonetic": "/ˈsʌmweə/",
+    "unit": "2",
+    "example": "I left my notebook **somewhere** in the classroom.",
+    "exampleCn": "我把笔记本落在教室的某个地方了。",
+    "extraMeanings": "大约（somewhere around...）；在某处（用于不确定）"
+  },
+  {
+    "front": "perfect",
+    "back": "完美的 adj.",
+    "phonetic": "/ˈpɜːfɪkt/",
+    "unit": "2",
+    "example": "This is the **perfect** day for a picnic.",
+    "exampleCn": "今天是野餐的完美一天。",
+    "extraMeanings": "完全的；使更完美（v. perfect）"
+  },
+  {
+    "front": "pollution",
+    "back": "污染 n.",
+    "phonetic": "/pəˈluːʃn/",
+    "unit": "3",
+    "example": "The river has **pollution**, so we cannot swim in it.",
+    "exampleCn": "这条河有污染，所以我们不能在里面游泳。",
+    "extraMeanings": "也可指“污染物”（较少用）。"
+  },
+  {
+    "front": "environment",
+    "back": "环境 n.",
+    "phonetic": "/ɪnˈvaɪrənmənt/",
+    "unit": "3",
+    "example": "We should keep our **environment** clean.",
+    "exampleCn": "我们应该保持我们的环境干净。",
+    "extraMeanings": "也可指“（学习/工作）环境，氛围”。"
+  },
+  {
+    "front": "protect",
+    "back": "保护 v.",
+    "phonetic": "/prəˈtekt/",
+    "unit": "3",
+    "example": "We must **protect** animals in the forest.",
+    "exampleCn": "我们必须保护森林里的动物。",
+    "extraMeanings": "也可指“保护……免受伤害”。"
+  },
+  {
+    "front": "recycle",
+    "back": "回收 v.",
+    "phonetic": "/riːˈsaɪkl/",
+    "unit": "3",
+    "example": "Please **recycle** plastic bottles.",
+    "exampleCn": "请回收塑料瓶。",
+    "extraMeanings": "也可指“循环使用（材料/资源）”。"
+  },
+  {
+    "front": "waste",
+    "back": "浪费 v./n.",
+    "phonetic": "/weɪst/",
+    "unit": "3",
+    "example": "Don’t **waste** water when you brush your teeth.",
+    "exampleCn": "刷牙时不要浪费水。",
+    "extraMeanings": "n.：废物；浪费（a waste of time）。"
+  },
+  {
+    "front": "rubbish",
+    "back": "垃圾 n.",
+    "phonetic": "/ˈrʌbɪʃ/",
+    "unit": "3",
+    "example": "Put the **rubbish** in the bin.",
+    "exampleCn": "把垃圾扔进垃圾桶。",
+    "extraMeanings": "也可指“废话/胡说”（That’s rubbish!）。"
+  },
+  {
+    "front": "harmful",
+    "back": "有害的 adj.",
+    "phonetic": "/ˈhɑːmfl/",
+    "unit": "3",
+    "example": "Too much screen time is **harmful** to your eyes.",
+    "exampleCn": "看屏幕时间太长对眼睛有害。",
+    "extraMeanings": "常用搭配：be harmful to..."
+  },
+  {
+    "front": "chemical",
+    "back": "化学的 adj.；化学品 n.",
+    "phonetic": "/ˈkemɪkl/",
+    "unit": "3",
+    "example": "Some **chemical** waste can pollute the water.",
+    "exampleCn": "一些化学废物会污染水。",
+    "extraMeanings": "n.：化学品；化学物质。"
+  },
+  {
+    "front": "factory",
+    "back": "工厂 n.",
+    "phonetic": "/ˈfæktri/",
+    "unit": "3",
+    "example": "My uncle works in a **factory**.",
+    "exampleCn": "我叔叔在工厂工作。",
+    "extraMeanings": "也可指“工厂式的地方”（如 toy factory）。"
+  },
+  {
+    "front": "smoke",
+    "back": "烟；吸烟 n./v.",
+    "phonetic": "/sməʊk/",
+    "unit": "3",
+    "example": "The **smoke** from the cars makes the air dirty.",
+    "exampleCn": "汽车的烟让空气变脏。",
+    "extraMeanings": "v.：吸烟；冒烟。"
+  },
+  {
+    "front": "produce",
+    "back": "生产 v.",
+    "phonetic": "/prəˈdjuːs/",
+    "unit": "3",
+    "example": "This factory **produces** toys.",
+    "exampleCn": "这家工厂生产玩具。",
+    "extraMeanings": "n.：农产品（fruit and vegetables）。"
+  },
+  {
+    "front": "noise",
+    "back": "噪音 n.",
+    "phonetic": "/nɔɪz/",
+    "unit": "3",
+    "example": "The **noise** outside keeps me awake.",
+    "exampleCn": "外面的噪音让我睡不着。",
+    "extraMeanings": "也可指“（信息中的）干扰”。"
+  },
+  {
+    "front": "disturb",
+    "back": "打扰 v.",
+    "phonetic": "/dɪˈstɜːb/",
+    "unit": "3",
+    "example": "Please don’t **disturb** me when I’m studying.",
+    "exampleCn": "我学习时请不要打扰我。",
+    "extraMeanings": "也可指“使不安/打乱”（disturb the peace）。"
+  },
+  {
+    "front": "energy",
+    "back": "能源；精力 n.",
+    "phonetic": "/ˈenədʒi/",
+    "unit": "3",
+    "example": "I need more **energy** after running.",
+    "exampleCn": "跑步后我需要更多精力。",
+    "extraMeanings": "也可指“能源”（save energy）。"
+  },
+  {
+    "front": "electricity",
+    "back": "电 n.",
+    "phonetic": "/ɪˌlekˈtrɪsəti/",
+    "unit": "3",
+    "example": "Turn off the lights to save **electricity**.",
+    "exampleCn": "关灯来节约用电。",
+    "extraMeanings": "也可指“电力供应/电”。"
+  },
+  {
+    "front": "power",
+    "back": "电力；力量 n.",
+    "phonetic": "/ˈpaʊə/",
+    "unit": "3",
+    "example": "The wind can make **power** for homes.",
+    "exampleCn": "风可以为家庭发电。",
+    "extraMeanings": "也可指“力量；权力；能力”。"
+  },
+  {
+    "front": "solar",
+    "back": "太阳的 adj.",
+    "phonetic": "/ˈsəʊlə/",
+    "unit": "3",
+    "example": "Our school uses **solar** lights in the garden.",
+    "exampleCn": "我们学校在花园里使用太阳能灯。",
+    "extraMeanings": "常见：solar energy/solar panel（太阳能板）。"
+  },
+  {
+    "front": "planet",
+    "back": "行星 n.",
+    "phonetic": "/ˈplænɪt/",
+    "unit": "3",
+    "example": "Earth is our **planet**.",
+    "exampleCn": "地球是我们的星球。",
+    "extraMeanings": "也可指“行星”（如 Mars）。"
+  },
+  {
+    "front": "reduce",
+    "back": "减少 v.",
+    "phonetic": "/rɪˈdjuːs/",
+    "unit": "3",
+    "example": "We should **reduce** plastic bags.",
+    "exampleCn": "我们应该减少塑料袋的使用。",
+    "extraMeanings": "也可指“降低（价格/速度/数量）”。"
+  },
+  {
+    "front": "reuse",
+    "back": "重新使用 v.",
+    "phonetic": "/riːˈjuːz/",
+    "unit": "3",
+    "example": "You can **reuse** this bottle for water.",
+    "exampleCn": "你可以重复使用这个瓶子来装水。",
+    "extraMeanings": "常与 reduce/recycle 一起出现：reduce, reuse, recycle。"
+  },
+  {
+    "front": "root",
+    "back": "根 n.",
+    "phonetic": "/ruːt/",
+    "unit": "4",
+    "example": "The tree’s **root** is under the ground.",
+    "exampleCn": "树的根在地下。",
+    "extraMeanings": "根源；（数学）根；（词）词根"
+  },
+  {
+    "front": "trunk",
+    "back": "树干 n.",
+    "phonetic": "/trʌŋk/",
+    "unit": "4",
+    "example": "The **trunk** of the tree is very thick.",
+    "exampleCn": "这棵树的树干很粗。",
+    "extraMeanings": "（汽车）后备箱；（大象）象鼻"
+  },
+  {
+    "front": "branch",
+    "back": "树枝 n.",
+    "phonetic": "/brɑːntʃ/",
+    "unit": "4",
+    "example": "A bird is sitting on a **branch**.",
+    "exampleCn": "一只鸟正停在一根树枝上。",
+    "extraMeanings": "分支；（机构）分部"
+  },
+  {
+    "front": "leaf",
+    "back": "叶子 n.",
+    "phonetic": "/liːf/",
+    "unit": "4",
+    "example": "This **leaf** is green and small.",
+    "exampleCn": "这片叶子又绿又小。",
+    "extraMeanings": "（书的）一页；（复数）树叶/叶子"
+  },
+  {
+    "front": "shade",
+    "back": "阴凉处 n.",
+    "phonetic": "/ʃeɪd/",
+    "unit": "4",
+    "example": "Let’s sit in the **shade** under the tree.",
+    "exampleCn": "我们坐在树下的阴凉处吧。",
+    "extraMeanings": "遮阴；阴影；（颜色）色调"
+  },
+  {
+    "front": "oxygen",
+    "back": "氧气 n.",
+    "phonetic": "/ˈɒksɪdʒən/",
+    "unit": "4",
+    "example": "We need **oxygen** to breathe.",
+    "exampleCn": "我们需要氧气来呼吸。",
+    "extraMeanings": "（化学元素）氧"
+  },
+  {
+    "front": "furniture",
+    "back": "家具 n.",
+    "phonetic": "/ˈfɜːnɪtʃə/",
+    "unit": "4",
+    "example": "There is new **furniture** in our living room.",
+    "exampleCn": "我们客厅里有新家具。",
+    "extraMeanings": "（总称）家具（不可数）"
+  },
+  {
+    "front": "rubber",
+    "back": "橡胶 n.",
+    "phonetic": "/ˈrʌbə/",
+    "unit": "4",
+    "example": "This ball is made of **rubber**.",
+    "exampleCn": "这个球是橡胶做的。",
+    "extraMeanings": "橡皮（英式英语常用）"
+  },
+  {
+    "front": "fight",
+    "back": "斗争；打架 v./n.",
+    "phonetic": "/faɪt/",
+    "unit": "4",
+    "example": "The two boys started to **fight** after school.",
+    "exampleCn": "放学后两个男孩开始打架。",
+    "extraMeanings": "斗争；争吵；比赛（n.）"
+  },
+  {
+    "front": "against",
+    "back": "反对 prep.",
+    "phonetic": "/əˈɡenst/",
+    "unit": "4",
+    "example": "I am **against** wasting water.",
+    "exampleCn": "我反对浪费水。",
+    "extraMeanings": "靠着；与……对抗；逆着（风/流）"
+  },
+  {
+    "front": "imagine",
+    "back": "想象 v.",
+    "phonetic": "/ɪˈmædʒɪn/",
+    "unit": "4",
+    "example": "Can you **imagine** living on the moon?",
+    "exampleCn": "你能想象住在月球上吗？",
+    "extraMeanings": "认为；设想"
+  },
+  {
+    "front": "without",
+    "back": "没有 prep.",
+    "phonetic": "/wɪˈðaʊt/",
+    "unit": "4",
+    "example": "I can’t live **without** my family.",
+    "exampleCn": "没有家人我无法生活。",
+    "extraMeanings": "在没有……的情况下"
+  },
+  {
+    "front": "although",
+    "back": "虽然 conj.",
+    "phonetic": "/ɔːlˈðəʊ/",
+    "unit": "4",
+    "example": "**Although** it was raining, we still played soccer.",
+    "exampleCn": "虽然下雨了，我们还是踢了足球。",
+    "extraMeanings": "尽管（引导让步）"
+  },
+  {
+    "front": "useful",
+    "back": "有用的 adj.",
+    "phonetic": "/ˈjuːsfl/",
+    "unit": "4",
+    "example": "This dictionary is very **useful**.",
+    "exampleCn": "这本词典很有用。",
+    "extraMeanings": "有帮助的；实用的"
+  },
+  {
+    "front": "material",
+    "back": "材料 n.",
+    "phonetic": "/məˈtɪəriəl/",
+    "unit": "4",
+    "example": "Wood is a common **material** for tables.",
+    "exampleCn": "木头是做桌子的常见材料。",
+    "extraMeanings": "（复数）材料；（adj.）物质的；重要的"
+  },
+  {
+    "front": "purpose",
+    "back": "目的 n.",
+    "phonetic": "/ˈpɜːpəs/",
+    "unit": "4",
+    "example": "What is the **purpose** of this meeting?",
+    "exampleCn": "这次会议的目的是什么？",
+    "extraMeanings": "意图；用途"
+  },
+  {
+    "front": "effect",
+    "back": "影响 n.",
+    "phonetic": "/ɪˈfekt/",
+    "unit": "4",
+    "example": "Too much sugar can have a bad **effect** on your teeth.",
+    "exampleCn": "吃太多糖会对牙齿有不好的影响。",
+    "extraMeanings": "结果；效果"
+  },
+  {
+    "front": "prevent",
+    "back": "阻止 v.",
+    "phonetic": "/prɪˈvent/",
+    "unit": "4",
+    "example": "Wearing a helmet can **prevent** head injuries.",
+    "exampleCn": "戴头盔可以防止头部受伤。",
+    "extraMeanings": "阻止……发生"
+  },
+  {
+    "front": "major",
+    "back": "主要的 adj.",
+    "phonetic": "/ˈmeɪdʒə/",
+    "unit": "4",
+    "example": "Reading is a **major** part of English learning.",
+    "exampleCn": "阅读是英语学习的主要部分。",
+    "extraMeanings": "（n.）主修（大学）；（军衔）少校"
+  },
+  {
+    "front": "flood",
+    "back": "洪水 n.",
+    "phonetic": "/flʌd/",
+    "unit": "4",
+    "example": "The heavy rain caused a **flood** in the village.",
+    "exampleCn": "大雨在村里引发了洪水。",
+    "extraMeanings": "（v.）淹没；大量涌入"
+  },
+  {
+    "front": "liquid",
+    "back": "液体 n./adj.",
+    "phonetic": "/ˈlɪkwɪd/",
+    "unit": "5",
+    "example": "Water is a **liquid**.",
+    "exampleCn": "水是一种液体。",
+    "extraMeanings": "adj. 流动的；不固定的（如 liquid money 现金）"
+  },
+  {
+    "front": "solid",
+    "back": "固体 n./adj.",
+    "phonetic": "/ˈsɒlɪd/",
+    "unit": "5",
+    "example": "Ice is a **solid**.",
+    "exampleCn": "冰是一种固体。",
+    "extraMeanings": "adj. 结实的；可靠的；纯色的（solid color）"
+  },
+  {
+    "front": "gas",
+    "back": "气体 n.",
+    "phonetic": "/ɡæs/",
+    "unit": "5",
+    "example": "Air is a kind of **gas**.",
+    "exampleCn": "空气是一种气体。",
+    "extraMeanings": "汽油（美式口语）；煤气"
+  },
+  {
+    "front": "steam",
+    "back": "蒸汽 n.",
+    "phonetic": "/stiːm/",
+    "unit": "5",
+    "example": "**Steam** comes from hot water.",
+    "exampleCn": "蒸汽来自热水。",
+    "extraMeanings": "v. 蒸；用蒸汽加热；（人）怒气冲冲地走开"
+  },
+  {
+    "front": "freeze",
+    "back": "结冰 v.",
+    "phonetic": "/friːz/",
+    "unit": "5",
+    "example": "Water can **freeze** in winter.",
+    "exampleCn": "冬天水会结冰。",
+    "extraMeanings": "（人）冻僵；（机器/屏幕）卡住；冷冻（食物）"
+  },
+  {
+    "front": "temperature",
+    "back": "温度 n.",
+    "phonetic": "/ˈtemprətʃə/",
+    "unit": "5",
+    "example": "The **temperature** is very high today.",
+    "exampleCn": "今天温度很高。",
+    "extraMeanings": "（人）体温；（情况）热度/紧张程度（较常见于较高年级）"
+  },
+  {
+    "front": "degree",
+    "back": "度 n.",
+    "phonetic": "/dɪˈɡriː/",
+    "unit": "5",
+    "example": "It is 30 **degrees** outside.",
+    "exampleCn": "外面是30度。",
+    "extraMeanings": "学位；程度（to some degree 在某种程度上）"
+  },
+  {
+    "front": "below",
+    "back": "在……下面 prep./adv.",
+    "phonetic": "/bɪˈləʊ/",
+    "unit": "5",
+    "example": "The fish swims **below** the boat.",
+    "exampleCn": "鱼在船下面游。",
+    "extraMeanings": "低于（数量/水平）；在下方（文章/图片中）"
+  },
+  {
+    "front": "above",
+    "back": "在……上面 prep./adv.",
+    "phonetic": "/əˈbʌv/",
+    "unit": "5",
+    "example": "The bird flies **above** the trees.",
+    "exampleCn": "鸟在树上方飞。",
+    "extraMeanings": "高于（数量/水平）；在上文（文章中）"
+  },
+  {
+    "front": "form",
+    "back": "形成 v.；形式 n.",
+    "phonetic": "/fɔːm/",
+    "unit": "5",
+    "example": "Clouds **form** in the sky.",
+    "exampleCn": "云在天空中形成。",
+    "extraMeanings": "n. 表格；形状；种类（in the form of 以……形式）"
+  },
+  {
+    "front": "drop",
+    "back": "水滴；下降 n./v.",
+    "phonetic": "/drɒp/",
+    "unit": "5",
+    "example": "A **drop** of water fell on my hand.",
+    "exampleCn": "一滴水落在我手上。",
+    "extraMeanings": "v. 掉落；下降；放下；n. 下降（a drop in price 价格下降）"
+  },
+  {
+    "front": "cloud",
+    "back": "云 n.",
+    "phonetic": "/klaʊd/",
+    "unit": "5",
+    "example": "There is a big **cloud** in the sky.",
+    "exampleCn": "天空中有一朵大云。",
+    "extraMeanings": "v. 使模糊；使蒙上阴影（cloud the glass 使玻璃起雾）"
+  },
+  {
+    "front": "heat",
+    "back": "加热 v.；热 n.",
+    "phonetic": "/hiːt/",
+    "unit": "5",
+    "example": "We **heat** the water in a pot.",
+    "exampleCn": "我们在锅里把水加热。",
+    "extraMeanings": "n. 热度；（比赛）一轮/一组（较少见）"
+  },
+  {
+    "front": "boil",
+    "back": "沸腾 v.",
+    "phonetic": "/bɔɪl/",
+    "unit": "5",
+    "example": "The water starts to **boil**.",
+    "exampleCn": "水开始沸腾。",
+    "extraMeanings": "v. 煮（boil eggs 煮鸡蛋）；（人）非常生气（boil with anger）"
+  },
+  {
+    "front": "experiment",
+    "back": "实验 n.",
+    "phonetic": "/ɪkˈsperɪmənt/",
+    "unit": "5",
+    "example": "We did an **experiment** in science class.",
+    "exampleCn": "我们在科学课上做了一个实验。",
+    "extraMeanings": "v. 做实验；尝试（experiment with new ideas 尝试新想法）"
+  },
+  {
+    "front": "pipe",
+    "back": "管子 n.",
+    "phonetic": "/paɪp/",
+    "unit": "5",
+    "example": "Water goes through the **pipe**.",
+    "exampleCn": "水通过管子流动。",
+    "extraMeanings": "烟斗；管乐器（较少见）"
+  },
+  {
+    "front": "flow",
+    "back": "流动 v./n.",
+    "phonetic": "/fləʊ/",
+    "unit": "5",
+    "example": "The river **flows** to the sea.",
+    "exampleCn": "河流流向大海。",
+    "extraMeanings": "n. 流动；流量；（说话/写作）流畅（较少见）"
+  },
+  {
+    "front": "tap",
+    "back": "水龙头 n.",
+    "phonetic": "/tæp/",
+    "unit": "5",
+    "example": "Please turn off the **tap** after washing your hands.",
+    "exampleCn": "洗完手后请关上水龙头。",
+    "extraMeanings": "v. 轻拍；轻敲；利用（tap a resource 利用资源）"
+  },
+  {
+    "front": "process",
+    "back": "过程 n.",
+    "phonetic": "/ˈprəʊses/",
+    "unit": "5",
+    "example": "Making bread is a long **process**.",
+    "exampleCn": "做面包是一个很长的过程。",
+    "extraMeanings": "v. 处理；加工（process information 处理信息）"
+  },
+  {
+    "front": "supply",
+    "back": "供应 v./n.",
+    "phonetic": "/səˈplaɪ/",
+    "unit": "5",
+    "example": "The school will **supply** free books.",
+    "exampleCn": "学校将提供免费书本。",
+    "extraMeanings": "n. 供应量；补给品（medical supplies 医疗用品）"
+  },
+  {
+    "front": "electrical",
+    "back": "电的 adj.",
+    "phonetic": "/ɪˈlektrɪkl/",
+    "unit": "6",
+    "example": "This is an **electrical** toy, so don’t put it in water.",
+    "exampleCn": "这是一个电动玩具，所以不要把它放进水里。",
+    "extraMeanings": "与电有关的；用电的"
+  },
+  {
+    "front": "appliance",
+    "back": "电器 n.",
+    "phonetic": "/əˈplaɪəns/",
+    "unit": "6",
+    "example": "The microwave is a kitchen **appliance**.",
+    "exampleCn": "微波炉是一种厨房电器。",
+    "extraMeanings": "器具；家用电器（常用复数 appliances）"
+  },
+  {
+    "front": "switch",
+    "back": "开关 n./v.",
+    "phonetic": "/swɪtʃ/",
+    "unit": "6",
+    "example": "Please turn off the **switch** before you leave.",
+    "exampleCn": "离开前请把开关关掉。",
+    "extraMeanings": "n. 转换；v. 改变，交换（switch to）"
+  },
+  {
+    "front": "connect",
+    "back": "连接 v.",
+    "phonetic": "/kəˈnekt/",
+    "unit": "6",
+    "example": "We **connect** the two wires to make the light work.",
+    "exampleCn": "我们把两根电线连接起来，让灯亮起来。",
+    "extraMeanings": "联系；连接（网络/设备）；与…有关联"
+  },
+  {
+    "front": "wire",
+    "back": "电线 n.",
+    "phonetic": "/ˈwaɪə/",
+    "unit": "6",
+    "example": "Be careful with the **wire** under the desk.",
+    "exampleCn": "小心桌子下面的电线。",
+    "extraMeanings": "v. 给…接电线；发电报/汇款（较旧用法）"
+  },
+  {
+    "front": "battery",
+    "back": "电池 n.",
+    "phonetic": "/ˈbætri/",
+    "unit": "6",
+    "example": "My flashlight needs a new **battery**.",
+    "exampleCn": "我的手电筒需要一节新电池。",
+    "extraMeanings": "一组电池；（法律）殴打（较少见）"
+  },
+  {
+    "front": "circuit",
+    "back": "电路 n.",
+    "phonetic": "/ˈsɜːkɪt/",
+    "unit": "6",
+    "example": "The light won’t turn on because the **circuit** is broken.",
+    "exampleCn": "灯打不开，因为电路坏了。",
+    "extraMeanings": "环行路线；巡回（a circuit of the city）"
+  },
+  {
+    "front": "current",
+    "back": "电流 n.",
+    "phonetic": "/ˈkʌrənt/",
+    "unit": "6",
+    "example": "Don’t touch it—there is **current** in the wire.",
+    "exampleCn": "别碰它——电线里有电流。",
+    "extraMeanings": "adj. 现在的；当前的（current news）"
+  },
+  {
+    "front": "safety",
+    "back": "安全 n.",
+    "phonetic": "/ˈseɪfti/",
+    "unit": "6",
+    "example": "**Safety** comes first in the lab.",
+    "exampleCn": "在实验室里，安全第一。",
+    "extraMeanings": "安全措施；保险装置（a safety on a gun）"
+  },
+  {
+    "front": "dangerous",
+    "back": "危险的 adj.",
+    "phonetic": "/ˈdeɪndʒərəs/",
+    "unit": "6",
+    "example": "It is **dangerous** to play with broken plugs.",
+    "exampleCn": "玩坏掉的插头很危险。",
+    "extraMeanings": "可能造成伤害的；不安全的"
+  },
+  {
+    "front": "careful",
+    "back": "小心的 adj.",
+    "phonetic": "/ˈkeəfl/",
+    "unit": "6",
+    "example": "Be **careful** when you use scissors.",
+    "exampleCn": "用剪刀时要小心。",
+    "extraMeanings": "仔细的；谨慎的（careful with/about）"
+  },
+  {
+    "front": "touch",
+    "back": "触摸 v.",
+    "phonetic": "/tʌtʃ/",
+    "unit": "6",
+    "example": "Do not **touch** the hot pan.",
+    "exampleCn": "不要触摸热锅。",
+    "extraMeanings": "n. 触碰；少量（a touch of salt）；感动（a touching moment 相关词）"
+  },
+  {
+    "front": "instruction",
+    "back": "说明 n.",
+    "phonetic": "/ɪnˈstrʌkʃn/",
+    "unit": "6",
+    "example": "Read the **instruction** before you use the machine.",
+    "exampleCn": "使用机器前先读说明。",
+    "extraMeanings": "教导；指示（常用复数 instructions）"
+  },
+  {
+    "front": "warning",
+    "back": "警告 n.",
+    "phonetic": "/ˈwɔːnɪŋ/",
+    "unit": "6",
+    "example": "The sign gives a **warning** about high voltage.",
+    "exampleCn": "这个标志警告有高电压。",
+    "extraMeanings": "警示；预告（a warning that…）"
+  },
+  {
+    "front": "allow",
+    "back": "允许 v.",
+    "phonetic": "/əˈlaʊ/",
+    "unit": "6",
+    "example": "Our teacher doesn’t **allow** phones in class.",
+    "exampleCn": "我们老师不允许在课堂上用手机。",
+    "extraMeanings": "让…发生；给（时间/钱）（allow time for）"
+  },
+  {
+    "front": "fault",
+    "back": "故障 n.",
+    "phonetic": "/fɔːlt/",
+    "unit": "6",
+    "example": "The TV stopped working because of a **fault**.",
+    "exampleCn": "电视因为故障停止工作了。",
+    "extraMeanings": "过错；责任（It’s my fault.）"
+  },
+  {
+    "front": "cause",
+    "back": "引起 v.；原因 n.",
+    "phonetic": "/kɔːz/",
+    "unit": "6",
+    "example": "Wet hands can **cause** an accident.",
+    "exampleCn": "湿手可能引起事故。",
+    "extraMeanings": "n. 原因；事业/公益（a good cause）"
+  },
+  {
+    "front": "shock",
+    "back": "电击；震惊 n.",
+    "phonetic": "/ʃɒk/",
+    "unit": "6",
+    "example": "He got a small **shock** from the broken wire.",
+    "exampleCn": "他被破电线电了一下。",
+    "extraMeanings": "v. 使震惊；n. 震惊（in shock）"
+  },
+  {
+    "front": "escape",
+    "back": "逃跑 v.",
+    "phonetic": "/ɪˈskeɪp/",
+    "unit": "6",
+    "example": "We must **escape** quickly if there is smoke.",
+    "exampleCn": "如果有烟，我们必须迅速逃离。",
+    "extraMeanings": "逃脱；避开（escape from）；n. 逃跑"
+  },
+  {
+    "front": "fire",
+    "back": "火灾 n.",
+    "phonetic": "/ˈfaɪə/",
+    "unit": "6",
+    "example": "Call 119 if there is a **fire** in the building.",
+    "exampleCn": "如果大楼里发生火灾，就打119。",
+    "extraMeanings": "n. 火；v. 开火；解雇（fire someone）"
+  },
+  {
+    "front": "poem",
+    "back": "诗 n.",
+    "phonetic": "/ˈpəʊɪm/",
+    "unit": "7",
+    "example": "I wrote a short **poem** about my school.",
+    "exampleCn": "我写了一首关于我学校的短诗。",
+    "extraMeanings": "也可指“诗歌作品”（一首诗）。"
+  },
+  {
+    "front": "poet",
+    "back": "诗人 n.",
+    "phonetic": "/ˈpəʊɪt/",
+    "unit": "7",
+    "example": "The **poet** reads his poems to the class.",
+    "exampleCn": "那位诗人给全班朗读他的诗。",
+    "extraMeanings": "也可指“有诗人气质的人”。"
+  },
+  {
+    "front": "express",
+    "back": "表达 v.",
+    "phonetic": "/ɪkˈspres/",
+    "unit": "7",
+    "example": "I use music to **express** my ideas.",
+    "exampleCn": "我用音乐来表达我的想法。",
+    "extraMeanings": "也可指“快递/特快的”（express train；express delivery）。"
+  },
+  {
+    "front": "feeling",
+    "back": "感觉 n.",
+    "phonetic": "/ˈfiːlɪŋ/",
+    "unit": "7",
+    "example": "I have a happy **feeling** today.",
+    "exampleCn": "我今天有一种开心的感觉。",
+    "extraMeanings": "也可指“感情/情绪”（hurt feelings）。"
+  },
+  {
+    "front": "beauty",
+    "back": "美丽 n.",
+    "phonetic": "/ˈbjuːti/",
+    "unit": "7",
+    "example": "We can see the **beauty** of the sunset.",
+    "exampleCn": "我们能看到日落的美丽。",
+    "extraMeanings": "也可指“美人/美好的事物”（a beauty）。"
+  },
+  {
+    "front": "sense",
+    "back": "感觉 n.",
+    "phonetic": "/sens/",
+    "unit": "7",
+    "example": "I have a **sense** of safety at home.",
+    "exampleCn": "我在家里有一种安全感。",
+    "extraMeanings": "也可指“意义/道理”（make sense）；“感官”（five senses）。"
+  },
+  {
+    "front": "ordinary",
+    "back": "普通的 adj.",
+    "phonetic": "/ˈɔːdnri/",
+    "unit": "7",
+    "example": "It is an **ordinary** day at school.",
+    "exampleCn": "这是在学校普通的一天。",
+    "extraMeanings": "也可指“平凡的/不特别的”。"
+  },
+  {
+    "front": "special",
+    "back": "特别的 adj.",
+    "phonetic": "/ˈspeʃl/",
+    "unit": "7",
+    "example": "This gift is **special** to me.",
+    "exampleCn": "这份礼物对我来说很特别。",
+    "extraMeanings": "也可指“专门的/特殊用途的”（special class）。"
+  },
+  {
+    "front": "mood",
+    "back": "心情 n.",
+    "phonetic": "/muːd/",
+    "unit": "7",
+    "example": "Music can change my **mood**.",
+    "exampleCn": "音乐可以改变我的心情。",
+    "extraMeanings": "也可指“情绪状态/氛围”（in the mood）。"
+  },
+  {
+    "front": "pattern",
+    "back": "模式 n.",
+    "phonetic": "/ˈpætn/",
+    "unit": "7",
+    "example": "The shirt has a simple **pattern**.",
+    "exampleCn": "这件衬衫有一个简单的图案。",
+    "extraMeanings": "也可指“规律/方式”（sleep pattern）。"
+  },
+  {
+    "front": "rhythm",
+    "back": "韵律 n.",
+    "phonetic": "/ˈrɪðəm/",
+    "unit": "7",
+    "example": "I can feel the **rhythm** of the song.",
+    "exampleCn": "我能感受到这首歌的韵律。",
+    "extraMeanings": "也可指“节奏”（音乐、说话或生活节奏）。"
+  },
+  {
+    "front": "rhyme",
+    "back": "押韵 v./n.",
+    "phonetic": "/raɪm/",
+    "unit": "7",
+    "example": "These two words **rhyme**: cat and hat.",
+    "exampleCn": "这两个词押韵：cat 和 hat。",
+    "extraMeanings": "名词：押韵词/儿歌（nursery rhyme）。"
+  },
+  {
+    "front": "describe",
+    "back": "描述 v.",
+    "phonetic": "/dɪˈskraɪb/",
+    "unit": "7",
+    "example": "Please **describe** your best friend.",
+    "exampleCn": "请描述一下你最好的朋友。",
+    "extraMeanings": "也可指“描写/形容”。"
+  },
+  {
+    "front": "create",
+    "back": "创造 v.",
+    "phonetic": "/kriˈeɪt/",
+    "unit": "7",
+    "example": "We **create** a poster for the school show.",
+    "exampleCn": "我们为学校演出制作一张海报。",
+    "extraMeanings": "也可指“造成/引起”（create problems）。"
+  },
+  {
+    "front": "image",
+    "back": "形象 n.",
+    "phonetic": "/ˈɪmɪdʒ/",
+    "unit": "7",
+    "example": "The book gives me an **image** of a quiet lake.",
+    "exampleCn": "这本书让我脑海里出现一幅安静湖泊的形象。",
+    "extraMeanings": "也可指“图片/图像”；“形象/印象”（public image）。"
+  },
+  {
+    "front": "celebrate",
+    "back": "庆祝 v.",
+    "phonetic": "/ˈselɪbreɪt/",
+    "unit": "7",
+    "example": "We **celebrate** the Spring Festival with our family.",
+    "exampleCn": "我们和家人一起庆祝春节。",
+    "extraMeanings": "也可指“赞美/歌颂”（celebrate a hero）。"
+  },
+  {
+    "front": "alive",
+    "back": "活着的 adj.",
+    "phonetic": "/əˈlaɪv/",
+    "unit": "7",
+    "example": "The fish is still **alive** in the water.",
+    "exampleCn": "这条鱼在水里还活着。",
+    "extraMeanings": "也可指“充满活力的”（alive with energy）。"
+  },
+  {
+    "front": "gentle",
+    "back": "温柔的 adj.",
+    "phonetic": "/ˈdʒentl/",
+    "unit": "7",
+    "example": "My mom has a **gentle** voice.",
+    "exampleCn": "我妈妈的声音很温柔。",
+    "extraMeanings": "也可指“轻柔的/不猛烈的”（gentle rain）。"
+  },
+  {
+    "front": "rise",
+    "back": "升起 v.",
+    "phonetic": "/raɪz/",
+    "unit": "7",
+    "example": "The sun will **rise** in the morning.",
+    "exampleCn": "太阳会在早晨升起。",
+    "extraMeanings": "也可指“上升/增加”（prices rise）；名词：增长（a rise）。"
+  },
+  {
+    "front": "whisper",
+    "back": "低语 v./n.",
+    "phonetic": "/ˈwɪspə/",
+    "unit": "7",
+    "example": "Please **whisper** in the library.",
+    "exampleCn": "在图书馆请小声说话。",
+    "extraMeanings": "名词：低语声；也可指“悄悄传言”（a whisper about）。"
+  },
+  {
+    "front": "subject",
+    "back": "科目 n.",
+    "phonetic": "/ˈsʌbdʒɪkt/",
+    "unit": "8",
+    "example": "My favorite **subject** is English.",
+    "exampleCn": "我最喜欢的科目是英语。",
+    "extraMeanings": "n. 主题；（语法）主语；（实验）受试者"
+  },
+  {
+    "front": "timetable",
+    "back": "时间表 n.",
+    "phonetic": "/ˈtaɪmˌteɪbl/",
+    "unit": "8",
+    "example": "I checked the **timetable** for tomorrow's classes.",
+    "exampleCn": "我查看了明天课程的时间表。",
+    "extraMeanings": "n. （火车/公交等）时刻表"
+  },
+  {
+    "front": "lesson",
+    "back": "课 n.",
+    "phonetic": "/ˈlesn/",
+    "unit": "8",
+    "example": "We have a math **lesson** after lunch.",
+    "exampleCn": "午饭后我们有一节数学课。",
+    "extraMeanings": "n. 教训；经验"
+  },
+  {
+    "front": "activity",
+    "back": "活动 n.",
+    "phonetic": "/ækˈtɪvəti/",
+    "unit": "8",
+    "example": "Our school has a sports **activity** on Friday.",
+    "exampleCn": "我们学校周五有一项体育活动。",
+    "extraMeanings": "n. 活跃；活动量"
+  },
+  {
+    "front": "club",
+    "back": "俱乐部 n.",
+    "phonetic": "/klʌb/",
+    "unit": "8",
+    "example": "I joined the basketball **club** this term.",
+    "exampleCn": "这学期我加入了篮球俱乐部。",
+    "extraMeanings": "n. 夜总会；（高尔夫等）球杆；棍棒"
+  },
+  {
+    "front": "organize",
+    "back": "组织 v.",
+    "phonetic": "/ˈɔːɡənaɪz/",
+    "unit": "8",
+    "example": "We will **organize** a class party next week.",
+    "exampleCn": "我们下周将组织一次班级聚会。",
+    "extraMeanings": "v. 整理；使有条理；成立（组织）"
+  },
+  {
+    "front": "competition",
+    "back": "比赛 n.",
+    "phonetic": "/ˌkɒmpəˈtɪʃn/",
+    "unit": "8",
+    "example": "She won first prize in the singing **competition**.",
+    "exampleCn": "她在歌唱比赛中获得了一等奖。",
+    "extraMeanings": "n. 竞争；对手"
+  },
+  {
+    "front": "volunteer",
+    "back": "志愿者 n.",
+    "phonetic": "/ˌvɒlənˈtɪə/",
+    "unit": "8",
+    "example": "I want to be a **volunteer** at the library.",
+    "exampleCn": "我想在图书馆当一名志愿者。",
+    "extraMeanings": "v. 自愿做；主动提出"
+  },
+  {
+    "front": "attend",
+    "back": "参加 v.",
+    "phonetic": "/əˈtend/",
+    "unit": "8",
+    "example": "Many students **attend** the school meeting.",
+    "exampleCn": "许多学生参加学校会议。",
+    "extraMeanings": "v. 出席；上（学/课）；照顾"
+  },
+  {
+    "front": "achieve",
+    "back": "取得 v.",
+    "phonetic": "/əˈtʃiːv/",
+    "unit": "8",
+    "example": "If you work hard, you can **achieve** your goals.",
+    "exampleCn": "如果你努力，你就能实现你的目标。",
+    "extraMeanings": "v. 取得（成功/成绩）；完成"
+  },
+  {
+    "front": "encourage",
+    "back": "鼓励 v.",
+    "phonetic": "/ɪnˈkʌrɪdʒ/",
+    "unit": "8",
+    "example": "My teacher **encouraged** me to speak English.",
+    "exampleCn": "我的老师鼓励我说英语。",
+    "extraMeanings": "v. 促进；支持"
+  },
+  {
+    "front": "effort",
+    "back": "努力 n.",
+    "phonetic": "/ˈefət/",
+    "unit": "8",
+    "example": "With more **effort**, you will do better in math.",
+    "exampleCn": "付出更多努力，你的数学会更好。",
+    "extraMeanings": "n. 努力的尝试；艰难的任务"
+  },
+  {
+    "front": "improve",
+    "back": "提高 v.",
+    "phonetic": "/ɪmˈpruːv/",
+    "unit": "8",
+    "example": "Reading every day can **improve** your English.",
+    "exampleCn": "每天阅读可以提高你的英语。",
+    "extraMeanings": "v. 改善；改进"
+  },
+  {
+    "front": "interview",
+    "back": "采访 n./v.",
+    "phonetic": "/ˈɪntəvjuː/",
+    "unit": "8",
+    "example": "The reporter will **interview** our coach.",
+    "exampleCn": "记者将采访我们的教练。",
+    "extraMeanings": "n. 面试；访谈"
+  },
+  {
+    "front": "experience",
+    "back": "经历 n.",
+    "phonetic": "/ɪkˈspɪəriəns/",
+    "unit": "8",
+    "example": "This trip was a great **experience** for me.",
+    "exampleCn": "这次旅行对我来说是一次很棒的经历。",
+    "extraMeanings": "v. 经历；体验"
+  },
+  {
+    "front": "advantage",
+    "back": "优势 n.",
+    "phonetic": "/ədˈvɑːntɪdʒ/",
+    "unit": "8",
+    "example": "Being tall is an **advantage** in basketball.",
+    "exampleCn": "个子高在篮球中是一个优势。",
+    "extraMeanings": "n. 有利条件；好处"
+  },
+  {
+    "front": "opportunity",
+    "back": "机会 n.",
+    "phonetic": "/ˌɒpəˈtjuːnəti/",
+    "unit": "8",
+    "example": "I had an **opportunity** to visit Beijing.",
+    "exampleCn": "我有机会去北京参观。",
+    "extraMeanings": "n. 时机"
+  },
+  {
+    "front": "responsibility",
+    "back": "责任 n.",
+    "phonetic": "/rɪˌspɒnsəˈbɪləti/",
+    "unit": "8",
+    "example": "It is my **responsibility** to finish my homework.",
+    "exampleCn": "完成作业是我的责任。",
+    "extraMeanings": "n. 职责；义务"
+  },
+  {
+    "front": "communicate",
+    "back": "交流 v.",
+    "phonetic": "/kəˈmjuːnɪkeɪt/",
+    "unit": "8",
+    "example": "We should **communicate** with our parents more.",
+    "exampleCn": "我们应该多和父母交流。",
+    "extraMeanings": "v. 传达（信息/想法）"
+  },
+  {
+    "front": "confident",
+    "back": "自信的 adj.",
+    "phonetic": "/ˈkɒnfɪdənt/",
+    "unit": "8",
+    "example": "She feels **confident** before the test.",
+    "exampleCn": "考试前她感到很自信。",
+    "extraMeanings": "adj. 有把握的；确信的"
+  }
+]

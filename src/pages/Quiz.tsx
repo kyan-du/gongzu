@@ -112,7 +112,7 @@ export default function Quiz() {
   return (
     <Layout userId={userId || ''} showBack maxWidth="max-w-3xl">
       {/* Quiz tag + date subheader */}
-      <div className="-mx-4 -mt-6 px-4 py-3 mb-4 flex items-center justify-between border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
+      <div className="py-3 mb-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 px-2.5 py-0.5 rounded-full">
             {quiz.tag}
@@ -193,14 +193,15 @@ export default function Quiz() {
           );
         })}
 
+        <div className="flex justify-center mt-6 mb-8">
         {!submitted ? (
           <button
             onClick={handleSubmit}
             disabled={submitting}
-            className={`w-full py-4 px-6 rounded-xl font-bold text-lg transition shadow-md mt-6 mb-8 ${
+            className={`py-3 px-10 rounded-full font-semibold text-base transition shadow-sm ${
               submitting
                 ? 'bg-gray-400 dark:bg-gray-600 text-gray-200 cursor-not-allowed'
-                : 'bg-blue-600 dark:bg-blue-500 text-white hover:bg-blue-700 dark:hover:bg-blue-600'
+                : 'bg-emerald-600 dark:bg-emerald-500 text-white hover:bg-emerald-700 dark:hover:bg-emerald-600'
             }`}
           >
             {submitting ? '正在判分…' : `交卷（${answeredCount}/${totalCount}）`}
@@ -208,11 +209,12 @@ export default function Quiz() {
         ) : (
           <button
             onClick={() => navigate(`/${userId}/${date}`)}
-            className="w-full bg-gray-600 dark:bg-gray-500 text-white py-4 px-6 rounded-xl font-bold text-lg hover:bg-gray-700 dark:hover:bg-gray-600 transition shadow-md mt-6 mb-8"
+            className="py-3 px-10 rounded-full font-semibold text-base bg-gray-600 dark:bg-gray-500 text-white hover:bg-gray-700 dark:hover:bg-gray-600 transition shadow-sm"
           >
             返回
           </button>
         )}
+        </div>
       </div>
     </Layout>
   );

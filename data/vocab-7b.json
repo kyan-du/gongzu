@@ -1,0 +1,962 @@
+[
+  {
+    "front": "travel",
+    "back": "旅行 n./v.",
+    "phonetic": "/ˈtrævl/",
+    "unit": "1"
+  },
+  {
+    "front": "guide",
+    "back": "指南；导游 n.",
+    "phonetic": "/ɡaɪd/",
+    "unit": "1"
+  },
+  {
+    "front": "foreign",
+    "back": "外国的 adj.",
+    "phonetic": "/ˈfɒrɪn/",
+    "unit": "1"
+  },
+  {
+    "front": "popular",
+    "back": "受欢迎的 adj.",
+    "phonetic": "/ˈpɒpjʊlə/",
+    "unit": "1"
+  },
+  {
+    "front": "tourist",
+    "back": "游客 n.",
+    "phonetic": "/ˈtʊərɪst/",
+    "unit": "1"
+  },
+  {
+    "front": "exciting",
+    "back": "令人兴奋的 adj.",
+    "phonetic": "/ɪkˈsaɪtɪŋ/",
+    "unit": "1"
+  },
+  {
+    "front": "ancient",
+    "back": "古代的 adj.",
+    "phonetic": "/ˈeɪnʃənt/",
+    "unit": "1"
+  },
+  {
+    "front": "modern",
+    "back": "现代的 adj.",
+    "phonetic": "/ˈmɒdn/",
+    "unit": "1"
+  },
+  {
+    "front": "famous",
+    "back": "著名的 adj.",
+    "phonetic": "/ˈfeɪməs/",
+    "unit": "1"
+  },
+  {
+    "front": "centre",
+    "back": "中心 n.",
+    "phonetic": "/ˈsentə/",
+    "unit": "1"
+  },
+  {
+    "front": "department",
+    "back": "部门；百货商店 n.",
+    "phonetic": "/dɪˈpɑːtmənt/",
+    "unit": "1"
+  },
+  {
+    "front": "sight",
+    "back": "风景；视力 n.",
+    "phonetic": "/saɪt/",
+    "unit": "1"
+  },
+  {
+    "front": "bridge",
+    "back": "桥 n.",
+    "phonetic": "/brɪdʒ/",
+    "unit": "1"
+  },
+  {
+    "front": "palace",
+    "back": "宫殿 n.",
+    "phonetic": "/ˈpæləs/",
+    "unit": "1"
+  },
+  {
+    "front": "tower",
+    "back": "塔 n.",
+    "phonetic": "/ˈtaʊə/",
+    "unit": "1"
+  },
+  {
+    "front": "opposite",
+    "back": "在……对面 prep./adj.",
+    "phonetic": "/ˈɒpəzɪt/",
+    "unit": "1"
+  },
+  {
+    "front": "direction",
+    "back": "方向 n.",
+    "phonetic": "/dɪˈrekʃn/",
+    "unit": "1"
+  },
+  {
+    "front": "natural",
+    "back": "自然的 adj.",
+    "phonetic": "/ˈnætʃrəl/",
+    "unit": "1"
+  },
+  {
+    "front": "beauty",
+    "back": "美丽 n.",
+    "phonetic": "/ˈbjuːti/",
+    "unit": "1"
+  },
+  {
+    "front": "island",
+    "back": "岛 n.",
+    "phonetic": "/ˈaɪlənd/",
+    "unit": "1"
+  },
+  {
+    "front": "explore",
+    "back": "探索 v.",
+    "phonetic": "/ɪkˈsplɔː/",
+    "unit": "2"
+  },
+  {
+    "front": "capital",
+    "back": "首都 n.",
+    "phonetic": "/ˈkæpɪtl/",
+    "unit": "2"
+  },
+  {
+    "front": "huge",
+    "back": "巨大的 adj.",
+    "phonetic": "/hjuːdʒ/",
+    "unit": "2"
+  },
+  {
+    "front": "excellent",
+    "back": "优秀的 adj.",
+    "phonetic": "/ˈeksələnt/",
+    "unit": "2"
+  },
+  {
+    "front": "international",
+    "back": "国际的 adj.",
+    "phonetic": "/ˌɪntəˈnæʃnəl/",
+    "unit": "2"
+  },
+  {
+    "front": "culture",
+    "back": "文化 n.",
+    "phonetic": "/ˈkʌltʃə/",
+    "unit": "2"
+  },
+  {
+    "front": "museum",
+    "back": "博物馆 n.",
+    "phonetic": "/mjuˈziːəm/",
+    "unit": "2"
+  },
+  {
+    "front": "theatre",
+    "back": "剧院 n.",
+    "phonetic": "/ˈθɪətə/",
+    "unit": "2"
+  },
+  {
+    "front": "including",
+    "back": "包括 prep.",
+    "phonetic": "/ɪnˈkluːdɪŋ/",
+    "unit": "2"
+  },
+  {
+    "front": "south",
+    "back": "南方 n./adj.",
+    "phonetic": "/saʊθ/",
+    "unit": "2"
+  },
+  {
+    "front": "north",
+    "back": "北方 n./adj.",
+    "phonetic": "/nɔːθ/",
+    "unit": "2"
+  },
+  {
+    "front": "east",
+    "back": "东方 n./adj.",
+    "phonetic": "/iːst/",
+    "unit": "2"
+  },
+  {
+    "front": "west",
+    "back": "西方 n./adj.",
+    "phonetic": "/west/",
+    "unit": "2"
+  },
+  {
+    "front": "coast",
+    "back": "海岸 n.",
+    "phonetic": "/kəʊst/",
+    "unit": "2"
+  },
+  {
+    "front": "continent",
+    "back": "大陆 n.",
+    "phonetic": "/ˈkɒntɪnənt/",
+    "unit": "2"
+  },
+  {
+    "front": "ocean",
+    "back": "海洋 n.",
+    "phonetic": "/ˈəʊʃn/",
+    "unit": "2"
+  },
+  {
+    "front": "harbour",
+    "back": "港口 n.",
+    "phonetic": "/ˈhɑːbə/",
+    "unit": "2"
+  },
+  {
+    "front": "till",
+    "back": "直到 conj./prep.",
+    "phonetic": "/tɪl/",
+    "unit": "2"
+  },
+  {
+    "front": "somewhere",
+    "back": "某处 adv.",
+    "phonetic": "/ˈsʌmweə/",
+    "unit": "2"
+  },
+  {
+    "front": "perfect",
+    "back": "完美的 adj.",
+    "phonetic": "/ˈpɜːfɪkt/",
+    "unit": "2"
+  },
+  {
+    "front": "pollution",
+    "back": "污染 n.",
+    "phonetic": "/pəˈluːʃn/",
+    "unit": "3"
+  },
+  {
+    "front": "environment",
+    "back": "环境 n.",
+    "phonetic": "/ɪnˈvaɪrənmənt/",
+    "unit": "3"
+  },
+  {
+    "front": "protect",
+    "back": "保护 v.",
+    "phonetic": "/prəˈtekt/",
+    "unit": "3"
+  },
+  {
+    "front": "recycle",
+    "back": "回收 v.",
+    "phonetic": "/riːˈsaɪkl/",
+    "unit": "3"
+  },
+  {
+    "front": "waste",
+    "back": "浪费 v./n.",
+    "phonetic": "/weɪst/",
+    "unit": "3"
+  },
+  {
+    "front": "rubbish",
+    "back": "垃圾 n.",
+    "phonetic": "/ˈrʌbɪʃ/",
+    "unit": "3"
+  },
+  {
+    "front": "harmful",
+    "back": "有害的 adj.",
+    "phonetic": "/ˈhɑːmfl/",
+    "unit": "3"
+  },
+  {
+    "front": "chemical",
+    "back": "化学的 adj.；化学品 n.",
+    "phonetic": "/ˈkemɪkl/",
+    "unit": "3"
+  },
+  {
+    "front": "factory",
+    "back": "工厂 n.",
+    "phonetic": "/ˈfæktri/",
+    "unit": "3"
+  },
+  {
+    "front": "smoke",
+    "back": "烟；吸烟 n./v.",
+    "phonetic": "/sməʊk/",
+    "unit": "3"
+  },
+  {
+    "front": "produce",
+    "back": "生产 v.",
+    "phonetic": "/prəˈdjuːs/",
+    "unit": "3"
+  },
+  {
+    "front": "noise",
+    "back": "噪音 n.",
+    "phonetic": "/nɔɪz/",
+    "unit": "3"
+  },
+  {
+    "front": "disturb",
+    "back": "打扰 v.",
+    "phonetic": "/dɪˈstɜːb/",
+    "unit": "3"
+  },
+  {
+    "front": "energy",
+    "back": "能源；精力 n.",
+    "phonetic": "/ˈenədʒi/",
+    "unit": "3"
+  },
+  {
+    "front": "electricity",
+    "back": "电 n.",
+    "phonetic": "/ɪˌlekˈtrɪsəti/",
+    "unit": "3"
+  },
+  {
+    "front": "power",
+    "back": "电力；力量 n.",
+    "phonetic": "/ˈpaʊə/",
+    "unit": "3"
+  },
+  {
+    "front": "solar",
+    "back": "太阳的 adj.",
+    "phonetic": "/ˈsəʊlə/",
+    "unit": "3"
+  },
+  {
+    "front": "planet",
+    "back": "行星 n.",
+    "phonetic": "/ˈplænɪt/",
+    "unit": "3"
+  },
+  {
+    "front": "reduce",
+    "back": "减少 v.",
+    "phonetic": "/rɪˈdjuːs/",
+    "unit": "3"
+  },
+  {
+    "front": "reuse",
+    "back": "重新使用 v.",
+    "phonetic": "/riːˈjuːz/",
+    "unit": "3"
+  },
+  {
+    "front": "root",
+    "back": "根 n.",
+    "phonetic": "/ruːt/",
+    "unit": "4"
+  },
+  {
+    "front": "trunk",
+    "back": "树干 n.",
+    "phonetic": "/trʌŋk/",
+    "unit": "4"
+  },
+  {
+    "front": "branch",
+    "back": "树枝 n.",
+    "phonetic": "/brɑːntʃ/",
+    "unit": "4"
+  },
+  {
+    "front": "leaf",
+    "back": "叶子 n.",
+    "phonetic": "/liːf/",
+    "unit": "4"
+  },
+  {
+    "front": "shade",
+    "back": "阴凉处 n.",
+    "phonetic": "/ʃeɪd/",
+    "unit": "4"
+  },
+  {
+    "front": "oxygen",
+    "back": "氧气 n.",
+    "phonetic": "/ˈɒksɪdʒən/",
+    "unit": "4"
+  },
+  {
+    "front": "furniture",
+    "back": "家具 n.",
+    "phonetic": "/ˈfɜːnɪtʃə/",
+    "unit": "4"
+  },
+  {
+    "front": "rubber",
+    "back": "橡胶 n.",
+    "phonetic": "/ˈrʌbə/",
+    "unit": "4"
+  },
+  {
+    "front": "fight",
+    "back": "斗争；打架 v./n.",
+    "phonetic": "/faɪt/",
+    "unit": "4"
+  },
+  {
+    "front": "against",
+    "back": "反对 prep.",
+    "phonetic": "/əˈɡenst/",
+    "unit": "4"
+  },
+  {
+    "front": "imagine",
+    "back": "想象 v.",
+    "phonetic": "/ɪˈmædʒɪn/",
+    "unit": "4"
+  },
+  {
+    "front": "without",
+    "back": "没有 prep.",
+    "phonetic": "/wɪˈðaʊt/",
+    "unit": "4"
+  },
+  {
+    "front": "although",
+    "back": "虽然 conj.",
+    "phonetic": "/ɔːlˈðəʊ/",
+    "unit": "4"
+  },
+  {
+    "front": "useful",
+    "back": "有用的 adj.",
+    "phonetic": "/ˈjuːsfl/",
+    "unit": "4"
+  },
+  {
+    "front": "material",
+    "back": "材料 n.",
+    "phonetic": "/məˈtɪəriəl/",
+    "unit": "4"
+  },
+  {
+    "front": "purpose",
+    "back": "目的 n.",
+    "phonetic": "/ˈpɜːpəs/",
+    "unit": "4"
+  },
+  {
+    "front": "effect",
+    "back": "影响 n.",
+    "phonetic": "/ɪˈfekt/",
+    "unit": "4"
+  },
+  {
+    "front": "prevent",
+    "back": "阻止 v.",
+    "phonetic": "/prɪˈvent/",
+    "unit": "4"
+  },
+  {
+    "front": "major",
+    "back": "主要的 adj.",
+    "phonetic": "/ˈmeɪdʒə/",
+    "unit": "4"
+  },
+  {
+    "front": "flood",
+    "back": "洪水 n.",
+    "phonetic": "/flʌd/",
+    "unit": "4"
+  },
+  {
+    "front": "liquid",
+    "back": "液体 n./adj.",
+    "phonetic": "/ˈlɪkwɪd/",
+    "unit": "5"
+  },
+  {
+    "front": "solid",
+    "back": "固体 n./adj.",
+    "phonetic": "/ˈsɒlɪd/",
+    "unit": "5"
+  },
+  {
+    "front": "gas",
+    "back": "气体 n.",
+    "phonetic": "/ɡæs/",
+    "unit": "5"
+  },
+  {
+    "front": "steam",
+    "back": "蒸汽 n.",
+    "phonetic": "/stiːm/",
+    "unit": "5"
+  },
+  {
+    "front": "freeze",
+    "back": "结冰 v.",
+    "phonetic": "/friːz/",
+    "unit": "5"
+  },
+  {
+    "front": "temperature",
+    "back": "温度 n.",
+    "phonetic": "/ˈtemprətʃə/",
+    "unit": "5"
+  },
+  {
+    "front": "degree",
+    "back": "度 n.",
+    "phonetic": "/dɪˈɡriː/",
+    "unit": "5"
+  },
+  {
+    "front": "below",
+    "back": "在……下面 prep./adv.",
+    "phonetic": "/bɪˈləʊ/",
+    "unit": "5"
+  },
+  {
+    "front": "above",
+    "back": "在……上面 prep./adv.",
+    "phonetic": "/əˈbʌv/",
+    "unit": "5"
+  },
+  {
+    "front": "form",
+    "back": "形成 v.；形式 n.",
+    "phonetic": "/fɔːm/",
+    "unit": "5"
+  },
+  {
+    "front": "drop",
+    "back": "水滴；下降 n./v.",
+    "phonetic": "/drɒp/",
+    "unit": "5"
+  },
+  {
+    "front": "cloud",
+    "back": "云 n.",
+    "phonetic": "/klaʊd/",
+    "unit": "5"
+  },
+  {
+    "front": "heat",
+    "back": "加热 v.；热 n.",
+    "phonetic": "/hiːt/",
+    "unit": "5"
+  },
+  {
+    "front": "boil",
+    "back": "沸腾 v.",
+    "phonetic": "/bɔɪl/",
+    "unit": "5"
+  },
+  {
+    "front": "experiment",
+    "back": "实验 n.",
+    "phonetic": "/ɪkˈsperɪmənt/",
+    "unit": "5"
+  },
+  {
+    "front": "pipe",
+    "back": "管子 n.",
+    "phonetic": "/paɪp/",
+    "unit": "5"
+  },
+  {
+    "front": "flow",
+    "back": "流动 v./n.",
+    "phonetic": "/fləʊ/",
+    "unit": "5"
+  },
+  {
+    "front": "tap",
+    "back": "水龙头 n.",
+    "phonetic": "/tæp/",
+    "unit": "5"
+  },
+  {
+    "front": "process",
+    "back": "过程 n.",
+    "phonetic": "/ˈprəʊses/",
+    "unit": "5"
+  },
+  {
+    "front": "supply",
+    "back": "供应 v./n.",
+    "phonetic": "/səˈplaɪ/",
+    "unit": "5"
+  },
+  {
+    "front": "electrical",
+    "back": "电的 adj.",
+    "phonetic": "/ɪˈlektrɪkl/",
+    "unit": "6"
+  },
+  {
+    "front": "appliance",
+    "back": "电器 n.",
+    "phonetic": "/əˈplaɪəns/",
+    "unit": "6"
+  },
+  {
+    "front": "switch",
+    "back": "开关 n./v.",
+    "phonetic": "/swɪtʃ/",
+    "unit": "6"
+  },
+  {
+    "front": "connect",
+    "back": "连接 v.",
+    "phonetic": "/kəˈnekt/",
+    "unit": "6"
+  },
+  {
+    "front": "wire",
+    "back": "电线 n.",
+    "phonetic": "/ˈwaɪə/",
+    "unit": "6"
+  },
+  {
+    "front": "battery",
+    "back": "电池 n.",
+    "phonetic": "/ˈbætri/",
+    "unit": "6"
+  },
+  {
+    "front": "circuit",
+    "back": "电路 n.",
+    "phonetic": "/ˈsɜːkɪt/",
+    "unit": "6"
+  },
+  {
+    "front": "current",
+    "back": "电流 n.",
+    "phonetic": "/ˈkʌrənt/",
+    "unit": "6"
+  },
+  {
+    "front": "safety",
+    "back": "安全 n.",
+    "phonetic": "/ˈseɪfti/",
+    "unit": "6"
+  },
+  {
+    "front": "dangerous",
+    "back": "危险的 adj.",
+    "phonetic": "/ˈdeɪndʒərəs/",
+    "unit": "6"
+  },
+  {
+    "front": "careful",
+    "back": "小心的 adj.",
+    "phonetic": "/ˈkeəfl/",
+    "unit": "6"
+  },
+  {
+    "front": "touch",
+    "back": "触摸 v.",
+    "phonetic": "/tʌtʃ/",
+    "unit": "6"
+  },
+  {
+    "front": "instruction",
+    "back": "说明 n.",
+    "phonetic": "/ɪnˈstrʌkʃn/",
+    "unit": "6"
+  },
+  {
+    "front": "warning",
+    "back": "警告 n.",
+    "phonetic": "/ˈwɔːnɪŋ/",
+    "unit": "6"
+  },
+  {
+    "front": "allow",
+    "back": "允许 v.",
+    "phonetic": "/əˈlaʊ/",
+    "unit": "6"
+  },
+  {
+    "front": "fault",
+    "back": "故障 n.",
+    "phonetic": "/fɔːlt/",
+    "unit": "6"
+  },
+  {
+    "front": "cause",
+    "back": "引起 v.；原因 n.",
+    "phonetic": "/kɔːz/",
+    "unit": "6"
+  },
+  {
+    "front": "shock",
+    "back": "电击；震惊 n.",
+    "phonetic": "/ʃɒk/",
+    "unit": "6"
+  },
+  {
+    "front": "escape",
+    "back": "逃跑 v.",
+    "phonetic": "/ɪˈskeɪp/",
+    "unit": "6"
+  },
+  {
+    "front": "fire",
+    "back": "火灾 n.",
+    "phonetic": "/ˈfaɪə/",
+    "unit": "6"
+  },
+  {
+    "front": "poem",
+    "back": "诗 n.",
+    "phonetic": "/ˈpəʊɪm/",
+    "unit": "7"
+  },
+  {
+    "front": "poet",
+    "back": "诗人 n.",
+    "phonetic": "/ˈpəʊɪt/",
+    "unit": "7"
+  },
+  {
+    "front": "express",
+    "back": "表达 v.",
+    "phonetic": "/ɪkˈspres/",
+    "unit": "7"
+  },
+  {
+    "front": "feeling",
+    "back": "感觉 n.",
+    "phonetic": "/ˈfiːlɪŋ/",
+    "unit": "7"
+  },
+  {
+    "front": "beauty",
+    "back": "美丽 n.",
+    "phonetic": "/ˈbjuːti/",
+    "unit": "7"
+  },
+  {
+    "front": "sense",
+    "back": "感觉 n.",
+    "phonetic": "/sens/",
+    "unit": "7"
+  },
+  {
+    "front": "ordinary",
+    "back": "普通的 adj.",
+    "phonetic": "/ˈɔːdnri/",
+    "unit": "7"
+  },
+  {
+    "front": "special",
+    "back": "特别的 adj.",
+    "phonetic": "/ˈspeʃl/",
+    "unit": "7"
+  },
+  {
+    "front": "mood",
+    "back": "心情 n.",
+    "phonetic": "/muːd/",
+    "unit": "7"
+  },
+  {
+    "front": "pattern",
+    "back": "模式 n.",
+    "phonetic": "/ˈpætn/",
+    "unit": "7"
+  },
+  {
+    "front": "rhythm",
+    "back": "韵律 n.",
+    "phonetic": "/ˈrɪðəm/",
+    "unit": "7"
+  },
+  {
+    "front": "rhyme",
+    "back": "押韵 v./n.",
+    "phonetic": "/raɪm/",
+    "unit": "7"
+  },
+  {
+    "front": "describe",
+    "back": "描述 v.",
+    "phonetic": "/dɪˈskraɪb/",
+    "unit": "7"
+  },
+  {
+    "front": "create",
+    "back": "创造 v.",
+    "phonetic": "/kriˈeɪt/",
+    "unit": "7"
+  },
+  {
+    "front": "image",
+    "back": "形象 n.",
+    "phonetic": "/ˈɪmɪdʒ/",
+    "unit": "7"
+  },
+  {
+    "front": "celebrate",
+    "back": "庆祝 v.",
+    "phonetic": "/ˈselɪbreɪt/",
+    "unit": "7"
+  },
+  {
+    "front": "alive",
+    "back": "活着的 adj.",
+    "phonetic": "/əˈlaɪv/",
+    "unit": "7"
+  },
+  {
+    "front": "gentle",
+    "back": "温柔的 adj.",
+    "phonetic": "/ˈdʒentl/",
+    "unit": "7"
+  },
+  {
+    "front": "rise",
+    "back": "升起 v.",
+    "phonetic": "/raɪz/",
+    "unit": "7"
+  },
+  {
+    "front": "whisper",
+    "back": "低语 v./n.",
+    "phonetic": "/ˈwɪspə/",
+    "unit": "7"
+  },
+  {
+    "front": "subject",
+    "back": "科目 n.",
+    "phonetic": "/ˈsʌbdʒɪkt/",
+    "unit": "8"
+  },
+  {
+    "front": "timetable",
+    "back": "时间表 n.",
+    "phonetic": "/ˈtaɪmˌteɪbl/",
+    "unit": "8"
+  },
+  {
+    "front": "lesson",
+    "back": "课 n.",
+    "phonetic": "/ˈlesn/",
+    "unit": "8"
+  },
+  {
+    "front": "activity",
+    "back": "活动 n.",
+    "phonetic": "/ækˈtɪvəti/",
+    "unit": "8"
+  },
+  {
+    "front": "club",
+    "back": "俱乐部 n.",
+    "phonetic": "/klʌb/",
+    "unit": "8"
+  },
+  {
+    "front": "organize",
+    "back": "组织 v.",
+    "phonetic": "/ˈɔːɡənaɪz/",
+    "unit": "8"
+  },
+  {
+    "front": "competition",
+    "back": "比赛 n.",
+    "phonetic": "/ˌkɒmpəˈtɪʃn/",
+    "unit": "8"
+  },
+  {
+    "front": "volunteer",
+    "back": "志愿者 n.",
+    "phonetic": "/ˌvɒlənˈtɪə/",
+    "unit": "8"
+  },
+  {
+    "front": "attend",
+    "back": "参加 v.",
+    "phonetic": "/əˈtend/",
+    "unit": "8"
+  },
+  {
+    "front": "achieve",
+    "back": "取得 v.",
+    "phonetic": "/əˈtʃiːv/",
+    "unit": "8"
+  },
+  {
+    "front": "encourage",
+    "back": "鼓励 v.",
+    "phonetic": "/ɪnˈkʌrɪdʒ/",
+    "unit": "8"
+  },
+  {
+    "front": "effort",
+    "back": "努力 n.",
+    "phonetic": "/ˈefət/",
+    "unit": "8"
+  },
+  {
+    "front": "improve",
+    "back": "提高 v.",
+    "phonetic": "/ɪmˈpruːv/",
+    "unit": "8"
+  },
+  {
+    "front": "interview",
+    "back": "采访 n./v.",
+    "phonetic": "/ˈɪntəvjuː/",
+    "unit": "8"
+  },
+  {
+    "front": "experience",
+    "back": "经历 n.",
+    "phonetic": "/ɪkˈspɪəriəns/",
+    "unit": "8"
+  },
+  {
+    "front": "advantage",
+    "back": "优势 n.",
+    "phonetic": "/ədˈvɑːntɪdʒ/",
+    "unit": "8"
+  },
+  {
+    "front": "opportunity",
+    "back": "机会 n.",
+    "phonetic": "/ˌɒpəˈtjuːnəti/",
+    "unit": "8"
+  },
+  {
+    "front": "responsibility",
+    "back": "责任 n.",
+    "phonetic": "/rɪˌspɒnsəˈbɪləti/",
+    "unit": "8"
+  },
+  {
+    "front": "communicate",
+    "back": "交流 v.",
+    "phonetic": "/kəˈmjuːnɪkeɪt/",
+    "unit": "8"
+  },
+  {
+    "front": "confident",
+    "back": "自信的 adj.",
+    "phonetic": "/ˈkɒnfɪdənt/",
+    "unit": "8"
+  }
+]
