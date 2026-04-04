@@ -167,20 +167,35 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     }
   }
 
-  // Mode 3: Save words to DB
+  // Mode 3: Save words to DB (batched for speed)
   if (words?.length) {
-    let count = 0;
     const tags = JSON.stringify(['生词本']);
 
+    // Step 1: batch check duplicates
+    const fronts = words
+      .map((w: any) => (w.front || w.word || '').trim().toLowerCase())
+      .filter(Boolean);
+
+    const existingSet = new Set<string>();
+    if (fronts.length > 0) {
+      // Check in batches of 30 (D1 query param limit)
+      for (let i = 0; i < fronts.length; i += 30) {
+        const batch = fronts.slice(i, i + 30);
+        const placeholders = batch.map(() => '?').join(',');
+        const rows = await db.prepare(
+          `SELECT json_extract(content, '$.front') as front FROM questions WHERE type = 'card' AND json_extract(content, '$.front') IN (${placeholders})`
+        ).bind(...batch).all();
+        for (const row of rows.results) {
+          existingSet.add((row as any).front);
+        }
+      }
+    }
+
+    // Step 2: batch insert new words
+    const stmts: D1PreparedStatement[] = [];
     for (const w of words) {
       const front = (w.front || w.word || '').trim().toLowerCase();
-      if (!front) continue;
-
-      // Check for duplicate
-      const existing = await db.prepare(
-        "SELECT id FROM questions WHERE type = 'card' AND json_extract(content, '$.front') = ?"
-      ).bind(front).first();
-      if (existing) continue; // skip duplicate
+      if (!front || existingSet.has(front)) continue;
 
       const id = crypto.randomUUID();
       const content = JSON.stringify({
@@ -192,12 +207,18 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       });
       const answer = JSON.stringify({ front, back: w.back });
 
-      await db.prepare(
-        'INSERT INTO questions (id, type, content, answer, tags, difficulty, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)'
-      ).bind(id, 'card', content, answer, tags, 3, Date.now()).run();
-      count++;
+      stmts.push(
+        db.prepare(
+          'INSERT INTO questions (id, type, content, answer, tags, difficulty, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)'
+        ).bind(id, 'card', content, answer, tags, 3, Date.now())
+      );
     }
-    return Response.json({ success: true, count });
+
+    if (stmts.length > 0) {
+      await db.batch(stmts);
+    }
+
+    return Response.json({ success: true, count: stmts.length });
   }
 
   // Legacy: single word save (non-enrichOnly)
