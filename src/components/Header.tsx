@@ -1,4 +1,4 @@
-import { LogOut, ChevronDown, ChevronLeft, Sun, Moon, Monitor, Users, Palette, Check, BookX } from 'lucide-react';
+import { LogOut, ChevronDown, ChevronLeft, Sun, Moon, Monitor, Users, Palette, Check, BookX, BookOpen } from 'lucide-react';
 import { getStoredTheme, setStoredTheme } from '../lib/theme';
 import { getUserName, getUserAvatar, getAllUsers } from '../lib/users';
 import { useState, useEffect, useRef } from 'react';
@@ -98,6 +98,16 @@ export default function Header({ userId, maxWidth, showBack, backTo }: HeaderPro
                 <span className="flex items-center gap-2.5">
                   <BookX className="w-4 h-4 text-gray-400 dark:text-gray-500" />
                   错题本
+                </span>
+              </button>
+              {/* Word book */}
+              <button
+                onClick={() => { setShowMenu(false); navigate(`/${userId}/cards`); }}
+                className="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+              >
+                <span className="flex items-center gap-2.5">
+                  <BookOpen className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+                  单词本
                 </span>
               </button>
               {/* Switch user group */}
