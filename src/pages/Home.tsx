@@ -286,35 +286,34 @@ export default function Home() {
                   const isClickable = !d.isFuture;
                   const isSelected = d.date === selectedDate;
                   const md = monthlyData[d.date];
-                  const hasData = !!md && (md.quizCount > 0 || md.memoryGames > 0);
                   const isDimmed = !d.isCurrentMonth;
 
                   // Build rings: only include rings with meaningful data
                   const ringDefs: { filledPercentage: number; color: string; ringWidth?: number }[] = [];
-                  if (hasData && !d.isFuture) {
+                  if (!d.isFuture) {
                     // Outer: quiz completion (Apple red/pink) — only if quizzes exist
-                    if (md.quizCount > 0) {
+                    if (md && md.quizCount > 0) {
                       ringDefs.push({
                         filledPercentage: md.completedCount / md.quizCount,
                         color: '#FA114F',
                       });
                     }
-                    // Memory game progress (Apple amber/orange)
-                    if (md.memoryGames > 0 || md.memoryGamesTarget > 0) {
+                    // Memory game progress (Apple amber/orange) — always show for today, show for past if played
+                    if (d.isToday || (md && md.memoryGames > 0)) {
                       ringDefs.push({
-                        filledPercentage: Math.min(md.memoryGames / (md.memoryGamesTarget || 5), 1),
+                        filledPercentage: md ? Math.min(md.memoryGames / (md.memoryGamesTarget || 5), 1) : 0,
                         color: '#FF9F0A',
                       });
                     }
                     // Accuracy (Apple green)
-                    if (md.answeredQuestions > 0) {
+                    if (md && md.answeredQuestions > 0) {
                       ringDefs.push({
                         filledPercentage: md.correctAnswers / md.answeredQuestions,
                         color: '#92E82A',
                       });
                     }
                     // Review (Apple cyan/teal)
-                    if (md.reviewDue > 0) {
+                    if (md && md.reviewDue > 0) {
                       ringDefs.push({
                         filledPercentage: md.reviewDone / md.reviewDue,
                         color: '#00E5CC',
