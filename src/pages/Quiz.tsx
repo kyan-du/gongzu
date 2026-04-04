@@ -110,27 +110,11 @@ export default function Quiz() {
   const totalCount = quiz.questions?.length || 0;
 
   return (
-    <Layout userId={userId || ''} showBack maxWidth="max-w-3xl">
-      {/* Quiz tag + date subheader */}
-      <div className="py-3 mb-4 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 px-2.5 py-0.5 rounded-full">
-            {quiz.tag}
-          </span>
-          {quiz.title && (() => {
-            // Remove tag text, question count, and leading/trailing punctuation
-            const sub = quiz.title
-              .replace(quiz.tag, '')
-              .replace(/\s*[·\-]\s*/g, ' ')
-              .replace(/\s*\(\d+题\)\s*/, '')
-              .trim();
-            return sub ? (
-              <span className="text-sm text-gray-500 dark:text-gray-400">{sub}</span>
-            ) : null;
-          })()}
-        </div>
-        <span className="text-sm text-gray-400 dark:text-gray-500">{date}</span>
-      </div>
+    <Layout userId={userId || ''} showBack maxWidth="max-w-3xl"
+      title={quiz?.tag || tag}
+      rightAction={<span className="text-sm text-gray-400 dark:text-gray-500">{date}</span>}
+    >
+
 
       {/* Passage / reading material */}
       {quiz.passage && (

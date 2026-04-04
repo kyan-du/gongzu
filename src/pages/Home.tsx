@@ -443,7 +443,7 @@ export default function Home() {
                         <BookOpen className="w-5 h-5 text-violet-500 dark:text-violet-400" />
                       </div>
                       <div className="text-left">
-                        <div className="font-medium text-gray-900 dark:text-gray-100">单词打卡</div>
+                        <div className="font-medium text-gray-900 dark:text-gray-100">单词记忆</div>
                         <div className="text-sm text-gray-500 dark:text-gray-400">
                           {cardCount} 个单词待背
                         </div>

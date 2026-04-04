@@ -45,6 +45,7 @@ export default function AddWords() {
   const [manualInput, setManualInput] = useState('');
   const [showManualAdd, setShowManualAdd] = useState(false);
   const [enrichingManual, setEnrichingManual] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Handle image upload
   const handleImageAdd = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -70,6 +71,7 @@ export default function AddWords() {
   const handleExtract = async () => {
     if ((!text.trim() && images.length === 0) || extracting) return;
     setExtracting(true);
+    setError(null);
 
     try {
       const controller = new AbortController();
@@ -97,13 +99,13 @@ export default function AddWords() {
         setText('');
         setImages([]);
       } else if (data.error) {
-        alert('提取失败: ' + data.error);
+        setError(data.error);
       }
     } catch (e: any) {
       if (e.name === 'AbortError') {
-        alert('请求超时，请重试');
+        setError('请求超时，请重试');
       } else {
-        alert('提取失败，请重试');
+        setError('提取失败，请重试');
       }
     }
     setExtracting(false);
@@ -155,11 +157,18 @@ export default function AddWords() {
   const hasInput = text.trim() || images.length > 0;
 
   return (
-    <Layout userId={userId || ''} showBack maxWidth="max-w-3xl">
-      <div className="flex flex-col min-h-[calc(100vh-120px)]">
+    <Layout userId={userId || ''} showBack maxWidth="max-w-3xl" title="添加生词">
+      <div className="flex flex-col min-h-[calc(100vh-180px)]">
         {/* Word list area */}
         <div className="flex-1 py-4">
-          {words.length === 0 && !extracting && (
+          {error && (
+            <div className="mx-auto max-w-sm mb-4 px-4 py-3 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
+              <p className="text-sm text-red-600 dark:text-red-400 text-center">{error}</p>
+              <button onClick={() => setError(null)} className="block mx-auto mt-1 text-xs text-red-400 hover:text-red-500">关闭</button>
+            </div>
+          )}
+
+          {words.length === 0 && !extracting && !error && (
             <div className="text-center py-16 text-gray-400 dark:text-gray-500">
               <p className="text-base mb-1">粘贴英文、拍课本、拍卷子</p>
               <p className="text-sm">AI 自动提取生词</p>

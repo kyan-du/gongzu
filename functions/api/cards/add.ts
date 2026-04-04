@@ -34,6 +34,10 @@ async function callAI(env: Env, messages: any[], maxTokens = 3000): Promise<stri
       max_tokens: maxTokens,
     }),
   });
+  if (!resp.ok) {
+    const errText = await resp.text();
+    throw new Error(`AI API ${resp.status}: ${errText.slice(0, 200)}`);
+  }
   const data = await resp.json() as any;
   let content = data.choices?.[0]?.message?.content || '';
   content = content.trim();
@@ -88,7 +92,11 @@ ONLY return the JSON array, no other text.`;
   ];
 
   const result = await callAI(env, messages);
-  return JSON.parse(result);
+  try {
+    return JSON.parse(result);
+  } catch {
+    throw new Error(`AI returned invalid JSON (${result.length} chars): ${result.slice(0, 100)}`);
+  }
 }
 
 async function enrichWord(env: Env, word: string): Promise<any> {
@@ -130,7 +138,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     try {
       // Support both `images` array and legacy `image` single
       const imgs = images || (image ? [image] : undefined);
-      const extracted = await extractWords(env, text, imgs);
+      const extracted = await extractWords(context.env, text, imgs);
       return Response.json({ success: true, words: extracted });
     } catch (e: any) {
       return Response.json({ error: 'Extract failed: ' + e.message }, { status: 500 });
@@ -140,7 +148,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   // Mode 2: Enrich single word (don't save)
   if (word && enrichOnly) {
     try {
-      const enriched = await enrichWord(env, word.trim());
+      const enriched = await enrichWord(context.env, word.trim());
       return Response.json({ success: true, word: enriched });
     } catch (e: any) {
       return Response.json({ error: 'Enrich failed: ' + e.message }, { status: 500 });
@@ -183,7 +191,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   // Legacy: single word save (non-enrichOnly)
   if (word && !enrichOnly) {
     try {
-      const enriched = await enrichWord(env, word.trim());
+      const enriched = await enrichWord(context.env, word.trim());
       const front = word.trim().toLowerCase();
       const id = crypto.randomUUID();
       const content = JSON.stringify({

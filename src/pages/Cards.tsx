@@ -122,24 +122,17 @@ export default function Cards() {
   if (!started) {
     const progress = stats ? Math.round((stats.learnedCount / Math.max(stats.totalWords, 1)) * 100) : 0;
     return (
-      <Layout userId={userId || ''} showBack maxWidth="max-w-3xl">
-        <div>
-          {/* Subheader — same style as Quiz */}
-          <div className="py-3 mb-4 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-medium border border-amber-300 dark:border-amber-600 text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-900/30">
-                单词
-              </span>
-              <span className="text-base font-medium text-gray-900 dark:text-gray-100">单词打卡</span>
-            </div>
-            <button
-              onClick={() => navigate(`/${userId}/cards/add`)}
-              className="px-3 py-1 rounded-full border border-dashed border-gray-300 dark:border-gray-600 text-xs text-gray-400 dark:text-gray-500 hover:border-gray-400 hover:text-gray-500 transition"
-            >
-              +添加生词
-            </button>
-          </div>
-
+      <Layout userId={userId || ''} showBack maxWidth="max-w-3xl"
+        title="单词记忆"
+        rightAction={
+          <button
+            onClick={() => navigate(`/${userId}/cards/add`)}
+            className="px-3 py-1 rounded-full border border-dashed border-gray-300 dark:border-gray-600 text-xs text-gray-400 dark:text-gray-500 hover:border-gray-400 hover:text-gray-500 transition"
+          >
+            +添加生词
+          </button>
+        }
+      >
           {/* Progress ring / bar */}
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-5 mb-4">
             <div className="flex items-center justify-between mb-3">
@@ -196,7 +189,6 @@ export default function Cards() {
               <p className="text-gray-500 dark:text-gray-400">今天的单词都学完啦 🎉</p>
             </div>
           )}
-        </div>
       </Layout>
     );
   }

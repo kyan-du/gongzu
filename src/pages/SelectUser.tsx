@@ -21,12 +21,12 @@ export default function SelectUser() {
       </video>
       <div className="absolute inset-0 bg-white/40 backdrop-blur-sm" />
 
-      <div className="relative z-10 w-full max-w-sm animate-fade-in">
+      <div className="relative z-10 w-full max-w-md animate-fade-in">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 drop-shadow-sm">你是谁？</h1>
         </div>
 
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-3 gap-5">
           {users.map((user, index) => (
             <button
               key={user.id}
@@ -36,7 +36,7 @@ export default function SelectUser() {
               <img
                 src={user.avatar}
                 alt={user.name}
-                className="w-20 h-20 rounded-full object-cover shadow-md mb-3"
+                className="w-24 h-24 rounded-full object-cover shadow-md mb-4"
               />
               <span className={`text-lg font-bold ${colorClasses[index % colorClasses.length]}`}>
                 {user.name}
