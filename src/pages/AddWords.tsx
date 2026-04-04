@@ -11,8 +11,8 @@ interface ExtractedWord {
   exampleCn?: string;
 }
 
-// Compress image aggressively for OCR — max 1024px on longest side, JPEG 0.4
-function compressImage(dataUrl: string, maxDim = 1024): Promise<string> {
+// Compress image for OCR — max 1600px on longest side, JPEG 0.5
+function compressImage(dataUrl: string, maxDim = 1600): Promise<string> {
   return new Promise((resolve) => {
     const img = new Image();
     img.onload = () => {
@@ -27,7 +27,7 @@ function compressImage(dataUrl: string, maxDim = 1024): Promise<string> {
       canvas.width = w;
       canvas.height = h;
       canvas.getContext('2d')!.drawImage(img, 0, 0, w, h);
-      resolve(canvas.toDataURL('image/jpeg', 0.4));
+      resolve(canvas.toDataURL('image/jpeg', 0.5));
     };
     img.src = dataUrl;
   });

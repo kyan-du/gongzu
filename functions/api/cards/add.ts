@@ -59,12 +59,13 @@ async function callAI(env: Env, messages: any[], maxTokens = 3000, vision = fals
 async function extractWords(env: Env, text?: string, images?: string[], userPrompt?: string): Promise<any[]> {
   const systemPrompt = `You are an AI that extracts English vocabulary for a Chinese student.
 
-From the given text or image(s), extract English words AND phrases following these rules:
-- If it's a vocabulary list / word table: extract ALL items in the list, no exceptions
+From the given text or image(s), extract ALL English words AND phrases following these rules:
+- If it's a vocabulary list / word table: extract EVERY item — scan ALL columns, ALL rows, left to right, top to bottom. Do NOT stop after the first column.
 - If it's a test paper / exam: focus on words from INCORRECT answers or marked/circled items
 - If it's a text passage: extract all noteworthy English words and phrases
 - When in doubt, include the word/phrase rather than skip it
-- IMPORTANT: Include phrases and collocations such as "both...and...", "look forward to", "be famous for", "not only...but also...", etc. These are as important as single words.
+- Include phrases and collocations such as "both...and...", "look forward to", "be famous for", "not only...but also...", etc.
+- Make sure to scan the ENTIRE image — many vocabulary pages have 2 or 3 columns side by side.
 
 For each item, provide:
 - front: the English word or phrase (for patterns use "..." as placeholder, e.g. "both...and...")
