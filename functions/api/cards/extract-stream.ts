@@ -3,6 +3,7 @@
 
 interface Env {
   DB: D1Database;
+  R2: R2Bucket;
   AI_PROXY_KEY: string;
   AI_BASE_URL?: string;
   AI_MODEL?: string;
@@ -19,13 +20,13 @@ function getAIConfig(env: Env, vision = false) {
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
   const body = await context.request.json() as any;
-  const { text, images } = body;
+  const { text, images, imageKeys } = body;
 
-  if (!text?.trim() && !images?.length) {
-    return Response.json({ error: 'text or images required' }, { status: 400 });
+  if (!text?.trim() && !images?.length && !imageKeys?.length) {
+    return Response.json({ error: 'text, images, or imageKeys required' }, { status: 400 });
   }
 
-  const hasImages = !!(images?.length);
+  const hasImages = !!(images?.length || imageKeys?.length);
   const cfg = getAIConfig(context.env, hasImages);
 
   const systemPrompt = `You are an AI that extracts English vocabulary for a Chinese student.
@@ -54,13 +55,23 @@ Output words one per line. No array brackets, no commas between objects. Just on
 
   const userContent: any[] = [];
 
-  if (images?.length) {
+  // Prefer imageKeys (R2 URLs) — smaller request body, faster
+  if (imageKeys?.length) {
+    const origin = new URL(context.request.url).origin;
+    for (const key of imageKeys) {
+      const url = `${origin}/api/cards/image/${key}`;
+      userContent.push({
+        type: 'image_url',
+        image_url: { url, detail: 'auto' },
+      });
+    }
+  } else if (images?.length) {
     for (const img of images) {
       userContent.push({
         type: 'image_url',
         image_url: {
           url: img.startsWith('data:') ? img : `data:image/jpeg;base64,${img}`,
-          detail: 'auto',  // auto instead of high — faster, sufficient for vocab tables
+          detail: 'auto',
         },
       });
     }

@@ -9,5 +9,9 @@ binding = "DB"
 database_name = "gongzu"
 database_id = "3276c058-d699-439b-b586-494dd0e8ef6a"
 
+[[r2_buckets]]
+binding = "R2"
+bucket_name = "gongzu-uploads"
+
 [vars]
 ENVIRONMENT = "development"

@@ -47,9 +47,26 @@ export default function AddWords() {
   const [manualInput, setManualInput] = useState('');
   const [showManualAdd, setShowManualAdd] = useState(false);
   const [enrichingManual, setEnrichingManual] = useState(false);
+  const [imageKeys, setImageKeys] = useState<string[]>([]); // R2 keys for uploaded images
+  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Handle image upload
+  // Upload image to R2, return key
+  const uploadToR2 = async (dataUrl: string): Promise<string | null> => {
+    try {
+      const resp = await fetch('/api/cards/upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: dataUrl }),
+      });
+      const data = await resp.json() as any;
+      return data.key || null;
+    } catch {
+      return null;
+    }
+  };
+
+  // Handle image upload — compress then upload to R2
   const handleImageAdd = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
@@ -59,6 +76,13 @@ export default function AddWords() {
         const raw = ev.target?.result as string;
         const compressed = await compressImage(raw);
         setImages(prev => [...prev, compressed]);
+        // Upload to R2 in background
+        setUploading(true);
+        const key = await uploadToR2(compressed);
+        if (key) {
+          setImageKeys(prev => [...prev, key]);
+        }
+        setUploading(false);
       };
       reader.readAsDataURL(file);
     });
@@ -67,6 +91,7 @@ export default function AddWords() {
 
   const removeImage = (idx: number) => {
     setImages(prev => prev.filter((_, i) => i !== idx));
+    setImageKeys(prev => prev.filter((_, i) => i !== idx));
   };
 
   const handlePaste = (e: React.ClipboardEvent) => {
@@ -82,6 +107,12 @@ export default function AddWords() {
           const raw = ev.target?.result as string;
           const compressed = await compressImage(raw);
           setImages(prev => [...prev, compressed]);
+          setUploading(true);
+          const key = await uploadToR2(compressed);
+          if (key) {
+            setImageKeys(prev => [...prev, key]);
+          }
+          setUploading(false);
         };
         reader.readAsDataURL(file);
       }
@@ -114,7 +145,12 @@ export default function AddWords() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           text: text.trim() || undefined,
-          images: images.length > 0 ? images : undefined,
+          // Prefer R2 keys (much smaller payload) over base64
+          ...(imageKeys.length > 0
+            ? { imageKeys }
+            : images.length > 0
+              ? { images }
+              : {}),
         }),
         signal: controller.signal,
       });
@@ -170,6 +206,7 @@ export default function AddWords() {
       if (firstWordReceived) {
         setText('');
         setImages([]);
+        setImageKeys([]);
       } else if (!error) {
         setError('未识别到单词，请换张图片试试');
       }
@@ -248,6 +285,17 @@ export default function AddWords() {
               {images.map((img, i) => (
                 <div key={i} className="relative flex-shrink-0 group">
                   <img src={img} alt="" className="w-14 h-14 rounded-lg object-cover border border-gray-100 dark:border-gray-700" />
+                  {/* Upload indicator */}
+                  {i >= imageKeys.length && uploading && (
+                    <div className="absolute inset-0 rounded-lg bg-black/30 flex items-center justify-center">
+                      <Loader2 className="w-4 h-4 text-white animate-spin" />
+                    </div>
+                  )}
+                  {i < imageKeys.length && (
+                    <div className="absolute bottom-0.5 right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-500 flex items-center justify-center">
+                      <Check className="w-2 h-2 text-white" />
+                    </div>
+                  )}
                   <button
                     onClick={() => removeImage(i)}
                     className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
