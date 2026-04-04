@@ -61,6 +61,7 @@ export default function Home() {
   const [requested, setRequested] = useState(false);
   const [mistakesCount, setMistakesCount] = useState<number>(0);
   const [cardCount, setCardCount] = useState<number>(0);
+  const [cardTotalWords, setCardTotalWords] = useState<number>(0);
   const [calMonth, setCalMonth] = useState(() => new Date());
   const [monthlyData, setMonthlyData] = useState<Record<string, MonthlyDayData>>({});
   const [monthlyCache, setMonthlyCache] = useState<Record<string, Record<string, MonthlyDayData>>>({});
@@ -102,7 +103,16 @@ export default function Home() {
       .catch(() => {});
   }, [userId]);
 
-  // Fetch card count for today
+  // Fetch card stats
+  useEffect(() => {
+    fetch(`/api/cards?userId=${userId}&mode=stats`)
+      .then(r => r.json())
+      .then(d => {
+        setCardTotalWords(d.stats?.totalWords || 0);
+      })
+      .catch(() => {});
+  }, [userId]);
+
   useEffect(() => {
     if (selectedDate !== todayStr) { setCardCount(0); return; }
     fetch(`/api/cards?userId=${userId}`)
@@ -339,6 +349,23 @@ export default function Home() {
                 <ChevronRight className="w-4 h-4 text-gray-400 dark:text-gray-500" />
               </div>
             </button>
+
+            {/* Word Book Card */}
+            <button onClick={() => navigate(`/${userId}/cards`)}
+              className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-3 hover:shadow-md transition active:scale-[0.98]">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-violet-50 dark:bg-violet-900/30">
+                  <BookOpen className="w-4 h-4 text-violet-500 dark:text-violet-400" />
+                </div>
+                <div className="text-left flex-1">
+                  <div className="text-sm font-medium text-gray-900 dark:text-gray-100">单词本</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">
+                    {cardTotalWords > 0 ? `共 ${cardTotalWords} 词` : '添加生词开始学习'}
+                  </div>
+                </div>
+                <ChevronRight className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+              </div>
+            </button>
           </div>
 
           {/* RIGHT COLUMN: Selected day content */}
@@ -433,9 +460,9 @@ export default function Home() {
                   ))}
                 </div>
 
-                {/* Vocabulary card entry */}
+                {/* Vocabulary card entry — daily route */}
                 <button
-                  onClick={() => navigate(`/${userId}/cards`)}
+                  onClick={() => navigate(`/${userId}/${selectedDate}/cards`)}
                   className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition active:scale-[0.98] mt-3">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-violet-50 dark:bg-violet-900/30">
@@ -444,11 +471,21 @@ export default function Home() {
                     <div className="text-left">
                       <div className="font-medium text-gray-900 dark:text-gray-100">单词记忆</div>
                       <div className="text-sm text-gray-500 dark:text-gray-400">
-                        {cardCount > 0 ? `${cardCount} 个单词待背` : '添加生词开始学习'}
+                        {cardCount > 0 ? `${cardCount} 个单词待背` : '今日已完成'}
                       </div>
                     </div>
                   </div>
-                  <span className="text-sm text-gray-400">→</span>
+                  {cardCount > 0 ? (
+                    <div className="flex items-center gap-1 text-sm text-amber-500 dark:text-amber-400 font-medium">
+                      <Clock className="w-3.5 h-3.5" />
+                      未完成
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-1 text-sm text-green-500 dark:text-green-400 font-medium">
+                      <CheckCircle className="w-3.5 h-3.5" />
+                      已完成
+                    </div>
+                  )}
                 </button>
               </>
             )}
