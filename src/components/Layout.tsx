@@ -5,7 +5,7 @@ export interface LayoutProps {
   showBack?: boolean;
   backTo?: string;
   maxWidth?: string;
-  title?: string;
+  title?: React.ReactNode;
   rightAction?: React.ReactNode;
   children: React.ReactNode;
 }

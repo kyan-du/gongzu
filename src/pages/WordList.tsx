@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Search, Trash2, ChevronDown, ArrowUpDown, CheckSquare, Square, Undo2 } from 'lucide-react';
 import Layout from '../components/Layout';
 
@@ -22,6 +22,7 @@ interface DeletedItem {
 
 export default function WordList() {
   const { userId } = useParams<{ userId: string }>();
+  const navigate = useNavigate();
   const [words, setWords] = useState<Word[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -125,8 +126,15 @@ export default function WordList() {
 
   return (
     <Layout userId={userId || ''} showBack backTo={`/${userId}/cards`} maxWidth="max-w-3xl"
-      title="生词本"
-      rightAction={<span className="text-sm text-gray-400 dark:text-gray-500">{total - deleted.size} 词</span>}
+      title={<>生词本 <span className="text-xs font-normal text-gray-400 dark:text-gray-500">({total - deleted.size} 词)</span></>}
+      rightAction={
+        <button
+          onClick={() => navigate(`/${userId}/cards/add`)}
+          className="px-3 py-1 rounded-full border border-dashed border-gray-300 dark:border-gray-600 text-xs text-gray-400 dark:text-gray-500 hover:border-gray-400 hover:text-gray-500 transition"
+        >
+          +生词
+        </button>
+      }
     >
       {/* Search + Sort bar */}
       <div className="mb-4 space-y-2">
