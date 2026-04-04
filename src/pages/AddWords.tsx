@@ -265,6 +265,7 @@ export default function AddWords() {
   };
 
   const hasInput = text.trim() || images.length > 0;
+  const canSend = hasInput && !extracting && !uploading && (images.length === 0 || imageKeys.length === images.length);
 
   return (
     <Layout userId={userId || ''} showBack backTo={`/${userId}/cards`} maxWidth="max-w-3xl" title="添加生词">
@@ -351,9 +352,9 @@ export default function AddWords() {
             {/* Send button */}
             <button
               onClick={handleExtract}
-              disabled={extracting || !hasInput}
+              disabled={!canSend}
               className={`p-2.5 rounded-full flex-shrink-0 transition ${
-                hasInput && !extracting
+                canSend
                   ? 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 hover:bg-gray-700 dark:hover:bg-gray-300'
                   : 'bg-gray-100 dark:bg-gray-700 text-gray-300 dark:text-gray-500'
               }`}
