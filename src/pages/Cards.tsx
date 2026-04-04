@@ -173,7 +173,7 @@ export default function Cards() {
       const totalW = stats?.totalWords || 0;
       const mastered = stats?.masteredCount || 0;
       const learned = (stats?.learnedCount || 0) - mastered;
-      const unlearned = totalW - (stats?.learnedCount || 0);
+      const reviewDue = stats?.reviewDueCount || 0;
       return (
         <Layout userId={userId || ''} showBack backTo={`/${userId}/home`} maxWidth="max-w-3xl"
           title={`单词本（${totalW} 词）`}
@@ -197,8 +197,8 @@ export default function Cards() {
               <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">学习中</div>
             </div>
             <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4 text-center">
-              <div className="text-2xl font-bold text-gray-600 dark:text-gray-300">{Math.max(unlearned, 0)}</div>
-              <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">未学习</div>
+              <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{reviewDue}</div>
+              <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">待复习</div>
             </div>
           </div>
 
