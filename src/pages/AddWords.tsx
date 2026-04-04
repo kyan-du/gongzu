@@ -11,8 +11,8 @@ interface ExtractedWord {
   exampleCn?: string;
 }
 
-// Compress image for upload — max 2048px on longest side, JPEG 0.7
-function compressImage(dataUrl: string, maxDim = 2048): Promise<string> {
+// Compress image for upload — max 1024px on longest side, JPEG 0.6 (speed optimized)
+function compressImage(dataUrl: string, maxDim = 1024): Promise<string> {
   return new Promise((resolve) => {
     const img = new Image();
     img.onload = () => {
@@ -27,7 +27,7 @@ function compressImage(dataUrl: string, maxDim = 2048): Promise<string> {
       canvas.width = w;
       canvas.height = h;
       canvas.getContext('2d')!.drawImage(img, 0, 0, w, h);
-      resolve(canvas.toDataURL('image/jpeg', 0.7));
+      resolve(canvas.toDataURL('image/jpeg', 0.6));
     };
     img.src = dataUrl;
   });
@@ -97,23 +97,22 @@ export default function AddWords() {
     setExtractPhase(0);
     setError(null);
 
-    // Phased loading text timers
+    // Phased loading text timers (only show before first word arrives)
     const phaseTimers = [
       setTimeout(() => setExtractPhase(1), 2000),
       setTimeout(() => setExtractPhase(2), 10000),
       setTimeout(() => setExtractPhase(3), 25000),
     ];
+    let firstWordReceived = false;
 
     try {
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 120000);
 
-      const resp = await fetch('/api/cards/add', {
+      const resp = await fetch('/api/cards/extract-stream', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          userId,
-          extract: true,
           text: text.trim() || undefined,
           images: images.length > 0 ? images : undefined,
         }),
@@ -121,16 +120,58 @@ export default function AddWords() {
       });
       clearTimeout(timeout);
 
-      const data = await resp.json();
-      if (data.words?.length) {
-        setWords(prev => {
-          const existing = new Set(prev.map(w => w.front.toLowerCase()));
-          return [...prev, ...data.words.filter((w: ExtractedWord) => !existing.has(w.front.toLowerCase()))];
-        });
+      if (!resp.ok) {
+        const data = await resp.json().catch(() => ({ error: 'Request failed' }));
+        setError(data.error || `HTTP ${resp.status}`);
+        phaseTimers.forEach(clearTimeout);
+        setExtracting(false);
+        return;
+      }
+
+      const reader = resp.body!.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+
+        for (const line of lines) {
+          if (!line.startsWith('data: ')) continue;
+          try {
+            const evt = JSON.parse(line.slice(6));
+
+            if (evt.type === 'word' && evt.word?.front) {
+              if (!firstWordReceived) {
+                firstWordReceived = true;
+                phaseTimers.forEach(clearTimeout);
+                setExtractPhase(99); // signals "receiving words"
+              }
+              setWords(prev => {
+                const existing = new Set(prev.map(w => w.front.toLowerCase()));
+                if (existing.has(evt.word.front.toLowerCase())) return prev;
+                return [...prev, evt.word];
+              });
+            } else if (evt.type === 'done') {
+              // stream complete
+            } else if (evt.type === 'error') {
+              setError(evt.error);
+            }
+          } catch {
+            // ignore parse error
+          }
+        }
+      }
+
+      if (firstWordReceived) {
         setText('');
         setImages([]);
-      } else if (data.error) {
-        setError(data.error);
+      } else if (!error) {
+        setError('未识别到单词，请换张图片试试');
       }
     } catch (e: any) {
       if (e.name === 'AbortError') {
@@ -284,7 +325,7 @@ export default function AddWords() {
             </div>
           )}
 
-          {extracting && (
+          {extracting && extractPhase !== 99 && words.length === 0 && (
             <div className="text-center py-12">
               <Loader2 className="w-8 h-8 text-violet-500 animate-spin mx-auto mb-3" />
               <p className="text-sm text-gray-500 dark:text-gray-400 animate-pulse">
@@ -310,7 +351,14 @@ export default function AddWords() {
             <>
               <div className="flex items-center justify-between mb-3">
                 <span className="text-sm text-gray-500 dark:text-gray-400">
-                  已提取 {words.length} 个单词
+                  {extracting ? (
+                    <span className="flex items-center gap-1.5">
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      已提取 {words.length} 个单词，继续识别中…
+                    </span>
+                  ) : (
+                    <>已提取 {words.length} 个单词</>
+                  )}
                 </span>
                 <button
                   onClick={() => setShowManualAdd(!showManualAdd)}

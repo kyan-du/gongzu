@@ -83,7 +83,7 @@ ONLY return the JSON array, no other text.`;
     for (const img of images) {
       userContent.push({
         type: 'image_url',
-        image_url: { url: img.startsWith('data:') ? img : `data:image/jpeg;base64,${img}`, detail: 'high' }
+        image_url: { url: img.startsWith('data:') ? img : `data:image/jpeg;base64,${img}`, detail: 'auto' }
       });
     }
   }
