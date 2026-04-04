@@ -11,26 +11,9 @@ interface ExtractedWord {
   exampleCn?: string;
 }
 
-// Compress image for OCR — max 1600px on longest side, JPEG 0.5
-function compressImage(dataUrl: string, maxDim = 1600): Promise<string> {
-  return new Promise((resolve) => {
-    const img = new Image();
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      let w = img.width, h = img.height;
-      const longest = Math.max(w, h);
-      if (longest > maxDim) {
-        const scale = maxDim / longest;
-        w = Math.round(w * scale);
-        h = Math.round(h * scale);
-      }
-      canvas.width = w;
-      canvas.height = h;
-      canvas.getContext('2d')!.drawImage(img, 0, 0, w, h);
-      resolve(canvas.toDataURL('image/jpeg', 0.5));
-    };
-    img.src = dataUrl;
-  });
+// Pass image through without compression for best OCR accuracy
+function compressImage(dataUrl: string): Promise<string> {
+  return Promise.resolve(dataUrl);
 }
 
 export default function AddWords() {
