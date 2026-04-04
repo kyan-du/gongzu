@@ -1,4 +1,4 @@
-// POST /api/cards/review — submit remembered/not-remembered for a card
+// POST /api/vocab/review — submit remembered/not-remembered for a card
 
 interface Env {
   DB: D1Database;

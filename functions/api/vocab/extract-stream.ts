@@ -1,4 +1,4 @@
-// POST /api/cards/extract-stream — SSE streaming word extraction
+// POST /api/vocab/extract-stream — SSE streaming word extraction
 // Returns text/event-stream with incremental word results
 
 interface Env {
@@ -59,7 +59,7 @@ Output words one per line. No array brackets, no commas between objects. Just on
   if (imageKeys?.length) {
     const origin = new URL(context.request.url).origin;
     for (const key of imageKeys) {
-      const url = `${origin}/api/cards/image/${key}`;
+      const url = `${origin}/api/vocab/image/${key}`;
       userContent.push({
         type: 'image_url',
         image_url: { url, detail: 'auto' },

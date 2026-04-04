@@ -1,4 +1,4 @@
-// POST /api/cards/add — unified word extraction + add
+// POST /api/vocab/add — unified word extraction + add
 // Modes:
 //   { extract: true, text?, images?, userId } → AI extract, return word list (don't save)
 //   { word, userId, enrichOnly: true } → AI enrich single word, return (don't save)

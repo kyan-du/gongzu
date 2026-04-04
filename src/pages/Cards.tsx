@@ -68,7 +68,7 @@ export default function Cards() {
   useEffect(() => {
     if (!userId) return;
     setLoading(true);
-    fetch(`/api/cards?userId=${userId}`)
+    fetch(`/api/vocab?userId=${userId}`)
       .then(r => r.json())
       .then(data => {
         setWords(data.words || []);
@@ -77,7 +77,7 @@ export default function Cards() {
       })
       .catch(() => setLoading(false));
     // Fetch settings
-    fetch(`/api/cards/settings?userId=${userId}`)
+    fetch(`/api/vocab/settings?userId=${userId}`)
       .then(r => r.json())
       .then(d => {
         setDailyNewWords(d.dailyNewWords ?? 15);
@@ -90,14 +90,14 @@ export default function Cards() {
     if (!userId) return;
     setSavingSettings(true);
     try {
-      await fetch('/api/cards/settings', {
+      await fetch('/api/vocab/settings', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId, dailyNewWords, dailyTotalLimit }),
       });
       setShowSettings(false);
       // Refresh word list with new settings
-      const r = await fetch(`/api/cards?userId=${userId}`);
+      const r = await fetch(`/api/vocab?userId=${userId}`);
       const data = await r.json();
       setWords(data.words || []);
       setStats(data.stats || null);
@@ -153,7 +153,7 @@ export default function Cards() {
     setResults(prev => ({ ...prev, [current.id]: correct }));
 
     try {
-      await fetch('/api/cards/review', {
+      await fetch('/api/vocab/review', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId, questionId: current.id, remembered: correct }),
@@ -174,7 +174,7 @@ export default function Cards() {
   const handleMaster = useCallback(async () => {
     if (!current) return;
     try {
-      await fetch('/api/cards', {
+      await fetch('/api/vocab', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId, questionId: current.id }),
@@ -212,7 +212,7 @@ export default function Cards() {
           rightAction={
             <div className="flex gap-2">
               <button
-                onClick={() => navigate(`/${userId}/cards/add`)}
+                onClick={() => navigate(`/${userId}/vocab/add`)}
                 className="px-3 py-1 rounded-full border border-dashed border-gray-300 dark:border-gray-600 text-xs text-gray-400 dark:text-gray-500 hover:border-gray-400 hover:text-gray-500 transition"
               >
                 +生词
@@ -298,7 +298,7 @@ export default function Cards() {
           {/* Action entries */}
           <div className="space-y-3">
             <button
-              onClick={() => navigate(`/${userId}/${todayDate}/cards`)}
+              onClick={() => navigate(`/${userId}/${todayDate}/vocab`)}
               className="w-full bg-violet-50 dark:bg-violet-900/20 rounded-xl p-4 flex items-center justify-between hover:bg-violet-100 dark:hover:bg-violet-900/30 transition active:scale-[0.98]"
             >
               <div className="flex items-center gap-3">
@@ -316,7 +316,7 @@ export default function Cards() {
             </button>
 
             <button
-              onClick={() => navigate(`/${userId}/cards/list`)}
+              onClick={() => navigate(`/${userId}/vocab/list`)}
               className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition active:scale-[0.98]"
             >
               <div className="flex items-center gap-3">
@@ -361,7 +361,7 @@ export default function Cards() {
 
           {total > 0 ? (
             <button
-              onClick={() => navigate(`/${userId}/${currentDate}/cards/learn`)}
+              onClick={() => navigate(`/${userId}/${currentDate}/vocab/learn`)}
               className="w-full py-3.5 rounded-full bg-violet-600 dark:bg-violet-500 text-white font-semibold text-base hover:bg-violet-700 dark:hover:bg-violet-600 transition shadow-sm active:scale-[0.98]"
             >
               开始学习（{total} 词）
@@ -399,7 +399,7 @@ export default function Cards() {
   if (finished) {
     const accuracy = total > 0 ? Math.round((correctCount / total) * 100) : 0;
     return (
-      <Layout userId={userId || ''} showBack backTo={`/${userId}/${currentDate}/cards`} maxWidth="max-w-3xl">
+      <Layout userId={userId || ''} showBack backTo={`/${userId}/${currentDate}/vocab`} maxWidth="max-w-3xl">
         <div className="text-center py-10">
           <CheckCircle className="w-16 h-16 text-emerald-500 mx-auto mb-4" />
           <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
@@ -443,7 +443,7 @@ export default function Cards() {
 
   // Active learning
   return (
-    <Layout userId={userId || ''} showBack backTo={`/${userId}/${currentDate}/cards`} maxWidth="max-w-3xl">
+    <Layout userId={userId || ''} showBack backTo={`/${userId}/${currentDate}/vocab`} maxWidth="max-w-3xl">
       {/* Progress header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">

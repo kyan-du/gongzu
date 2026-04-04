@@ -103,7 +103,7 @@ export default function DailyView() {
 
   useEffect(() => {
     if (!isToday(currentDate)) { setCardStats(null); return; }
-    fetch(`/api/cards?userId=${userId}&mode=stats`)
+    fetch(`/api/vocab?userId=${userId}&mode=stats`)
       .then(r => r.json())
       .then(d => setCardStats({
         totalWords: d.stats?.totalWords || 0,
@@ -266,7 +266,7 @@ export default function DailyView() {
               <button
                 onClick={() => {
                   const dateStr = toDateStr(currentDate);
-                  navigate(cardStats && cardStats.totalWords > 0 ? `/${userId}/${dateStr}/cards` : `/${userId}/${dateStr}/cards/add`);
+                  navigate(cardStats && cardStats.totalWords > 0 ? `/${userId}/${dateStr}/vocab` : `/${userId}/${dateStr}/vocab/add`);
                 }}
                 className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition active:scale-[0.98]"
               >

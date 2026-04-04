@@ -54,7 +54,7 @@ export default function AddWords() {
   // Upload image to R2, return key
   const uploadToR2 = async (dataUrl: string): Promise<string | null> => {
     try {
-      const resp = await fetch('/api/cards/upload', {
+      const resp = await fetch('/api/vocab/upload', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ image: dataUrl }),
@@ -140,7 +140,7 @@ export default function AddWords() {
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 120000);
 
-      const resp = await fetch('/api/cards/extract-stream', {
+      const resp = await fetch('/api/vocab/extract-stream', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -233,7 +233,7 @@ export default function AddWords() {
     setEnrichingManual(true);
 
     try {
-      const resp = await fetch('/api/cards/add', {
+      const resp = await fetch('/api/vocab/add', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId, word: w, enrichOnly: true }),
@@ -254,12 +254,12 @@ export default function AddWords() {
     setSaving(true);
 
     try {
-      await fetch('/api/cards/add', {
+      await fetch('/api/vocab/add', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId, words }),
       });
-      navigate(`/${userId}/cards`);
+      navigate(`/${userId}/vocab`);
     } catch (e) { /* ignore */ }
     setSaving(false);
   };
@@ -268,7 +268,7 @@ export default function AddWords() {
   const canSend = hasInput && !extracting && !uploading && (images.length === 0 || imageKeys.length === images.length);
 
   return (
-    <Layout userId={userId || ''} showBack backTo={`/${userId}/cards`} maxWidth="max-w-3xl" title="添加生词">
+    <Layout userId={userId || ''} showBack backTo={`/${userId}/vocab`} maxWidth="max-w-3xl" title="添加生词">
       <div className="flex flex-col">
         {/* Error */}
         {error && (

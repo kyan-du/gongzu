@@ -1,5 +1,5 @@
-// GET /api/cards/manage?userId=xxx&page=1&pageSize=20&sort=newest&q=xxx
-// DELETE /api/cards/manage?userId=xxx&id=xxx
+// GET /api/vocab/manage?userId=xxx&page=1&pageSize=20&sort=newest&q=xxx
+// DELETE /api/vocab/manage?userId=xxx&id=xxx
 
 interface Env {
   DB: D1Database;

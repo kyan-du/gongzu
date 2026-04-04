@@ -1,4 +1,4 @@
-// POST /api/cards/upload — upload image to R2, return public URL
+// POST /api/vocab/upload — upload image to R2, return public URL
 // Body: { image: "data:image/jpeg;base64,..." }
 // Returns: { url: "https://..." }
 
@@ -34,7 +34,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
   // R2 public URL — use the bucket's default domain
   // For CF Pages + R2 binding, we serve via a proxy endpoint
-  const url = `/api/cards/image/${key}`;
+  const url = `/api/vocab/image/${key}`;
 
   return Response.json({ success: true, key, url });
 };

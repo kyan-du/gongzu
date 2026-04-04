@@ -1,5 +1,5 @@
-// GET /api/cards/settings?userId=cyan — get card learning settings
-// PUT /api/cards/settings — update settings
+// GET /api/vocab/settings?userId=cyan — get card learning settings
+// PUT /api/vocab/settings — update settings
 
 interface Env {
   DB: D1Database;

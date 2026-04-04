@@ -47,7 +47,7 @@ export default function WordList() {
         sort,
       });
       if (search.trim()) params.set('q', search.trim());
-      const res = await fetch(`/api/cards/manage?${params}`);
+      const res = await fetch(`/api/vocab/manage?${params}`);
       const data = await res.json();
       setWords(prev => append ? [...prev, ...(data.words || [])] : (data.words || []));
       setTotal(data.total || 0);
@@ -89,7 +89,7 @@ export default function WordList() {
         setDeleted(prev => { const n = new Map(prev); n.delete(id); return n; });
         setWords(prev => prev.filter(w => w.id !== id));
         setTotal(prev => prev - 1);
-        fetch(`/api/cards/manage?id=${id}`, { method: 'DELETE' }).catch(console.error);
+        fetch(`/api/vocab/manage?id=${id}`, { method: 'DELETE' }).catch(console.error);
       }, 5000);
       newDeleted.set(id, { word, index: words.findIndex(w => w.id === id), timer });
     });
@@ -125,11 +125,11 @@ export default function WordList() {
   const liveCount = words.filter(w => !deleted.has(w.id)).length;
 
   return (
-    <Layout userId={userId || ''} showBack backTo={`/${userId}/cards`} maxWidth="max-w-3xl"
+    <Layout userId={userId || ''} showBack backTo={`/${userId}/vocab`} maxWidth="max-w-3xl"
       title={<>生词本 <span className="text-xs font-normal text-gray-400 dark:text-gray-500">({total - deleted.size} 词)</span></>}
       rightAction={
         <button
-          onClick={() => navigate(`/${userId}/cards/add`)}
+          onClick={() => navigate(`/${userId}/vocab/add`)}
           className="px-3 py-1 rounded-full border border-dashed border-gray-300 dark:border-gray-600 text-xs text-gray-400 dark:text-gray-500 hover:border-gray-400 hover:text-gray-500 transition"
         >
           +生词

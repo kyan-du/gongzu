@@ -108,7 +108,7 @@ export default function Home() {
 
   // Fetch card stats
   useEffect(() => {
-    fetch(`/api/cards?userId=${userId}&mode=stats`)
+    fetch(`/api/vocab?userId=${userId}&mode=stats`)
       .then(r => r.json())
       .then(d => {
         const s = d.stats || {};
@@ -122,7 +122,7 @@ export default function Home() {
 
   useEffect(() => {
     if (selectedDate !== todayStr) { setCardCount(0); return; }
-    fetch(`/api/cards?userId=${userId}`)
+    fetch(`/api/vocab?userId=${userId}`)
       .then(r => r.json())
       .then(d => setCardCount((d.words || []).length))
       .catch(() => setCardCount(0));
@@ -355,7 +355,7 @@ export default function Home() {
             </button>
 
             {/* Word Book Card */}
-            <button onClick={() => navigate(`/${userId}/cards`)}
+            <button onClick={() => navigate(`/${userId}/vocab`)}
               className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-3 hover:shadow-md transition active:scale-[0.98] mt-3">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-violet-50 dark:bg-violet-900/30">
@@ -468,7 +468,7 @@ export default function Home() {
 
                 {/* Vocabulary card entry — daily route */}
                 <button
-                  onClick={() => navigate(`/${userId}/${selectedDate}/cards`)}
+                  onClick={() => navigate(`/${userId}/${selectedDate}/vocab`)}
                   className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition active:scale-[0.98] mt-3">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-violet-50 dark:bg-violet-900/30">

@@ -1,4 +1,4 @@
-// GET /api/cards/image/tmp/[uuid].[ext] — serve image from R2
+// GET /api/vocab/image/tmp/[uuid].[ext] — serve image from R2
 interface Env {
   R2: R2Bucket;
 }

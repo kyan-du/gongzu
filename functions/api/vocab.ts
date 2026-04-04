@@ -1,7 +1,7 @@
-// GET /api/cards?userId=cyan — get today's card deck (new + review) + stats
-// GET /api/cards?userId=cyan&mode=stats — only stats (for home page)
-// POST /api/cards — admin: bulk add words
-// PATCH /api/cards — mark word as "mastered" (斩)
+// GET /api/vocab?userId=cyan — get today's card deck (new + review) + stats
+// GET /api/vocab?userId=cyan&mode=stats — only stats (for home page)
+// POST /api/vocab — admin: bulk add words
+// PATCH /api/vocab — mark word as "mastered" (斩)
 
 interface Env {
   DB: D1Database;
@@ -140,7 +140,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   return Response.json({ words, stats, date: today });
 };
 
-// POST /api/cards — bulk add vocabulary words
+// POST /api/vocab — bulk add vocabulary words
 export const onRequestPost: PagesFunction<Env> = async (context) => {
   const auth = context.request.headers.get('Authorization');
   if (auth !== `Bearer ${context.env.ADMIN_API_KEY}`) {
@@ -182,7 +182,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   return Response.json({ success: true, count });
 };
 
-// PATCH /api/cards — mark word as mastered ("斩")
+// PATCH /api/vocab — mark word as mastered ("斩")
 export const onRequestPatch: PagesFunction<Env> = async (context) => {
   const body = await context.request.json() as any;
   const { userId, questionId } = body;

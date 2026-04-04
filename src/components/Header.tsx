@@ -102,7 +102,7 @@ export default function Header({ userId, maxWidth, showBack, backTo }: HeaderPro
               </button>
               {/* Word book */}
               <button
-                onClick={() => { setShowMenu(false); navigate(`/${userId}/cards`); }}
+                onClick={() => { setShowMenu(false); navigate(`/${userId}/vocab`); }}
                 className="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
               >
                 <span className="flex items-center gap-2.5">
