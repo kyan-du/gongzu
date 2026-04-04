@@ -106,3 +106,58 @@ CREATE INDEX IF NOT EXISTS idx_mastery_review
   ON knowledge_mastery(user_id, mastered, next_review_at);
 CREATE INDEX IF NOT EXISTS idx_mastery_point
   ON knowledge_mastery(user_id, knowledge_point);
+
+-- 生词表（独立于 questions 表）
+CREATE TABLE IF NOT EXISTS vocabulary (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  word TEXT NOT NULL,                  -- 英文单词或短语（原始大小写）
+  word_lower TEXT NOT NULL,            -- 小写形式（用于去重和搜索）
+  meaning TEXT NOT NULL,               -- 中文释义+词性
+  phonetic TEXT,                       -- IPA 音标
+  example TEXT,                        -- 例句
+  example_cn TEXT,                     -- 例句中文翻译
+  tags TEXT,                           -- 标签（JSON 数组）
+  source TEXT DEFAULT 'manual',        -- 来源：'manual' | 'extracted' | 'imported'
+  difficulty INTEGER DEFAULT 3,        -- 难度 1-5
+  created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+-- 唯一索引：每个用户的单词不重复（基于小写形式）
+CREATE UNIQUE INDEX IF NOT EXISTS idx_vocabulary_user_word
+  ON vocabulary(user_id, word_lower);
+
+-- 时间索引：支持"最新添加"排序
+CREATE INDEX IF NOT EXISTS idx_vocabulary_created
+  ON vocabulary(user_id, created_at DESC);
+
+-- 生词复习记录表（艾宾浩斯间隔重复）
+CREATE TABLE IF NOT EXISTS vocabulary_reviews (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  vocabulary_id TEXT NOT NULL,         -- 外键 → vocabulary.id
+  remembered INTEGER NOT NULL,         -- 0/1
+  next_review_at TEXT,                 -- 下次复习日期（YYYY-MM-DD 格式）
+  interval_days INTEGER DEFAULT 1,     -- 当前间隔天数
+  reviewed_at INTEGER NOT NULL DEFAULT (unixepoch()),
+  FOREIGN KEY (user_id) REFERENCES users(id),
+  FOREIGN KEY (vocabulary_id) REFERENCES vocabulary(id) ON DELETE CASCADE
+);
+
+-- 复习队列索引：查询今日待复习的单词
+CREATE INDEX IF NOT EXISTS idx_vocabulary_reviews_next
+  ON vocabulary_reviews(user_id, next_review_at);
+
+-- 单词复习历史索引：查询某个单词的复习记录
+CREATE INDEX IF NOT EXISTS idx_vocabulary_reviews_vocab
+  ON vocabulary_reviews(vocabulary_id, reviewed_at DESC);
+
+-- 单词学习设置表（补充缺失的定义）
+CREATE TABLE IF NOT EXISTS card_settings (
+  user_id TEXT PRIMARY KEY,
+  daily_new_words INTEGER DEFAULT 15,    -- 每日新词数量
+  daily_total_limit INTEGER DEFAULT 20,  -- 每日总量上限（新词+复习）
+  created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);

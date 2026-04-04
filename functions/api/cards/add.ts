@@ -183,10 +183,10 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
         const batch = fronts.slice(i, i + 30);
         const placeholders = batch.map(() => '?').join(',');
         const rows = await db.prepare(
-          `SELECT json_extract(content, '$.front') as front FROM questions WHERE type = 'card' AND json_extract(content, '$.front') IN (${placeholders})`
-        ).bind(...batch).all();
+          `SELECT word_lower FROM vocabulary WHERE user_id = ? AND word_lower IN (${placeholders})`
+        ).bind(userId, ...batch).all();
         for (const row of rows.results) {
-          existingSet.add((row as any).front);
+          existingSet.add((row as any).word_lower);
         }
       }
     }
@@ -194,23 +194,19 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     // Step 2: batch insert new words
     const stmts: D1PreparedStatement[] = [];
     for (const w of words) {
-      const front = (w.front || w.word || '').trim().toLowerCase();
-      if (!front || existingSet.has(front)) continue;
+      const front = (w.front || w.word || '').trim();
+      const frontLower = front.toLowerCase();
+      if (!front || existingSet.has(frontLower)) continue;
 
       const id = crypto.randomUUID();
-      const content = JSON.stringify({
-        front,
-        back: w.back || '',
-        phonetic: w.phonetic || '',
-        example: w.example || '',
-        exampleCn: w.exampleCn || '',
-      });
-      const answer = JSON.stringify({ front, back: w.back });
 
       stmts.push(
         db.prepare(
-          'INSERT INTO questions (id, type, content, answer, tags, difficulty, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)'
-        ).bind(id, 'card', content, answer, tags, 3, Date.now())
+          'INSERT INTO vocabulary (id, user_id, word, word_lower, meaning, phonetic, example, example_cn, tags, source, difficulty, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+        ).bind(
+          id, userId, front, frontLower, w.back || '', w.phonetic || '',
+          w.example || '', w.exampleCn || '', tags, 'extracted', 3, Date.now()
+        )
       );
     }
 
@@ -224,30 +220,27 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   // Legacy: single word save (non-enrichOnly)
   if (word && !enrichOnly) {
     try {
-      const front = word.trim().toLowerCase();
+      const front = word.trim();
+      const frontLower = front.toLowerCase();
 
       // Check for duplicate
       const existing = await db.prepare(
-        "SELECT id FROM questions WHERE type = 'card' AND json_extract(content, '$.front') = ?"
-      ).bind(front).first();
+        "SELECT id FROM vocabulary WHERE user_id = ? AND word_lower = ?"
+      ).bind(userId, frontLower).first();
       if (existing) {
         return Response.json({ success: true, duplicate: true, message: `"${front}" 已在生词本中` });
       }
 
       const enriched = await enrichWord(context.env, word.trim());
       const id = crypto.randomUUID();
-      const content = JSON.stringify({
-        front,
-        back: enriched.back,
-        phonetic: enriched.phonetic,
-        example: enriched.example,
-        exampleCn: enriched.exampleCn,
-      });
       const tags = JSON.stringify(['生词本']);
 
       await db.prepare(
-        'INSERT INTO questions (id, type, content, answer, tags, difficulty, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)'
-      ).bind(id, 'card', content, JSON.stringify({ front, back: enriched.back }), tags, 3, Date.now()).run();
+        'INSERT INTO vocabulary (id, user_id, word, word_lower, meaning, phonetic, example, example_cn, tags, source, difficulty, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+      ).bind(
+        id, userId, front, frontLower, enriched.back, enriched.phonetic,
+        enriched.example, enriched.exampleCn, tags, 'manual', 3, Date.now()
+      ).run();
 
       return Response.json({ success: true, word: { id, front, ...enriched } });
     } catch (e: any) {

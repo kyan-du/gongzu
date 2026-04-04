@@ -18,31 +18,31 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   const today = new Date().toISOString().slice(0, 10);
 
   // Total words in deck
-  const totalRow = await db.prepare('SELECT COUNT(*) as cnt FROM questions WHERE type = ?').bind('card').first() as any;
+  const totalRow = await db.prepare('SELECT COUNT(*) as cnt FROM vocabulary WHERE user_id = ?').bind(userId).first() as any;
   const totalWords = totalRow?.cnt || 0;
 
   // Mastered (interval >= 60 or explicitly marked)
   const masteredRow = await db.prepare(`
-    SELECT COUNT(DISTINCT question_id) as cnt FROM card_reviews 
+    SELECT COUNT(DISTINCT vocabulary_id) as cnt FROM vocabulary_reviews
     WHERE user_id = ? AND interval_days >= 60
   `).bind(userId).first() as any;
   const masteredCount = masteredRow?.cnt || 0;
 
   // Words with at least one review (learning)
   const learnedRow = await db.prepare(`
-    SELECT COUNT(DISTINCT question_id) as cnt FROM card_reviews WHERE user_id = ?
+    SELECT COUNT(DISTINCT vocabulary_id) as cnt FROM vocabulary_reviews WHERE user_id = ?
   `).bind(userId).first() as any;
   const learnedCount = learnedRow?.cnt || 0;
 
   // Review due today
   const reviewDueRow = await db.prepare(`
-    SELECT COUNT(DISTINCT cr.question_id) as cnt
-    FROM card_reviews cr
-    WHERE cr.user_id = ? AND cr.next_review_at <= ? AND cr.interval_days < 60
-    AND cr.id = (
-      SELECT id FROM card_reviews cr2 
-      WHERE cr2.user_id = cr.user_id AND cr2.question_id = cr.question_id 
-      ORDER BY cr2.reviewed_at DESC LIMIT 1
+    SELECT COUNT(DISTINCT vr.vocabulary_id) as cnt
+    FROM vocabulary_reviews vr
+    WHERE vr.user_id = ? AND vr.next_review_at <= ? AND vr.interval_days < 60
+    AND vr.id = (
+      SELECT id FROM vocabulary_reviews vr2
+      WHERE vr2.user_id = vr.user_id AND vr2.vocabulary_id = vr.vocabulary_id
+      ORDER BY vr2.reviewed_at DESC LIMIT 1
     )
   `).bind(userId, today).first() as any;
   const reviewDueCount = reviewDueRow?.cnt || 0;
@@ -65,17 +65,17 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   // Full mode: fetch actual words
   // 1. Review words due
   const reviewWords = await db.prepare(`
-    SELECT q.id, q.content, cr.interval_days,
-    (SELECT COUNT(*) FROM card_reviews cr3 WHERE cr3.question_id = q.id AND cr3.user_id = cr.user_id) as review_count
-    FROM card_reviews cr
-    JOIN questions q ON q.id = cr.question_id
-    WHERE cr.user_id = ? AND cr.next_review_at <= ? AND cr.interval_days < 60
-    AND cr.id = (
-      SELECT id FROM card_reviews cr2
-      WHERE cr2.user_id = cr.user_id AND cr2.question_id = cr.question_id
-      ORDER BY cr2.reviewed_at DESC LIMIT 1
+    SELECT v.id, v.word, v.meaning, v.phonetic, v.example, v.example_cn, vr.interval_days,
+    (SELECT COUNT(*) FROM vocabulary_reviews vr3 WHERE vr3.vocabulary_id = v.id AND vr3.user_id = vr.user_id) as review_count
+    FROM vocabulary_reviews vr
+    JOIN vocabulary v ON v.id = vr.vocabulary_id
+    WHERE vr.user_id = ? AND vr.next_review_at <= ? AND vr.interval_days < 60
+    AND vr.id = (
+      SELECT id FROM vocabulary_reviews vr2
+      WHERE vr2.user_id = vr.user_id AND vr2.vocabulary_id = vr.vocabulary_id
+      ORDER BY vr2.reviewed_at DESC LIMIT 1
     )
-    ORDER BY cr.next_review_at ASC
+    ORDER BY vr.next_review_at ASC
     LIMIT 30
   `).bind(userId, today).all();
 
@@ -90,38 +90,36 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   const newLimit = Math.max(0, Math.min(dailyNewWords, dailyTotalLimit - reviewCount));
 
   const newWords = await db.prepare(`
-    SELECT q.id, q.content
-    FROM questions q
-    WHERE q.type = 'card'
-    AND q.id NOT IN (
-      SELECT DISTINCT question_id FROM card_reviews WHERE user_id = ?
+    SELECT v.id, v.word, v.meaning, v.phonetic, v.example, v.example_cn
+    FROM vocabulary v
+    WHERE v.user_id = ?
+    AND v.id NOT IN (
+      SELECT DISTINCT vocabulary_id FROM vocabulary_reviews WHERE user_id = ?
     )
-    ORDER BY q.created_at ASC
+    ORDER BY v.created_at ASC
     LIMIT ?
-  `).bind(userId, newLimit).all();
+  `).bind(userId, userId, newLimit).all();
 
   // 3. Gather ALL card meanings for distractor generation
   const allMeanings = await db.prepare(
-    "SELECT id, content FROM questions WHERE type = 'card'"
-  ).all();
+    "SELECT id, meaning FROM vocabulary WHERE user_id = ?"
+  ).bind(userId).all();
   const meaningPool: { id: string; back: string }[] = (allMeanings.results || []).map((r: any) => {
-    const c = JSON.parse(r.content);
-    return { id: r.id, back: c.back };
+    return { id: r.id, back: r.meaning };
   });
 
   const buildWord = (r: any, isReview: boolean) => {
-    const content = JSON.parse(r.content);
     const others = meaningPool.filter(m => m.id !== r.id);
     const shuffled = others.sort(() => Math.random() - 0.5);
     const distractors = shuffled.slice(0, 3).map(m => m.back);
 
     return {
       id: r.id,
-      front: content.front,
-      back: content.back,
-      phonetic: content.phonetic || null,
-      example: content.example || null,
-      exampleCn: content.exampleCn || null,
+      front: r.word,
+      back: r.meaning,
+      phonetic: r.phonetic || null,
+      example: r.example || null,
+      exampleCn: r.example_cn || null,
       distractors,
       isReview,
       reviewCount: r.review_count || 0,
@@ -142,7 +140,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   return Response.json({ words, stats, date: today });
 };
 
-// POST /api/cards — bulk add card-type questions
+// POST /api/cards — bulk add vocabulary words
 export const onRequestPost: PagesFunction<Env> = async (context) => {
   const auth = context.request.headers.get('Authorization');
   if (auth !== `Bearer ${context.env.ADMIN_API_KEY}`) {
@@ -150,7 +148,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   }
 
   const body = await context.request.json() as any;
-  const { words, tags } = body;
+  const { words, tags, userId = 'cyan' } = body;
 
   if (!words?.length) {
     return Response.json({ error: 'words array required' }, { status: 400 });
@@ -162,19 +160,22 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
   for (const w of words) {
     const id = crypto.randomUUID();
-    const content = JSON.stringify({
-      front: w.front || w.word || w.english,
-      back: w.back || w.meaning || w.chinese,
-      phonetic: w.phonetic || w.pronunciation || null,
-      example: w.example || null,
-      exampleCn: w.exampleCn || null,
-      unit: w.unit || null,
-    });
-    const answer = JSON.stringify({ front: w.front, back: w.back });
+    const word = w.front || w.word || w.english;
+    const wordLower = word.toLowerCase();
+    const meaning = w.back || w.meaning || w.chinese;
 
     await db.prepare(
-      'INSERT INTO questions (id, type, content, answer, tags, difficulty, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)'
-    ).bind(id, 'card', content, answer, tagJson, w.difficulty || 3, Date.now()).run();
+      'INSERT INTO vocabulary (id, user_id, word, word_lower, meaning, phonetic, example, example_cn, tags, source, difficulty, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+    ).bind(
+      id, userId, word, wordLower, meaning,
+      w.phonetic || w.pronunciation || null,
+      w.example || null,
+      w.exampleCn || null,
+      tagJson,
+      'manual',
+      w.difficulty || 3,
+      Date.now()
+    ).run();
     count++;
   }
 
@@ -195,7 +196,7 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
   const farFuture = '2099-12-31';
 
   await db.prepare(
-    'INSERT INTO card_reviews (id, user_id, question_id, remembered, next_review_at, interval_days, reviewed_at) VALUES (?, ?, ?, ?, ?, ?, ?)'
+    'INSERT INTO vocabulary_reviews (id, user_id, vocabulary_id, remembered, next_review_at, interval_days, reviewed_at) VALUES (?, ?, ?, ?, ?, ?, ?)'
   ).bind(id, userId, questionId, 1, farFuture, 999, Date.now()).run();
 
   return Response.json({ success: true, mastered: true });

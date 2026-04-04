@@ -20,34 +20,33 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   const db = context.env.DB;
 
   const orderBy = sort === 'oldest' ? 'created_at ASC'
-    : sort === 'alpha' ? "json_extract(content, '$.front') ASC"
+    : sort === 'alpha' ? 'word ASC'
     : 'created_at DESC';
 
   const offset = (page - 1) * pageSize;
-  const params: any[] = [];
+  const params: any[] = [userId];
 
-  let whereClause = "type = 'card'";
+  let whereClause = "user_id = ?";
   if (search) {
-    whereClause += " AND (json_extract(content, '$.front') LIKE ? OR json_extract(content, '$.back') LIKE ?)";
+    whereClause += " AND (word LIKE ? OR meaning LIKE ?)";
     params.push(`%${search}%`, `%${search}%`);
   }
 
   // Get total count
-  const countResult = await db.prepare(`SELECT COUNT(*) as total FROM questions WHERE ${whereClause}`).bind(...params).first<{ total: number }>();
+  const countResult = await db.prepare(`SELECT COUNT(*) as total FROM vocabulary WHERE ${whereClause}`).bind(...params).first<{ total: number }>();
   const total = countResult?.total || 0;
 
   // Get page
   const results = await db.prepare(
-    `SELECT id, content, created_at FROM questions WHERE ${whereClause} ORDER BY ${orderBy} LIMIT ? OFFSET ?`
+    `SELECT id, word, meaning, phonetic, created_at FROM vocabulary WHERE ${whereClause} ORDER BY ${orderBy} LIMIT ? OFFSET ?`
   ).bind(...params, pageSize, offset).all();
 
   const words = (results.results || []).map((row: any) => {
-    const content = JSON.parse(row.content);
     return {
       id: row.id,
-      front: content.front,
-      back: content.back,
-      phonetic: content.phonetic || '',
+      front: row.word,
+      back: row.meaning,
+      phonetic: row.phonetic || '',
       createdAt: row.created_at,
     };
   });
@@ -63,8 +62,13 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 
 export const onRequestDelete: PagesFunction<Env> = async (context) => {
   const url = new URL(context.request.url);
+  const userId = url.searchParams.get('userId');
   const id = url.searchParams.get('id');
   const ids = url.searchParams.get('ids'); // comma-separated for batch
+
+  if (!userId) {
+    return Response.json({ error: 'userId required' }, { status: 400 });
+  }
 
   const db = context.env.DB;
 
@@ -73,7 +77,7 @@ export const onRequestDelete: PagesFunction<Env> = async (context) => {
     const idList = ids.split(',').map(s => s.trim()).filter(Boolean);
     if (idList.length === 0) return Response.json({ error: 'ids required' }, { status: 400 });
     const placeholders = idList.map(() => '?').join(',');
-    await db.prepare(`DELETE FROM questions WHERE id IN (${placeholders}) AND type = 'card'`).bind(...idList).run();
+    await db.prepare(`DELETE FROM vocabulary WHERE user_id = ? AND id IN (${placeholders})`).bind(userId, ...idList).run();
     return Response.json({ success: true, deleted: idList.length });
   }
 
@@ -81,6 +85,6 @@ export const onRequestDelete: PagesFunction<Env> = async (context) => {
     return Response.json({ error: 'id or ids required' }, { status: 400 });
   }
 
-  await db.prepare('DELETE FROM questions WHERE id = ? AND type = ?').bind(id, 'card').run();
+  await db.prepare('DELETE FROM vocabulary WHERE user_id = ? AND id = ?').bind(userId, id).run();
   return Response.json({ success: true });
 };
