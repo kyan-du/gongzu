@@ -273,7 +273,7 @@ export default function Cards() {
               <div className="text-2xl font-bold text-amber-600 dark:text-amber-400">{Math.max(learned, 0)}</div>
               <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">学习中</div>
             </div>
-            <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4 text-center">
+            <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4 text-center">
               <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{reviewDue}</div>
               <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">待复习</div>
             </div>
