@@ -362,7 +362,7 @@ export default function Home() {
                   <BookOpen className="w-4 h-4 text-violet-500 dark:text-violet-400" />
                 </div>
                 <div className="text-left flex-1">
-                  <div className="text-sm font-medium text-gray-900 dark:text-gray-100">单词本（{cardTotalWords} 词）</div>
+                  <div className="text-sm font-medium text-gray-900 dark:text-gray-100">单词本 <span className="text-xs font-normal text-gray-400 dark:text-gray-500">({cardTotalWords} 词)</span></div>
                   <div className="text-xs text-gray-500 dark:text-gray-400">
                     {cardTotalWords > 0
                       ? `已掌握 ${cardMastered} · 学习中 ${Math.max(cardLearning, 0)} · 待复习 ${cardReviewDue}`
