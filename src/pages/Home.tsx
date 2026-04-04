@@ -1,6 +1,6 @@
 import { getSlug } from '../lib/tags';
 import { normalizeQuiz } from '../lib/types';
-import { CheckCircle, Clock, BookX, ChevronLeft, ChevronRight, BookOpen, Languages, PenLine } from 'lucide-react';
+import { CheckCircle, Clock, BookX, ChevronLeft, ChevronRight, BookOpen, Languages, PenLine, Boxes } from 'lucide-react';
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Layout from '../components/Layout';
@@ -65,6 +65,8 @@ export default function Home() {
   const [cardMastered, setCardMastered] = useState<number>(0);
   const [cardLearning, setCardLearning] = useState<number>(0);
   const [cardReviewDue, setCardReviewDue] = useState<number>(0);
+  const [memoryGameCompleted, setMemoryGameCompleted] = useState<number>(0);
+  const memoryGameTarget = 5;
   const [calMonth, setCalMonth] = useState(() => new Date());
   const [monthlyData, setMonthlyData] = useState<Record<string, MonthlyDayData>>({});
   const [monthlyCache, setMonthlyCache] = useState<Record<string, Record<string, MonthlyDayData>>>({});
@@ -127,6 +129,15 @@ export default function Home() {
       .then(d => setCardCount((d.words || []).length))
       .catch(() => setCardCount(0));
   }, [userId, selectedDate, todayStr]);
+
+  // 记忆游戏今日进度
+  useEffect(() => {
+    if (!userId) return;
+    fetch(`/api/memory-game?userId=${userId}&date=${todayStr}&type=matryoshka`)
+      .then(r => r.json())
+      .then((data: any) => setMemoryGameCompleted(data.completed || 0))
+      .catch(() => {});
+  }, [userId, todayStr]);
 
   // Monthly data with cache — load current + adjacent months for overflow dates
   useEffect(() => {
@@ -354,7 +365,8 @@ export default function Home() {
               </div>
             </button>
 
-            {/* Word Book Card */}
+            {/* Word Book Card — 可可不需要 */}
+            {userId !== 'ryan' && (
             <button onClick={() => navigate(`/${userId}/vocab`)}
               className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-3 hover:shadow-md transition active:scale-[0.98] mt-3">
               <div className="flex items-center gap-3">
@@ -368,6 +380,22 @@ export default function Home() {
                       ? `已掌握 ${cardMastered} · 学习中 ${Math.max(cardLearning, 0)} · 待复习 ${cardReviewDue}`
                       : '添加生词开始学习'}
                   </div>
+                </div>
+                <ChevronRight className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+              </div>
+            </button>
+            )}
+
+            {/* 记忆游戏 */}
+            <button onClick={() => navigate(`/${userId}/memory/matryoshka`)}
+              className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-3 hover:shadow-md transition active:scale-[0.98] mt-3">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-amber-50 dark:bg-amber-900/30">
+                  <Boxes className="w-4 h-4 text-amber-500 dark:text-amber-400" />
+                </div>
+                <div className="text-left flex-1">
+                  <div className="text-sm font-medium text-gray-900 dark:text-gray-100">记忆游戏</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">记住位置和颜色</div>
                 </div>
                 <ChevronRight className="w-4 h-4 text-gray-400 dark:text-gray-500" />
               </div>
@@ -413,11 +441,44 @@ export default function Home() {
             {loadingDay ? (
               <div className="text-center text-gray-400 dark:text-gray-500 py-12">加载中...</div>
             ) : totalQuizzes === 0 ? (
-              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-8 text-center">
-                <div className="text-gray-400 dark:text-gray-500 text-sm">
-                  {selectedDate === todayStr ? '今天暂无作业' : '当天没有作业'}
+              <>
+              {selectedDate !== todayStr && (
+                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-8 text-center">
+                  <div className="text-gray-400 dark:text-gray-500 text-sm">
+                    当天没有作业
+                  </div>
                 </div>
-              </div>
+              )}
+              {/* 记忆游戏 — 即使没有作业也显示 */}
+              {selectedDate === todayStr && (
+                <button
+                  onClick={() => navigate(`/${userId}/memory/matryoshka`)}
+                  className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition active:scale-[0.98] mt-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-amber-50 dark:bg-amber-900/30">
+                      <Boxes className="w-5 h-5 text-amber-500 dark:text-amber-400" />
+                    </div>
+                    <div className="text-left">
+                      <div className="font-medium text-gray-900 dark:text-gray-100">套娃记忆</div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">
+                        {memoryGameCompleted >= memoryGameTarget ? '今日已完成' : `${memoryGameCompleted}/${memoryGameTarget} 完成`}
+                      </div>
+                    </div>
+                  </div>
+                  {memoryGameCompleted >= memoryGameTarget ? (
+                    <div className="flex items-center gap-1 text-sm text-green-500 dark:text-green-400 font-medium">
+                      <CheckCircle className="w-3.5 h-3.5" />
+                      已完成
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-1 text-sm text-amber-500 dark:text-amber-400 font-medium">
+                      <Clock className="w-3.5 h-3.5" />
+                      {memoryGameCompleted > 0 ? `${memoryGameCompleted}/${memoryGameTarget}` : '未完成'}
+                    </div>
+                  )}
+                </button>
+              )}
+              </>
             ) : (
               <>
                 {/* Quiz cards */}
@@ -493,6 +554,36 @@ export default function Home() {
                     </div>
                   )}
                 </button>
+
+                {/* 记忆游戏 */}
+                {selectedDate === todayStr && (
+                  <button
+                    onClick={() => navigate(`/${userId}/memory/matryoshka`)}
+                    className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition active:scale-[0.98] mt-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-amber-50 dark:bg-amber-900/30">
+                        <Boxes className="w-5 h-5 text-amber-500 dark:text-amber-400" />
+                      </div>
+                      <div className="text-left">
+                        <div className="font-medium text-gray-900 dark:text-gray-100">套娃记忆</div>
+                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                          {memoryGameCompleted >= memoryGameTarget ? '今日已完成' : `${memoryGameCompleted}/${memoryGameTarget} 完成`}
+                        </div>
+                      </div>
+                    </div>
+                    {memoryGameCompleted >= memoryGameTarget ? (
+                      <div className="flex items-center gap-1 text-sm text-green-500 dark:text-green-400 font-medium">
+                        <CheckCircle className="w-3.5 h-3.5" />
+                        已完成
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-1 text-sm text-amber-500 dark:text-amber-400 font-medium">
+                        <Clock className="w-3.5 h-3.5" />
+                        {memoryGameCompleted > 0 ? `${memoryGameCompleted}/${memoryGameTarget}` : '未完成'}
+                      </div>
+                    )}
+                  </button>
+                )}
               </>
             )}
           </div>
