@@ -377,20 +377,9 @@ export default function AddWords() {
             <div className="text-center py-12">
               <Loader2 className="w-8 h-8 text-violet-500 animate-spin mx-auto mb-3" />
               <p className="text-sm text-gray-500 dark:text-gray-400 animate-pulse">
-                {images.length > 0 ? (
-                  <>
-                    {extractPhase === 0 && '压缩图片中…'}
-                    {extractPhase === 1 && '识别图片中，请稍候…'}
-                    {extractPhase === 2 && 'AI 正在分析，马上就好…'}
-                    {extractPhase === 3 && '快好了，正在整理结果…'}
-                  </>
-                ) : (
-                  <>
-                    {extractPhase < 2 && 'AI 正在提取单词…'}
-                    {extractPhase === 2 && 'AI 正在分析，马上就好…'}
-                    {extractPhase === 3 && '快好了，正在整理结果…'}
-                  </>
-                )}
+                {extractPhase < 2 && 'AI 正在识别中，请稍候…'}
+                {extractPhase === 2 && 'AI 正在分析，马上就好…'}
+                {extractPhase === 3 && '快好了，正在整理结果…'}
               </p>
             </div>
           )}
