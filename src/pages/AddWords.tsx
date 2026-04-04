@@ -11,21 +11,23 @@ interface ExtractedWord {
   exampleCn?: string;
 }
 
-// Compress image to max 800px and JPEG quality 0.5 (keep small for API)
-function compressImage(dataUrl: string, maxWidth = 800): Promise<string> {
+// Compress image aggressively for OCR — max 1024px on longest side, JPEG 0.4
+function compressImage(dataUrl: string, maxDim = 1024): Promise<string> {
   return new Promise((resolve) => {
     const img = new Image();
     img.onload = () => {
       const canvas = document.createElement('canvas');
       let w = img.width, h = img.height;
-      if (w > maxWidth) {
-        h = Math.round((h * maxWidth) / w);
-        w = maxWidth;
+      const longest = Math.max(w, h);
+      if (longest > maxDim) {
+        const scale = maxDim / longest;
+        w = Math.round(w * scale);
+        h = Math.round(h * scale);
       }
       canvas.width = w;
       canvas.height = h;
       canvas.getContext('2d')!.drawImage(img, 0, 0, w, h);
-      resolve(canvas.toDataURL('image/jpeg', 0.5));
+      resolve(canvas.toDataURL('image/jpeg', 0.4));
     };
     img.src = dataUrl;
   });
