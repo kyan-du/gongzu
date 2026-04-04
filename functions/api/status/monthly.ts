@@ -13,6 +13,8 @@ interface DayStats {
   reviewDone: number;
   memoryGames: number;
   memoryGamesTarget: number;
+  memoryTotal: number;
+  memoryCorrect: number;
 }
 
 // GET /api/status/monthly?userId=cyan&month=2026-04
@@ -100,15 +102,17 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 
     // 5. Fetch memory game data for the month
     const memGames = await context.env.DB.prepare(
-      `SELECT date, COUNT(*) as cnt FROM memory_games WHERE user_id = ? AND date >= ? AND date <= ? GROUP BY date`
+      `SELECT date, COUNT(*) as cnt, SUM(total) as total_cards, SUM(correct) as correct_cards FROM memory_games WHERE user_id = ? AND date >= ? AND date <= ? GROUP BY date`
     ).bind(userId, startDate, endDate).all();
 
     for (const mg of memGames.results) {
       const date = mg.date as string;
       if (!days[date]) {
-        days[date] = { quizCount: 0, completedCount: 0, totalQuestions: 0, answeredQuestions: 0, correctAnswers: 0, reviewDue: 0, reviewDone: 0, memoryGames: 0, memoryGamesTarget: 5 };
+        days[date] = { quizCount: 0, completedCount: 0, totalQuestions: 0, answeredQuestions: 0, correctAnswers: 0, reviewDue: 0, reviewDone: 0, memoryGames: 0, memoryGamesTarget: 5, memoryTotal: 0, memoryCorrect: 0 };
       }
       days[date].memoryGames = mg.cnt as number;
+      days[date].memoryTotal = mg.total_cards as number;
+      days[date].memoryCorrect = mg.correct_cards as number;
     }
 
     // 6. Streak calculation

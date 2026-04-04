@@ -34,6 +34,8 @@ interface MonthlyDayData {
   reviewDone: number;
   memoryGames: number;
   memoryGamesTarget: number;
+  memoryTotal: number;
+  memoryCorrect: number;
 }
 
 function toDateStr(d: Date) {
@@ -288,36 +290,44 @@ export default function Home() {
                   const md = monthlyData[d.date];
                   const isDimmed = !d.isCurrentMonth;
 
-                  // Build rings: only include rings with meaningful data
+                  // Build rings: 2 rings for every day — progress (red) + accuracy (green)
                   const ringDefs: { filledPercentage: number; color: string; ringWidth?: number }[] = [];
                   if (!d.isFuture) {
-                    // Outer: quiz completion (Apple red/pink) — only if quizzes exist
-                    if (md && md.quizCount > 0) {
+                    // Compute combined progress: quiz completion + memory game completion
+                    const quizTotal = md ? md.quizCount : 0;
+                    const quizDone = md ? md.completedCount : 0;
+                    const mgTarget = md?.memoryGamesTarget || 5;
+                    const mgDone = md ? Math.min(md.memoryGames, mgTarget) : 0;
+                    const totalTasks = quizTotal + mgTarget;
+                    const doneTasks = quizDone + mgDone;
+                    const hasAnyTask = d.isToday || (md && (quizTotal > 0 || md.memoryGames > 0));
+
+                    if (hasAnyTask) {
+                      // Outer: progress (Apple red/pink)
                       ringDefs.push({
-                        filledPercentage: md.completedCount / md.quizCount,
+                        filledPercentage: totalTasks > 0 ? doneTasks / totalTasks : 0,
                         color: '#FA114F',
                       });
-                    }
-                    // Memory game progress (Apple amber/orange) — always show for today, show for past if played
-                    if (d.isToday || (md && md.memoryGames > 0)) {
-                      ringDefs.push({
-                        filledPercentage: md ? Math.min(md.memoryGames / (md.memoryGamesTarget || 5), 1) : 0,
-                        color: '#FF9F0A',
-                      });
-                    }
-                    // Accuracy (Apple green)
-                    if (md && md.answeredQuestions > 0) {
-                      ringDefs.push({
-                        filledPercentage: md.correctAnswers / md.answeredQuestions,
-                        color: '#92E82A',
-                      });
-                    }
-                    // Review (Apple cyan/teal)
-                    if (md && md.reviewDue > 0) {
-                      ringDefs.push({
-                        filledPercentage: md.reviewDone / md.reviewDue,
-                        color: '#00E5CC',
-                      });
+
+                      // Inner: accuracy (Apple green) — combine quiz + memory game accuracy
+                      const quizAnswered = md ? md.answeredQuestions : 0;
+                      const quizCorrect = md ? md.correctAnswers : 0;
+                      const mgTotal = md ? md.memoryTotal : 0;
+                      const mgCorrect = md ? md.memoryCorrect : 0;
+                      const allAnswered = quizAnswered + mgTotal;
+                      const allCorrect = quizCorrect + mgCorrect;
+                      if (allAnswered > 0) {
+                        ringDefs.push({
+                          filledPercentage: allCorrect / allAnswered,
+                          color: '#92E82A',
+                        });
+                      } else if (d.isToday) {
+                        // Today with no answers yet — show empty green ring
+                        ringDefs.push({
+                          filledPercentage: 0,
+                          color: '#92E82A',
+                        });
+                      }
                     }
                   }
 
