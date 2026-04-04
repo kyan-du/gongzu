@@ -255,9 +255,9 @@ export default function DailyView() {
             )}
 
             {/* 单词记忆入口 — 仅今天 */}
-            {isToday(currentDate) && cardCount > 0 && (
+            {isToday(currentDate) && (
               <button
-                onClick={() => navigate(`/${userId}/cards`)}
+                onClick={() => navigate(cardCount > 0 ? `/${userId}/cards` : `/${userId}/cards/add`)}
                 className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition active:scale-[0.98]"
               >
                 <div className="flex items-center gap-3">
@@ -266,12 +266,14 @@ export default function DailyView() {
                   </div>
                   <div className="text-left">
                     <div className="font-medium text-gray-900 dark:text-gray-100">单词记忆</div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400">{cardCount} 个单词待背</div>
+                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                      {cardCount > 0 ? `${cardCount} 个单词待背` : '添加生词开始学习'}
+                    </div>
                   </div>
                 </div>
                 <div className="flex items-center gap-1 text-sm text-amber-500 dark:text-amber-400 font-medium">
                   <Clock className="w-3.5 h-3.5" />
-                  开始
+                  {cardCount > 0 ? '开始' : '添加'}
                 </div>
               </button>
             )}
