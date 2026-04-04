@@ -64,6 +64,7 @@ export default function Home() {
   const [cardTotalWords, setCardTotalWords] = useState<number>(0);
   const [cardMastered, setCardMastered] = useState<number>(0);
   const [cardLearning, setCardLearning] = useState<number>(0);
+  const [cardReviewDue, setCardReviewDue] = useState<number>(0);
   const [calMonth, setCalMonth] = useState(() => new Date());
   const [monthlyData, setMonthlyData] = useState<Record<string, MonthlyDayData>>({});
   const [monthlyCache, setMonthlyCache] = useState<Record<string, Record<string, MonthlyDayData>>>({});
@@ -114,6 +115,7 @@ export default function Home() {
         setCardTotalWords(s.totalWords || 0);
         setCardMastered(s.masteredCount || 0);
         setCardLearning((s.learnedCount || 0) - (s.masteredCount || 0));
+        setCardReviewDue(s.reviewDueCount || 0);
       })
       .catch(() => {});
   }, [userId]);
@@ -360,10 +362,10 @@ export default function Home() {
                   <BookOpen className="w-4 h-4 text-violet-500 dark:text-violet-400" />
                 </div>
                 <div className="text-left flex-1">
-                  <div className="text-sm font-medium text-gray-900 dark:text-gray-100">单词本</div>
+                  <div className="text-sm font-medium text-gray-900 dark:text-gray-100">单词本（{cardTotalWords} 词）</div>
                   <div className="text-xs text-gray-500 dark:text-gray-400">
                     {cardTotalWords > 0
-                      ? `已掌握 ${cardMastered} · 学习中 ${Math.max(cardLearning, 0)} · 共 ${cardTotalWords}`
+                      ? `已掌握 ${cardMastered} · 学习中 ${Math.max(cardLearning, 0)} · 待复习 ${cardReviewDue}`
                       : '添加生词开始学习'}
                   </div>
                 </div>
