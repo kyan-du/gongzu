@@ -170,30 +170,56 @@ export default function Cards() {
 
     // ── Global overview (no date) ──
     if (!isDaily) {
+      const totalW = stats?.totalWords || 0;
+      const mastered = stats?.masteredCount || 0;
+      const learned = (stats?.learnedCount || 0) - mastered;
+      const unlearned = totalW - (stats?.learnedCount || 0);
       return (
-        <Layout userId={userId || ''} showBack backTo={`/${userId}/home`} maxWidth="max-w-3xl" title="单词记忆">
-          {/* Overall progress */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-5 mb-4">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-sm text-gray-500 dark:text-gray-400">学习进度</span>
-              <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                {stats?.learnedCount || 0} / {stats?.totalWords || 0}
-              </span>
+        <Layout userId={userId || ''} showBack backTo={`/${userId}/home`} maxWidth="max-w-3xl"
+          title={`单词本（${totalW} 词）`}
+          rightAction={
+            <button
+              onClick={() => navigate(`/${userId}/cards/add`)}
+              className="px-3 py-1 rounded-full border border-dashed border-gray-300 dark:border-gray-600 text-xs text-gray-400 dark:text-gray-500 hover:border-gray-400 hover:text-gray-500 transition"
+            >
+              +添加
+            </button>
+          }
+        >
+          {/* Stats cards */}
+          <div className="grid grid-cols-3 gap-3 mb-5">
+            <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-xl p-4 text-center">
+              <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{mastered}</div>
+              <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">已掌握</div>
             </div>
-            <div className="w-full h-3 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden mb-2">
-              <div
-                className="h-full bg-gradient-to-r from-violet-500 to-purple-500 rounded-full transition-all"
-                style={{ width: `${progress}%` }}
-              />
+            <div className="bg-amber-50 dark:bg-amber-900/20 rounded-xl p-4 text-center">
+              <div className="text-2xl font-bold text-amber-600 dark:text-amber-400">{Math.max(learned, 0)}</div>
+              <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">学习中</div>
             </div>
-            <div className="flex justify-between text-xs text-gray-400 dark:text-gray-500">
-              <span>{progress}% 完成</span>
-              <span>已掌握 {stats?.masteredCount || 0} 词</span>
+            <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4 text-center">
+              <div className="text-2xl font-bold text-gray-600 dark:text-gray-300">{Math.max(unlearned, 0)}</div>
+              <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">未学习</div>
             </div>
           </div>
 
-          {/* Action cards */}
-          <div className="space-y-3 mb-4">
+          {/* Progress bar */}
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 mb-4">
+            <div className="w-full h-2.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden flex">
+              {mastered > 0 && (
+                <div className="h-full bg-emerald-500 rounded-l-full" style={{ width: `${(mastered / totalW) * 100}%` }} />
+              )}
+              {learned > 0 && (
+                <div className="h-full bg-amber-400" style={{ width: `${(learned / totalW) * 100}%` }} />
+              )}
+            </div>
+            <div className="flex justify-between mt-2 text-xs text-gray-400 dark:text-gray-500">
+              <span>{totalW > 0 ? Math.round(((stats?.learnedCount || 0) / totalW) * 100) : 0}% 学过</span>
+              <span>{totalW > 0 ? Math.round((mastered / totalW) * 100) : 0}% 掌握</span>
+            </div>
+          </div>
+
+          {/* Action entries */}
+          <div className="space-y-3">
             <button
               onClick={() => navigate(`/${userId}/${todayDate}/cards`)}
               className="w-full bg-violet-50 dark:bg-violet-900/20 rounded-xl p-4 flex items-center justify-between hover:bg-violet-100 dark:hover:bg-violet-900/30 transition active:scale-[0.98]"
@@ -221,24 +247,8 @@ export default function Cards() {
                   <RefreshCw className="w-5 h-5 text-blue-500" />
                 </div>
                 <div className="text-left">
-                  <div className="font-medium text-gray-900 dark:text-gray-100">生词本</div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">共 {stats?.totalWords || 0} 词</div>
-                </div>
-              </div>
-              <span className="text-sm text-gray-400">→</span>
-            </button>
-
-            <button
-              onClick={() => navigate(`/${userId}/cards/add`)}
-              className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition active:scale-[0.98]"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center">
-                  <span className="text-emerald-500 text-lg font-bold">+</span>
-                </div>
-                <div className="text-left">
-                  <div className="font-medium text-gray-900 dark:text-gray-100">添加生词</div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">拍照或输入英文</div>
+                  <div className="font-medium text-gray-900 dark:text-gray-100">全部单词</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">查看、搜索、管理</div>
                 </div>
               </div>
               <span className="text-sm text-gray-400">→</span>
