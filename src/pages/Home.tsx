@@ -67,6 +67,7 @@ export default function Home() {
   const [cardReviewDue, setCardReviewDue] = useState<number>(0);
   const [memoryGameCompleted, setMemoryGameCompleted] = useState<number>(0);
   const memoryGameTarget = 5;
+  const hasMemoryGame = memoryGameTarget > 0;
   const [calMonth, setCalMonth] = useState(() => new Date());
   const [monthlyData, setMonthlyData] = useState<Record<string, MonthlyDayData>>({});
   const [monthlyCache, setMonthlyCache] = useState<Record<string, Record<string, MonthlyDayData>>>({});
@@ -422,7 +423,7 @@ export default function Home() {
                     {allCompleted ? '✅ 全部完成' : `${completedQuizzes}/${totalQuizzes} 完成`}
                   </div>
                 )}
-                {selectedDate === todayStr && !loadingDay && !hasAnyAnswer && (
+                {selectedDate === todayStr && !loadingDay && !hasAnyAnswer && (totalQuizzes > 0 || !hasMemoryGame) && (
                   requested ? (
                     <span className="text-xs text-gray-400 dark:text-gray-500">已通知出题 ✓</span>
                   ) : (
