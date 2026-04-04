@@ -212,16 +212,16 @@ export default function Cards() {
           rightAction={
             <div className="flex gap-2">
               <button
+                onClick={() => navigate(`/${userId}/cards/add`)}
+                className="px-3 py-1 rounded-full border border-dashed border-gray-300 dark:border-gray-600 text-xs text-gray-400 dark:text-gray-500 hover:border-gray-400 hover:text-gray-500 transition"
+              >
+                +生词
+              </button>
+              <button
                 onClick={() => setShowSettings(!showSettings)}
                 className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition"
               >
                 <Settings className="w-5 h-5" />
-              </button>
-              <button
-                onClick={() => navigate(`/${userId}/cards/add`)}
-                className="px-3 py-1 rounded-full border border-dashed border-gray-300 dark:border-gray-600 text-xs text-gray-400 dark:text-gray-500 hover:border-gray-400 hover:text-gray-500 transition"
-              >
-                +添加
               </button>
             </div>
           }
