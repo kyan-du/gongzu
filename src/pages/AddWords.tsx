@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Camera, Keyboard, Check, Loader2 } from 'lucide-react';
+import { ImagePlus, Send, X, Loader2, Check, Plus } from 'lucide-react';
 import Layout from '../components/Layout';
 
 interface ExtractedWord {
@@ -9,279 +9,318 @@ interface ExtractedWord {
   phonetic?: string;
   example?: string;
   exampleCn?: string;
-  selected?: boolean;
+}
+
+// Compress image to max 800px and JPEG quality 0.5 (keep small for API)
+function compressImage(dataUrl: string, maxWidth = 800): Promise<string> {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      let w = img.width, h = img.height;
+      if (w > maxWidth) {
+        h = Math.round((h * maxWidth) / w);
+        w = maxWidth;
+      }
+      canvas.width = w;
+      canvas.height = h;
+      canvas.getContext('2d')!.drawImage(img, 0, 0, w, h);
+      resolve(canvas.toDataURL('image/jpeg', 0.5));
+    };
+    img.src = dataUrl;
+  });
 }
 
 export default function AddWords() {
   const { userId } = useParams<{ userId: string }>();
   const navigate = useNavigate();
   const fileRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  const [mode, setMode] = useState<'choose' | 'manual' | 'photo'>('choose');
-  const [inputWord, setInputWord] = useState('');
-  const [addedWords, setAddedWords] = useState<string[]>([]);
-  const [submitting, setSubmitting] = useState(false);
+  const [text, setText] = useState('');
+  const [images, setImages] = useState<string[]>([]); // base64 data URLs
+  const [extracting, setExtracting] = useState(false);
+  const [words, setWords] = useState<ExtractedWord[]>([]);
+  const [saving, setSaving] = useState(false);
+  const [manualInput, setManualInput] = useState('');
+  const [showManualAdd, setShowManualAdd] = useState(false);
+  const [enrichingManual, setEnrichingManual] = useState(false);
 
-  // Photo mode
-  const [extractedWords, setExtractedWords] = useState<ExtractedWord[]>([]);
-  const [analyzing, setAnalyzing] = useState(false);
-  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  // Handle image upload
+  const handleImageAdd = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+    Array.from(files).forEach(file => {
+      const reader = new FileReader();
+      reader.onload = async (ev) => {
+        const raw = ev.target?.result as string;
+        const compressed = await compressImage(raw);
+        setImages(prev => [...prev, compressed]);
+      };
+      reader.readAsDataURL(file);
+    });
+    e.target.value = '';
+  };
 
+  const removeImage = (idx: number) => {
+    setImages(prev => prev.filter((_, i) => i !== idx));
+  };
+
+  // Send to AI for extraction
+  const handleExtract = async () => {
+    if ((!text.trim() && images.length === 0) || extracting) return;
+    setExtracting(true);
+
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 45000);
+
+      const resp = await fetch('/api/cards/add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId,
+          extract: true,
+          text: text.trim() || undefined,
+          images: images.length > 0 ? images : undefined,
+        }),
+        signal: controller.signal,
+      });
+      clearTimeout(timeout);
+
+      const data = await resp.json();
+      if (data.words?.length) {
+        setWords(prev => {
+          const existing = new Set(prev.map(w => w.front.toLowerCase()));
+          return [...prev, ...data.words.filter((w: ExtractedWord) => !existing.has(w.front.toLowerCase()))];
+        });
+        setText('');
+        setImages([]);
+      } else if (data.error) {
+        alert('提取失败: ' + data.error);
+      }
+    } catch (e: any) {
+      if (e.name === 'AbortError') {
+        alert('请求超时，请重试');
+      } else {
+        alert('提取失败，请重试');
+      }
+    }
+    setExtracting(false);
+  };
+
+  // Remove a word from list
+  const removeWord = (idx: number) => {
+    setWords(prev => prev.filter((_, i) => i !== idx));
+  };
+
+  // Manually add a single word (AI enrich)
   const handleManualAdd = async () => {
-    const w = inputWord.trim();
-    if (!w || submitting) return;
-    setSubmitting(true);
+    const w = manualInput.trim();
+    if (!w || enrichingManual) return;
+    setEnrichingManual(true);
 
     try {
       const resp = await fetch('/api/cards/add', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, word: w }),
+        body: JSON.stringify({ userId, word: w, enrichOnly: true }),
       });
       const data = await resp.json();
-      if (data.success) {
-        setAddedWords(prev => [...prev, `${w} — ${data.word.back}`]);
-        setInputWord('');
+      if (data.word) {
+        setWords(prev => [...prev, data.word]);
+        setManualInput('');
+        setShowManualAdd(false);
       }
     } catch (e) { /* ignore */ }
-    setSubmitting(false);
+    setEnrichingManual(false);
   };
 
-  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    // Preview
-    const reader = new FileReader();
-    reader.onload = async (ev) => {
-      const base64 = ev.target?.result as string;
-      setPhotoPreview(base64);
-      setAnalyzing(true);
-      setMode('photo');
-
-      try {
-        const resp = await fetch('/api/cards/add', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId, image: base64 }),
-        });
-        const data = await resp.json();
-        if (data.words) {
-          setExtractedWords(data.words.map((w: any) => ({ ...w, selected: true })));
-        }
-      } catch (e) { /* ignore */ }
-      setAnalyzing(false);
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const toggleWord = (idx: number) => {
-    setExtractedWords(prev => prev.map((w, i) => i === idx ? { ...w, selected: !w.selected } : w));
-  };
-
-  const handleConfirmPhoto = async () => {
-    const selected = extractedWords.filter(w => w.selected);
-    if (!selected.length || submitting) return;
-    setSubmitting(true);
+  // Save all words
+  const handleSave = async () => {
+    if (!words.length || saving) return;
+    setSaving(true);
 
     try {
       await fetch('/api/cards/add', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, words: selected }),
+        body: JSON.stringify({ userId, words }),
       });
       navigate(`/${userId}/cards`);
     } catch (e) { /* ignore */ }
-    setSubmitting(false);
+    setSaving(false);
   };
 
-  // Choose mode
-  if (mode === 'choose') {
-    return (
-      <Layout userId={userId || ''} showBack maxWidth="max-w-3xl">
-        <div className="py-6">
-          <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 text-center mb-8">
-            添加生词
-          </h1>
+  const hasInput = text.trim() || images.length > 0;
 
-          <div className="space-y-3 max-w-sm mx-auto">
-            <button
-              onClick={() => setMode('manual')}
-              className="w-full flex items-center gap-4 p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition active:scale-[0.98]"
-            >
-              <div className="w-12 h-12 rounded-xl bg-violet-50 dark:bg-violet-900/30 flex items-center justify-center">
-                <Keyboard className="w-6 h-6 text-violet-500" />
-              </div>
-              <div className="text-left">
-                <div className="font-medium text-gray-900 dark:text-gray-100">手动输入</div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">输入单词，AI 自动补全释义</div>
-              </div>
-            </button>
+  return (
+    <Layout userId={userId || ''} showBack maxWidth="max-w-3xl">
+      <div className="flex flex-col min-h-[calc(100vh-120px)]">
+        {/* Word list area */}
+        <div className="flex-1 py-4">
+          {words.length === 0 && !extracting && (
+            <div className="text-center py-16 text-gray-400 dark:text-gray-500">
+              <p className="text-base mb-1">粘贴英文、拍课本、拍卷子</p>
+              <p className="text-sm">AI 自动提取生词</p>
+            </div>
+          )}
 
-            <button
-              onClick={() => fileRef.current?.click()}
-              className="w-full flex items-center gap-4 p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition active:scale-[0.98]"
-            >
-              <div className="w-12 h-12 rounded-xl bg-amber-50 dark:bg-amber-900/30 flex items-center justify-center">
-                <Camera className="w-6 h-6 text-amber-500" />
+          {extracting && (
+            <div className="text-center py-12">
+              <Loader2 className="w-8 h-8 text-violet-500 animate-spin mx-auto mb-3" />
+              <p className="text-sm text-gray-500 dark:text-gray-400">AI 正在提取单词…</p>
+            </div>
+          )}
+
+          {words.length > 0 && (
+            <>
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-sm text-gray-500 dark:text-gray-400">
+                  已提取 {words.length} 个单词
+                </span>
+                <button
+                  onClick={() => setShowManualAdd(!showManualAdd)}
+                  className="text-xs text-violet-600 dark:text-violet-400 hover:text-violet-700 flex items-center gap-0.5"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  手动追加
+                </button>
               </div>
-              <div className="text-left">
-                <div className="font-medium text-gray-900 dark:text-gray-100">拍照识别</div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">拍卷子/课本，AI 提取生词</div>
+
+              {/* Manual add inline */}
+              {showManualAdd && (
+                <div className="flex gap-2 mb-3">
+                  <input
+                    type="text"
+                    value={manualInput}
+                    onChange={e => setManualInput(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && handleManualAdd()}
+                    placeholder="输入单词…"
+                    autoFocus
+                    className="flex-1 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:border-violet-400"
+                  />
+                  <button
+                    onClick={handleManualAdd}
+                    disabled={enrichingManual || !manualInput.trim()}
+                    className="px-3 py-2 rounded-lg bg-violet-600 text-white text-sm hover:bg-violet-700 disabled:opacity-50"
+                  >
+                    {enrichingManual ? <Loader2 className="w-4 h-4 animate-spin" /> : '添加'}
+                  </button>
+                </div>
+              )}
+
+              <div className="space-y-2">
+                {words.map((w, i) => (
+                  <div key={`${w.front}-${i}`} className="flex items-center gap-3 p-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-gray-900 dark:text-gray-100">{w.front}</span>
+                        {w.phonetic && <span className="text-xs text-gray-400">{w.phonetic}</span>}
+                      </div>
+                      <span className="text-sm text-gray-500 dark:text-gray-400">{w.back}</span>
+                    </div>
+                    <button
+                      onClick={() => removeWord(i)}
+                      className="p-1 text-gray-300 dark:text-gray-600 hover:text-red-400 dark:hover:text-red-400 transition flex-shrink-0"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
               </div>
-            </button>
-            <input
-              ref={fileRef}
-              type="file"
-              accept="image/*"
-              capture="environment"
-              className="hidden"
-              onChange={handlePhotoUpload}
-            />
-          </div>
+
+              {/* Save button */}
+              <button
+                onClick={handleSave}
+                disabled={saving}
+                className="w-full mt-4 py-3 rounded-full bg-emerald-600 dark:bg-emerald-500 text-white font-semibold hover:bg-emerald-700 dark:hover:bg-emerald-600 transition disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {saving ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : (
+                  <>
+                    <Check className="w-5 h-5" />
+                    添加 {words.length} 个单词到生词本
+                  </>
+                )}
+              </button>
+            </>
+          )}
         </div>
-      </Layout>
-    );
-  }
 
-  // Manual input mode
-  if (mode === 'manual') {
-    return (
-      <Layout userId={userId || ''} showBack maxWidth="max-w-3xl">
-        <div className="py-6">
-          <div className="flex items-center justify-between mb-6">
-            <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">手动添加</h1>
-            <button onClick={() => setMode('choose')} className="text-sm text-gray-400 hover:text-gray-600">
-              返回
-            </button>
-          </div>
-
-          {/* Input area */}
-          <div className="flex gap-2 mb-6">
-            <input
-              type="text"
-              value={inputWord}
-              onChange={e => setInputWord(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && handleManualAdd()}
-              placeholder="输入英文单词…"
-              autoFocus
-              className="flex-1 px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-violet-400 dark:focus:border-violet-500 transition"
-            />
-            <button
-              onClick={handleManualAdd}
-              disabled={submitting || !inputWord.trim()}
-              className="px-5 py-3 rounded-xl bg-violet-600 dark:bg-violet-500 text-white font-medium hover:bg-violet-700 dark:hover:bg-violet-600 transition disabled:opacity-50"
-            >
-              {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : '添加'}
-            </button>
-          </div>
-
-          {/* Added words list */}
-          {addedWords.length > 0 && (
-            <div className="space-y-2">
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
-                已添加 {addedWords.length} 个单词
-              </p>
-              {addedWords.map((w, i) => (
-                <div key={i} className="flex items-center gap-2 p-3 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg">
-                  <Check className="w-4 h-4 text-emerald-500 flex-shrink-0" />
-                  <span className="text-sm text-gray-700 dark:text-gray-300">{w}</span>
+        {/* Input area — pinned at bottom, ChatGPT style */}
+        <div className="sticky bottom-0 bg-gray-50 dark:bg-gray-900 pt-3 pb-4 -mx-4 px-4 border-t border-gray-100 dark:border-gray-800">
+          {/* Image previews */}
+          {images.length > 0 && (
+            <div className="flex gap-2 mb-2 overflow-x-auto pb-1">
+              {images.map((img, i) => (
+                <div key={i} className="relative flex-shrink-0">
+                  <img src={img} alt="" className="w-16 h-16 rounded-lg object-cover border border-gray-200 dark:border-gray-700" />
+                  <button
+                    onClick={() => removeImage(i)}
+                    className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-gray-800/70 text-white flex items-center justify-center"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
                 </div>
               ))}
             </div>
           )}
 
-          {addedWords.length > 0 && (
+          <div className="flex items-end gap-2">
+            {/* Image button */}
             <button
-              onClick={() => navigate(`/${userId}/cards`)}
-              className="mt-6 w-full py-3 rounded-full bg-emerald-600 text-white font-medium hover:bg-emerald-700 transition"
+              onClick={() => fileRef.current?.click()}
+              className="p-2.5 rounded-xl text-gray-400 dark:text-gray-500 hover:text-violet-500 dark:hover:text-violet-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition flex-shrink-0"
             >
-              完成，开始背
+              <ImagePlus className="w-5 h-5" />
             </button>
-          )}
-        </div>
-      </Layout>
-    );
-  }
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/*"
+              multiple
+              className="hidden"
+              onChange={handleImageAdd}
+            />
 
-  // Photo analysis mode
-  return (
-    <Layout userId={userId || ''} showBack maxWidth="max-w-3xl">
-      <div className="py-6">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">拍照识别</h1>
-          <button onClick={() => { setMode('choose'); setExtractedWords([]); setPhotoPreview(null); }} className="text-sm text-gray-400 hover:text-gray-600">
-            返回
-          </button>
-        </div>
+            {/* Text area */}
+            <textarea
+              ref={inputRef}
+              value={text}
+              onChange={e => {
+                setText(e.target.value);
+                // Auto-resize
+                e.target.style.height = 'auto';
+                e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
+              }}
+              onKeyDown={e => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  handleExtract();
+                }
+              }}
+              placeholder="粘贴英文、输入单词、或补充说明…"
+              rows={1}
+              className="flex-1 px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:border-violet-400 dark:focus:border-violet-500 resize-none transition leading-relaxed"
+              style={{ minHeight: '42px', maxHeight: '120px' }}
+            />
 
-        {/* Photo preview */}
-        {photoPreview && (
-          <div className="mb-4 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700">
-            <img src={photoPreview} alt="uploaded" className="w-full max-h-48 object-cover" />
-          </div>
-        )}
-
-        {/* Analyzing */}
-        {analyzing && (
-          <div className="text-center py-8">
-            <Loader2 className="w-8 h-8 text-violet-500 animate-spin mx-auto mb-3" />
-            <p className="text-sm text-gray-500 dark:text-gray-400">AI 正在识别生词…</p>
-          </div>
-        )}
-
-        {/* Extracted words list */}
-        {!analyzing && extractedWords.length > 0 && (
-          <>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
-              识别出 {extractedWords.length} 个单词，取消勾选不需要的：
-            </p>
-            <div className="space-y-2 mb-6">
-              {extractedWords.map((w, i) => (
-                <button
-                  key={i}
-                  onClick={() => toggleWord(i)}
-                  className={`w-full flex items-center gap-3 p-3 rounded-xl border transition text-left ${
-                    w.selected
-                      ? 'bg-white dark:bg-gray-800 border-violet-300 dark:border-violet-600'
-                      : 'bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 opacity-50'
-                  }`}
-                >
-                  <div className={`w-5 h-5 rounded flex items-center justify-center flex-shrink-0 ${
-                    w.selected ? 'bg-violet-500 text-white' : 'bg-gray-200 dark:bg-gray-600'
-                  }`}>
-                    {w.selected && <Check className="w-3.5 h-3.5" />}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium text-gray-900 dark:text-gray-100">{w.front}</span>
-                      {w.phonetic && <span className="text-xs text-gray-400">{w.phonetic}</span>}
-                    </div>
-                    <span className="text-sm text-gray-500 dark:text-gray-400">{w.back}</span>
-                  </div>
-                </button>
-              ))}
-            </div>
-
+            {/* Send button */}
             <button
-              onClick={handleConfirmPhoto}
-              disabled={submitting || !extractedWords.some(w => w.selected)}
-              className="w-full py-3 rounded-full bg-violet-600 text-white font-medium hover:bg-violet-700 transition disabled:opacity-50"
+              onClick={handleExtract}
+              disabled={extracting || !hasInput}
+              className={`p-2.5 rounded-xl flex-shrink-0 transition ${
+                hasInput && !extracting
+                  ? 'bg-violet-600 text-white hover:bg-violet-700'
+                  : 'bg-gray-100 dark:bg-gray-800 text-gray-300 dark:text-gray-600'
+              }`}
             >
-              {submitting ? '添加中…' : `添加 ${extractedWords.filter(w => w.selected).length} 个单词`}
+              {extracting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
             </button>
-          </>
-        )}
-
-        {!analyzing && extractedWords.length === 0 && !photoPreview && (
-          <button
-            onClick={() => fileRef.current?.click()}
-            className="w-full py-12 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600 text-gray-400 hover:border-violet-400 hover:text-violet-400 transition"
-          >
-            <Camera className="w-8 h-8 mx-auto mb-2" />
-            <span className="text-sm">点击拍照或上传图片</span>
-          </button>
-        )}
+          </div>
+        </div>
       </div>
     </Layout>
   );

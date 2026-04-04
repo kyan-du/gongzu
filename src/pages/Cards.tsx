@@ -123,10 +123,21 @@ export default function Cards() {
     const progress = stats ? Math.round((stats.learnedCount / Math.max(stats.totalWords, 1)) * 100) : 0;
     return (
       <Layout userId={userId || ''} showBack maxWidth="max-w-3xl">
-        <div className="py-4">
-          {/* Header */}
-          <div className="text-center mb-6">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">单词打卡</h1>
+        <div>
+          {/* Subheader — same style as Quiz */}
+          <div className="py-3 mb-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-medium border border-amber-300 dark:border-amber-600 text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-900/30">
+                单词
+              </span>
+              <span className="text-base font-medium text-gray-900 dark:text-gray-100">单词打卡</span>
+            </div>
+            <button
+              onClick={() => navigate(`/${userId}/cards/add`)}
+              className="px-3 py-1 rounded-full border border-dashed border-gray-300 dark:border-gray-600 text-xs text-gray-400 dark:text-gray-500 hover:border-gray-400 hover:text-gray-500 transition"
+            >
+              +添加生词
+            </button>
           </div>
 
           {/* Progress ring / bar */}
@@ -185,14 +196,6 @@ export default function Cards() {
               <p className="text-gray-500 dark:text-gray-400">今天的单词都学完啦 🎉</p>
             </div>
           )}
-
-          {/* Add words entry */}
-          <button
-            onClick={() => navigate(`/${userId}/cards/add`)}
-            className="w-full mt-3 py-3 rounded-full border-2 border-dashed border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400 text-sm font-medium hover:border-violet-400 hover:text-violet-500 dark:hover:border-violet-500 dark:hover:text-violet-400 transition"
-          >
-            + 添加生词
-          </button>
         </div>
       </Layout>
     );
