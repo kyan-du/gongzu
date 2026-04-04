@@ -23,7 +23,7 @@ function getAIConfig(env: Env, vision = false) {
 async function callAI(env: Env, messages: any[], maxTokens = 3000, vision = false): Promise<string> {
   const cfg = getAIConfig(env, vision);
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 55000); // 55s timeout
+  const timer = setTimeout(() => controller.abort(), 80000); // 80s timeout
   try {
     const resp = await fetch(cfg.url, {
       method: 'POST',

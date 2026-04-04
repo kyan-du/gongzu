@@ -11,8 +11,8 @@ interface ExtractedWord {
   exampleCn?: string;
 }
 
-// Compress image for upload — max 1600px on longest side, JPEG 0.6
-function compressImage(dataUrl: string, maxDim = 1600): Promise<string> {
+// Compress image for upload — max 2048px on longest side, JPEG 0.7
+function compressImage(dataUrl: string, maxDim = 2048): Promise<string> {
   return new Promise((resolve) => {
     const img = new Image();
     img.onload = () => {
@@ -27,7 +27,7 @@ function compressImage(dataUrl: string, maxDim = 1600): Promise<string> {
       canvas.width = w;
       canvas.height = h;
       canvas.getContext('2d')!.drawImage(img, 0, 0, w, h);
-      resolve(canvas.toDataURL('image/jpeg', 0.6));
+      resolve(canvas.toDataURL('image/jpeg', 0.7));
     };
     img.src = dataUrl;
   });
@@ -96,7 +96,7 @@ export default function AddWords() {
 
     try {
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 90000);
+      const timeout = setTimeout(() => controller.abort(), 120000);
 
       const resp = await fetch('/api/cards/add', {
         method: 'POST',
