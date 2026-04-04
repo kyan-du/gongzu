@@ -352,7 +352,7 @@ export default function Home() {
 
             {/* Word Book Card */}
             <button onClick={() => navigate(`/${userId}/cards`)}
-              className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-3 hover:shadow-md transition active:scale-[0.98]">
+              className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-3 hover:shadow-md transition active:scale-[0.98] mt-3">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-violet-50 dark:bg-violet-900/30">
                   <BookOpen className="w-4 h-4 text-violet-500 dark:text-violet-400" />
