@@ -433,28 +433,23 @@ export default function Home() {
                   ))}
                 </div>
 
-                {/* Vocabulary card entry — only show on today */}
-                {selectedDate === todayStr && (
-                  <button
-                    onClick={() => navigate(cardCount > 0 ? `/${userId}/${todayStr}/cards` : `/${userId}/${todayStr}/cards/add`)}
-                    className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition active:scale-[0.98] mt-3">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-violet-50 dark:bg-violet-900/30">
-                        <BookOpen className="w-5 h-5 text-violet-500 dark:text-violet-400" />
-                      </div>
-                      <div className="text-left">
-                        <div className="font-medium text-gray-900 dark:text-gray-100">单词记忆</div>
-                        <div className="text-sm text-gray-500 dark:text-gray-400">
-                          {cardCount > 0 ? `${cardCount} 个单词待背` : '添加生词开始学习'}
-                        </div>
+                {/* Vocabulary card entry */}
+                <button
+                  onClick={() => navigate(`/${userId}/cards`)}
+                  className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition active:scale-[0.98] mt-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-violet-50 dark:bg-violet-900/30">
+                      <BookOpen className="w-5 h-5 text-violet-500 dark:text-violet-400" />
+                    </div>
+                    <div className="text-left">
+                      <div className="font-medium text-gray-900 dark:text-gray-100">单词记忆</div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">
+                        {cardCount > 0 ? `${cardCount} 个单词待背` : '添加生词开始学习'}
                       </div>
                     </div>
-                    <div className="flex items-center gap-1 text-sm text-amber-500 dark:text-amber-400 font-medium">
-                      <Clock className="w-3.5 h-3.5" />
-                      {cardCount > 0 ? '开始' : '添加'}
-                    </div>
-                  </button>
-                )}
+                  </div>
+                  <span className="text-sm text-gray-400">→</span>
+                </button>
               </>
             )}
           </div>

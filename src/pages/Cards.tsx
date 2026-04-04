@@ -166,27 +166,13 @@ export default function Cards() {
   // Dashboard — show before starting
   if (!isLearnMode) {
     const progress = stats ? Math.round((stats.learnedCount / Math.max(stats.totalWords, 1)) * 100) : 0;
-    return (
-      <Layout userId={userId || ''} showBack backTo={`/${userId}/${currentDate}`} maxWidth="max-w-3xl"
-        title="单词记忆"
-        rightAction={
-          <div className="flex gap-2">
-            <button
-              onClick={() => navigate(`/${userId}/${currentDate}/cards/list`)}
-              className="px-3 py-1 rounded-full border border-gray-200 dark:border-gray-700 text-xs text-gray-500 dark:text-gray-400 hover:border-gray-400 hover:text-gray-600 transition"
-            >
-              生词本
-            </button>
-            <button
-              onClick={() => navigate(`/${userId}/${currentDate}/cards/add`)}
-              className="px-3 py-1 rounded-full border border-dashed border-gray-300 dark:border-gray-600 text-xs text-gray-400 dark:text-gray-500 hover:border-gray-400 hover:text-gray-500 transition"
-            >
-              +添加
-            </button>
-          </div>
-        }
-      >
-          {/* Progress ring / bar */}
+    const isDaily = !!date; // has date param = daily task mode
+
+    // ── Global overview (no date) ──
+    if (!isDaily) {
+      return (
+        <Layout userId={userId || ''} showBack backTo={`/${userId}/home`} maxWidth="max-w-3xl" title="单词记忆">
+          {/* Overall progress */}
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-5 mb-4">
             <div className="flex items-center justify-between mb-3">
               <span className="text-sm text-gray-500 dark:text-gray-400">学习进度</span>
@@ -206,29 +192,86 @@ export default function Cards() {
             </div>
           </div>
 
-          {/* Today's tasks */}
-          <div className="grid grid-cols-2 gap-3 mb-6">
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 text-center">
+          {/* Action cards */}
+          <div className="space-y-3 mb-4">
+            <button
+              onClick={() => navigate(`/${userId}/${todayDate}/cards`)}
+              className="w-full bg-violet-50 dark:bg-violet-900/20 rounded-xl p-4 flex items-center justify-between hover:bg-violet-100 dark:hover:bg-violet-900/30 transition active:scale-[0.98]"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-violet-100 dark:bg-violet-900/40 flex items-center justify-center">
+                  <Zap className="w-5 h-5 text-violet-600 dark:text-violet-400" />
+                </div>
+                <div className="text-left">
+                  <div className="font-medium text-gray-900 dark:text-gray-100">今日学习</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                    {total > 0 ? `${newWords.length} 新词 · ${reviewWords.length} 复习` : '今天的任务已完成'}
+                  </div>
+                </div>
+              </div>
+              <span className="text-sm font-medium text-violet-600 dark:text-violet-400">{total > 0 ? '开始' : '查看'}</span>
+            </button>
+
+            <button
+              onClick={() => navigate(`/${userId}/cards/list`)}
+              className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition active:scale-[0.98]"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center">
+                  <RefreshCw className="w-5 h-5 text-blue-500" />
+                </div>
+                <div className="text-left">
+                  <div className="font-medium text-gray-900 dark:text-gray-100">生词本</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">共 {stats?.totalWords || 0} 词</div>
+                </div>
+              </div>
+              <span className="text-sm text-gray-400">→</span>
+            </button>
+
+            <button
+              onClick={() => navigate(`/${userId}/cards/add`)}
+              className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition active:scale-[0.98]"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center">
+                  <span className="text-emerald-500 text-lg font-bold">+</span>
+                </div>
+                <div className="text-left">
+                  <div className="font-medium text-gray-900 dark:text-gray-100">添加生词</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">拍照或输入英文</div>
+                </div>
+              </div>
+              <span className="text-sm text-gray-400">→</span>
+            </button>
+          </div>
+        </Layout>
+      );
+    }
+
+    // ── Daily task dashboard (with date) ──
+    return (
+      <Layout userId={userId || ''} showBack backTo={`/${userId}/${currentDate}`} maxWidth="max-w-3xl"
+        title="今日单词"
+      >
+        {/* Today's tasks — primary */}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-5 mb-4">
+          <div className="grid grid-cols-2 gap-3 mb-5">
+            <div className="text-center">
               <div className="flex items-center justify-center gap-1.5 mb-1">
                 <Zap className="w-4 h-4 text-amber-500" />
-                <span className="text-xs text-gray-500 dark:text-gray-400">今日新学</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400">新词</span>
               </div>
-              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                {newWords.length}
-              </div>
+              <div className="text-3xl font-bold text-gray-900 dark:text-gray-100">{newWords.length}</div>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 text-center">
+            <div className="text-center">
               <div className="flex items-center justify-center gap-1.5 mb-1">
                 <RefreshCw className="w-4 h-4 text-blue-500" />
                 <span className="text-xs text-gray-500 dark:text-gray-400">待复习</span>
               </div>
-              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                {reviewWords.length}
-              </div>
+              <div className="text-3xl font-bold text-gray-900 dark:text-gray-100">{reviewWords.length}</div>
             </div>
           </div>
 
-          {/* Start button */}
           {total > 0 ? (
             <button
               onClick={() => navigate(`/${userId}/${currentDate}/cards/learn`)}
@@ -237,11 +280,30 @@ export default function Cards() {
               开始学习（{total} 词）
             </button>
           ) : (
-            <div className="text-center py-8">
-              <CheckCircle className="w-12 h-12 text-emerald-400 mx-auto mb-3" />
+            <div className="text-center py-4">
+              <CheckCircle className="w-10 h-10 text-emerald-400 mx-auto mb-2" />
               <p className="text-gray-500 dark:text-gray-400">今天的单词都学完啦 🎉</p>
             </div>
           )}
+        </div>
+
+        {/* Secondary: overall progress */}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-4">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm text-gray-500 dark:text-gray-400">总进度</span>
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{stats?.learnedCount || 0} / {stats?.totalWords || 0}</span>
+          </div>
+          <div className="w-full h-2 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-violet-500 dark:bg-violet-400 rounded-full transition-all duration-500"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+          <div className="flex justify-between mt-1.5">
+            <span className="text-xs text-gray-400 dark:text-gray-500">{progress}%</span>
+            <span className="text-xs text-gray-400 dark:text-gray-500">已掌握 {stats?.masteredCount || 0} 词</span>
+          </div>
+        </div>
       </Layout>
     );
   }

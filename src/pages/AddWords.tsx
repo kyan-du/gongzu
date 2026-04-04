@@ -32,9 +32,7 @@ function compressImage(dataUrl: string, maxWidth = 800): Promise<string> {
 }
 
 export default function AddWords() {
-  const { userId, date } = useParams<{ userId: string; date: string }>();
-  const todayDate = new Date().toISOString().split('T')[0];
-  const currentDate = date || todayDate;
+  const { userId } = useParams<{ userId: string }>();
   const navigate = useNavigate();
   const fileRef = useRef<HTMLInputElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -170,7 +168,7 @@ export default function AddWords() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId, words }),
       });
-      navigate(`/${userId}/${currentDate}/cards`);
+      navigate(`/${userId}/cards`);
     } catch (e) { /* ignore */ }
     setSaving(false);
   };
@@ -178,7 +176,7 @@ export default function AddWords() {
   const hasInput = text.trim() || images.length > 0;
 
   return (
-    <Layout userId={userId || ''} showBack backTo={`/${userId}/${currentDate}/cards`} maxWidth="max-w-3xl" title="添加生词">
+    <Layout userId={userId || ''} showBack backTo={`/${userId}/cards`} maxWidth="max-w-3xl" title="添加生词">
       <div className="flex flex-col">
         {/* Error */}
         {error && (

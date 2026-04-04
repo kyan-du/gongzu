@@ -24,11 +24,13 @@ function App() {
         {/* Main view: today or specific date */}
         <Route path="/:userId/today" element={<DailyView />} />
         <Route path="/:userId/home" element={<Home />} />
-        {/* Cards / vocabulary */}
+        {/* Cards / vocabulary — daily (with date) */}
         <Route path="/:userId/:date/cards" element={<Cards />} />
         <Route path="/:userId/:date/cards/learn" element={<Cards />} />
-        <Route path="/:userId/:date/cards/add" element={<AddWords />} />
-        <Route path="/:userId/:date/cards/list" element={<WordList />} />
+        {/* Cards / vocabulary — global (no date) */}
+        <Route path="/:userId/cards" element={<Cards />} />
+        <Route path="/:userId/cards/add" element={<AddWords />} />
+        <Route path="/:userId/cards/list" element={<WordList />} />
         {/* Mistakes book */}
         <Route path="/:userId/mistakes" element={<Mistakes />} />
         {/* Quiz by date + tag slug */}

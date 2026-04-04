@@ -21,9 +21,7 @@ interface DeletedItem {
 }
 
 export default function WordList() {
-  const { userId, date } = useParams<{ userId: string; date: string }>();
-  const todayDate = new Date().toISOString().split('T')[0];
-  const currentDate = date || todayDate;
+  const { userId } = useParams<{ userId: string }>();
   const [words, setWords] = useState<Word[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -126,7 +124,7 @@ export default function WordList() {
   const liveCount = words.filter(w => !deleted.has(w.id)).length;
 
   return (
-    <Layout userId={userId || ''} showBack backTo={`/${userId}/${currentDate}/cards`} maxWidth="max-w-3xl"
+    <Layout userId={userId || ''} showBack backTo={`/${userId}/cards`} maxWidth="max-w-3xl"
       title="生词本"
       rightAction={<span className="text-sm text-gray-400 dark:text-gray-500">{total - deleted.size} 词</span>}
     >
