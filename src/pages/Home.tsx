@@ -70,11 +70,33 @@ export default function Home() {
   const [cardLearning, setCardLearning] = useState<number>(0);
   const [cardReviewDue, setCardReviewDue] = useState<number>(0);
   const [memoryGameCompleted, setMemoryGameCompleted] = useState<number>(0);
-  const memoryGameTarget = 5;
-  const hasMemoryGame = memoryGameTarget > 0;
+
+  // 用户模块配置（从 API 获取）
+  interface UserModule {
+    module: string;
+    enabled: boolean;
+    isTask: boolean;
+    dailyTarget: number | null;
+    config: Record<string, any>;
+  }
+  const [userModules, setUserModules] = useState<UserModule[]>([]);
+  const mod = (name: string) => userModules.find(m => m.module === name);
+  const modEnabled = (name: string) => mod(name)?.enabled ?? false;
+  const modIsTask = (name: string) => mod(name)?.isTask ?? false;
+  const modTarget = (name: string) => mod(name)?.dailyTarget ?? 0;
+
   const [calMonth, setCalMonth] = useState(() => new Date());
   const [monthlyData, setMonthlyData] = useState<Record<string, MonthlyDayData>>({});
   const [monthlyCache, setMonthlyCache] = useState<Record<string, Record<string, MonthlyDayData>>>({});
+
+  // 获取用户模块配置
+  useEffect(() => {
+    if (!userId) return;
+    fetch(`/api/modules?userId=${userId}`)
+      .then(r => r.json())
+      .then((data: any) => setUserModules(data.modules || []))
+      .catch(() => {});
+  }, [userId]);
 
   // Fetch selected day's data
   const fetchDayData = useCallback(async (dateStr: string) => {
@@ -135,14 +157,14 @@ export default function Home() {
       .catch(() => setCardCount(0));
   }, [userId, selectedDate, todayStr]);
 
-  // 记忆游戏今日进度
+  // 记忆游戏今日进度（仅启用了的用户）
   useEffect(() => {
-    if (!userId) return;
+    if (!userId || !modEnabled('memory_game')) return;
     fetch(`/api/memory-game?userId=${userId}&date=${todayStr}&type=matryoshka`)
       .then(r => r.json())
       .then((data: any) => setMemoryGameCompleted(data.completed || 0))
       .catch(() => {});
-  }, [userId, todayStr]);
+  }, [userId, todayStr, userModules]);
 
   // Monthly data with cache — load current + adjacent months for overflow dates
   useEffect(() => {
@@ -296,11 +318,12 @@ export default function Home() {
                     // Compute combined progress: quiz completion + memory game completion
                     const quizTotal = md ? md.quizCount : 0;
                     const quizDone = md ? md.completedCount : 0;
-                    const mgTarget = md?.memoryGamesTarget || 5;
-                    const mgDone = md ? Math.min(md.memoryGames, mgTarget) : 0;
+                    const showMemoryRing = modIsTask('memory_game');
+                    const mgTarget = showMemoryRing ? (md?.memoryGamesTarget || modTarget('memory_game') || 5) : 0;
+                    const mgDone = showMemoryRing && md ? Math.min(md.memoryGames, mgTarget) : 0;
                     const totalTasks = quizTotal + mgTarget;
                     const doneTasks = quizDone + mgDone;
-                    const hasAnyTask = d.isToday || (md && (quizTotal > 0 || md.memoryGames > 0));
+                    const hasAnyTask = d.isToday || (md && (quizTotal > 0 || (showMemoryRing && md.memoryGames > 0)));
 
                     if (hasAnyTask) {
                       // Outer: progress (Apple red/pink)
@@ -312,8 +335,8 @@ export default function Home() {
                       // Inner: accuracy (Apple green) — combine quiz + memory game accuracy
                       const quizAnswered = md ? md.answeredQuestions : 0;
                       const quizCorrect = md ? md.correctAnswers : 0;
-                      const mgTotal = md ? md.memoryTotal : 0;
-                      const mgCorrect = md ? md.memoryCorrect : 0;
+                      const mgTotal = showMemoryRing && md ? md.memoryTotal : 0;
+                      const mgCorrect = showMemoryRing && md ? md.memoryCorrect : 0;
                       const allAnswered = quizAnswered + mgTotal;
                       const allCorrect = quizCorrect + mgCorrect;
                       if (allAnswered > 0) {
@@ -360,7 +383,8 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Mistakes Card */}
+            {/* Mistakes Card — 按模块配置 */}
+            {modEnabled('mistakes') && (
             <button onClick={() => navigate(`/${userId}/mistakes`)}
               className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-3 hover:shadow-md transition active:scale-[0.98]">
               <div className="flex items-center gap-3">
@@ -385,9 +409,10 @@ export default function Home() {
                 <ChevronRight className="w-4 h-4 text-gray-400 dark:text-gray-500" />
               </div>
             </button>
+            )}
 
-            {/* Word Book Card — 可可不需要 */}
-            {userId !== 'ryan' && (
+            {/* Word Book Card — 按模块配置 */}
+            {modEnabled('vocab') && (
             <button onClick={() => navigate(`/${userId}/vocab`)}
               className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-3 hover:shadow-md transition active:scale-[0.98] mt-3">
               <div className="flex items-center gap-3">
@@ -407,7 +432,8 @@ export default function Home() {
             </button>
             )}
 
-            {/* 记忆游戏 */}
+            {/* 记忆游戏 — 按模块配置 */}
+            {modEnabled('memory_game') && (
             <button onClick={() => navigate(`/${userId}/memory/matryoshka`)}
               className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-3 hover:shadow-md transition active:scale-[0.98] mt-3">
               <div className="flex items-center gap-3">
@@ -421,6 +447,7 @@ export default function Home() {
                 <ChevronRight className="w-4 h-4 text-gray-400 dark:text-gray-500" />
               </div>
             </button>
+            )}
           </div>
 
           {/* RIGHT COLUMN: Selected day content */}
@@ -443,7 +470,7 @@ export default function Home() {
                     {allCompleted ? '✅ 全部完成' : `${completedQuizzes}/${totalQuizzes} 完成`}
                   </div>
                 )}
-                {selectedDate === todayStr && !loadingDay && !hasAnyAnswer && (totalQuizzes > 0 || !hasMemoryGame) && (
+                {selectedDate === todayStr && !loadingDay && !hasAnyAnswer && (totalQuizzes > 0 || !modIsTask('memory_game')) && (
                   requested ? (
                     <span className="text-xs text-gray-400 dark:text-gray-500">已通知出题 ✓</span>
                   ) : (
@@ -470,8 +497,8 @@ export default function Home() {
                   </div>
                 </div>
               )}
-              {/* 记忆游戏 — 即使没有作业也显示 */}
-              {selectedDate === todayStr && (
+              {/* 记忆游戏任务卡 — 仅 isTask 的用户 */}
+              {modIsTask('memory_game') && selectedDate === todayStr && (
                 <button
                   onClick={() => navigate(`/${userId}/memory/matryoshka`)}
                   className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition active:scale-[0.98] mt-3">
@@ -482,11 +509,11 @@ export default function Home() {
                     <div className="text-left">
                       <div className="font-medium text-gray-900 dark:text-gray-100">套娃记忆</div>
                       <div className="text-sm text-gray-500 dark:text-gray-400">
-                        {memoryGameCompleted >= memoryGameTarget ? '今日已完成' : `${memoryGameCompleted}/${memoryGameTarget} 完成`}
+                        {memoryGameCompleted >= modTarget('memory_game') ? '今日已完成' : `${memoryGameCompleted}/${modTarget('memory_game')} 完成`}
                       </div>
                     </div>
                   </div>
-                  {memoryGameCompleted >= memoryGameTarget ? (
+                  {memoryGameCompleted >= modTarget('memory_game') ? (
                     <div className="flex items-center gap-1 text-sm text-green-500 dark:text-green-400 font-medium">
                       <CheckCircle className="w-3.5 h-3.5" />
                       已完成
@@ -494,7 +521,7 @@ export default function Home() {
                   ) : (
                     <div className="flex items-center gap-1 text-sm text-amber-500 dark:text-amber-400 font-medium">
                       <Clock className="w-3.5 h-3.5" />
-                      {memoryGameCompleted > 0 ? `${memoryGameCompleted}/${memoryGameTarget}` : '未完成'}
+                      {memoryGameCompleted > 0 ? `${memoryGameCompleted}/${modTarget('memory_game')}` : '未完成'}
                     </div>
                   )}
                 </button>
@@ -548,7 +575,8 @@ export default function Home() {
                   ))}
                 </div>
 
-                {/* Vocabulary card entry — daily route */}
+                {/* Vocabulary card entry — 按模块配置 */}
+                {modEnabled('vocab') && (
                 <button
                   onClick={() => navigate(`/${userId}/${selectedDate}/vocab`)}
                   className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition active:scale-[0.98] mt-3">
@@ -575,9 +603,10 @@ export default function Home() {
                     </div>
                   )}
                 </button>
+                )}
 
-                {/* 记忆游戏 */}
-                {selectedDate === todayStr && (
+                {/* 记忆游戏任务卡 — 按模块配置 */}
+                {modEnabled('memory_game') && selectedDate === todayStr && (
                   <button
                     onClick={() => navigate(`/${userId}/memory/matryoshka`)}
                     className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition active:scale-[0.98] mt-3">
@@ -588,11 +617,11 @@ export default function Home() {
                       <div className="text-left">
                         <div className="font-medium text-gray-900 dark:text-gray-100">套娃记忆</div>
                         <div className="text-sm text-gray-500 dark:text-gray-400">
-                          {memoryGameCompleted >= memoryGameTarget ? '今日已完成' : `${memoryGameCompleted}/${memoryGameTarget} 完成`}
+                          {memoryGameCompleted >= modTarget('memory_game') ? '今日已完成' : `${memoryGameCompleted}/${modTarget('memory_game')} 完成`}
                         </div>
                       </div>
                     </div>
-                    {memoryGameCompleted >= memoryGameTarget ? (
+                    {memoryGameCompleted >= modTarget('memory_game') ? (
                       <div className="flex items-center gap-1 text-sm text-green-500 dark:text-green-400 font-medium">
                         <CheckCircle className="w-3.5 h-3.5" />
                         已完成
@@ -600,7 +629,7 @@ export default function Home() {
                     ) : (
                       <div className="flex items-center gap-1 text-sm text-amber-500 dark:text-amber-400 font-medium">
                         <Clock className="w-3.5 h-3.5" />
-                        {memoryGameCompleted > 0 ? `${memoryGameCompleted}/${memoryGameTarget}` : '未完成'}
+                        {memoryGameCompleted > 0 ? `${memoryGameCompleted}/${modTarget('memory_game')}` : '未完成'}
                       </div>
                     )}
                   </button>

@@ -52,3 +52,59 @@ export function normalizeSubmissionResults(results: any[]): SubmissionResult[] {
     questionId: String(r.questionId),
   }));
 }
+
+// ========== 父母端数据类型 ==========
+
+export interface DayData {
+  date: string;
+  total: number;
+  completed: number;
+  correct: number;
+  rate: number;
+}
+
+export interface TagData {
+  tag: string;
+  total: number;
+  correct: number;
+  rate: number;
+}
+
+export interface ParentDashboardData {
+  today: {
+    total: number;
+    completed: number;
+    correct: number;
+    rate: number;
+  };
+  history: DayData[];
+  byTag: TagData[];
+  memoryGames?: {
+    completed: number;
+    target: number;
+  };
+  memoryAvgAccuracy?: number;
+}
+
+export interface UserModule {
+  module: string;
+  enabled: boolean;
+  isTask: boolean;
+  dailyTarget: number | null;
+  config: Record<string, any>;
+}
+
+export interface QuizTagConfig {
+  tag: string;
+  count: number;
+  prompt: string;
+  enabled?: boolean;
+  // 向后兼容字段
+  type?: string;
+  focus?: string[];
+  exclude?: string[];
+  difficulty?: number;
+  schedule?: string;
+  config?: Record<string, any>;
+  [key: string]: any;
+}

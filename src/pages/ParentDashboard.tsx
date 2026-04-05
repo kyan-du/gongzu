@@ -1,280 +1,249 @@
 import { useState, useEffect } from 'react';
-import { CheckCircle, Target, BookOpen } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { ChevronRight } from 'lucide-react';
 import Layout from '../components/Layout';
 import { getAllUsers } from '../lib/users';
+import { formatAgo, rateColor } from '../lib/utils';
+import type { ParentDashboardData } from '../lib/types';
+import MiniSparkline from '../components/charts/MiniSparkline';
+import ProgressRing from '../components/charts/ProgressRing';
 
-interface DayData {
-  date: string;
-  total: number;
-  completed: number;
-  correct: number;
-  rate: number;
-}
-
-interface TagData {
-  tag: string;
-  total: number;
-  correct: number;
-  rate: number;
-}
-
-interface ParentData {
-  today: { total: number; completed: number; correct: number; rate: number };
-  history: DayData[];
-  byTag: TagData[];
-}
-
-// Get children (non-parent users)
 const getChildren = () => getAllUsers().filter(u => u.id !== 'parent');
-
-function TrendChart({ data, range }: { data: DayData[]; range: 'week' | 'month' }) {
-  if (data.length === 0) {
-    return <div className="text-center text-gray-400 dark:text-gray-500 py-8 text-sm">暂无数据</div>;
-  }
-
-  const W = 320;
-  const H = 160;
-  const padL = 32;
-  const padR = 12;
-  const padT = 12;
-  const padB = 28;
-  const chartW = W - padL - padR;
-  const chartH = H - padT - padB;
-
-  // Fill missing dates with 0
-  const startDate = new Date(data[0].date);
-  const endDate = new Date(data[data.length - 1].date);
-  const dateMap = new Map(data.map(d => [d.date, d]));
-  const filledData: DayData[] = [];
-  for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
-    const ds = d.toISOString().split('T')[0];
-    filledData.push(dateMap.get(ds) || { date: ds, total: 0, completed: 0, correct: 0, rate: 0 });
-  }
-
-  const points = filledData.map((d, i) => ({
-    x: padL + (i / Math.max(filledData.length - 1, 1)) * chartW,
-    y: padT + (1 - d.rate) * chartH,
-    ...d,
-  }));
-
-  // Smooth curve using cardinal spline
-  const lineSegments: string[] = [];
-  for (let i = 0; i < points.length; i++) {
-    if (i === 0) {
-      lineSegments.push(`M${points[i].x.toFixed(1)},${points[i].y.toFixed(1)}`);
-    } else {
-      lineSegments.push(`L${points[i].x.toFixed(1)},${points[i].y.toFixed(1)}`);
-    }
-  }
-  const line = lineSegments.join(' ');
-  const area = `${line} L${points[points.length - 1].x.toFixed(1)},${padT + chartH} L${points[0].x.toFixed(1)},${padT + chartH} Z`;
-
-  // Y axis labels
-  const yLabels = [0, 25, 50, 75, 100];
-
-  // X axis labels (show ~5 labels evenly)
-  const xLabelCount = Math.min(5, filledData.length);
-  const xIndices: number[] = [];
-  for (let i = 0; i < xLabelCount; i++) {
-    xIndices.push(Math.round(i * (filledData.length - 1) / Math.max(xLabelCount - 1, 1)));
-  }
-
-  return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ height: '200px' }}>
-      <defs>
-        <linearGradient id={`grad-${range}`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#10B981" stopOpacity="0.15" />
-          <stop offset="100%" stopColor="#10B981" stopOpacity="0" />
-        </linearGradient>
-      </defs>
-
-      {/* Grid lines + Y labels */}
-      {yLabels.map((v) => {
-        const y = padT + (1 - v / 100) * chartH;
-        return (
-          <g key={v}>
-            <line x1={padL} y1={y} x2={W - padR} y2={y} stroke="#E5E7EB" strokeWidth="0.5" strokeDasharray={v === 0 ? 'none' : '2,2'} />
-            <text x={padL - 4} y={y + 3} textAnchor="end" className="fill-gray-400" style={{ fontSize: '8px' }}>{v}%</text>
-          </g>
-        );
-      })}
-
-      {/* Area + Line */}
-      <path d={area} fill={`url(#grad-${range})`} />
-      <path d={line} fill="none" stroke="#10B981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-
-      {/* Data points */}
-      {points.map((p, i) => (
-        <g key={i}>
-          {p.total > 0 && (
-            <>
-              <circle cx={p.x} cy={p.y} r="3" fill="white" stroke="#10B981" strokeWidth="1.5" />
-              {/* Show rate label on points where data exists and not too crowded */}
-              {(filledData.length <= 10 || i % Math.ceil(filledData.length / 8) === 0) && (
-                <text x={p.x} y={p.y - 6} textAnchor="middle" className="fill-gray-600 dark:fill-gray-300" style={{ fontSize: '7px', fontWeight: 600 }}>
-                  {Math.round(p.rate * 100)}%
-                </text>
-              )}
-            </>
-          )}
-          {p.total === 0 && (
-            <circle cx={p.x} cy={p.y} r="2" fill="#D1D5DB" />
-          )}
-        </g>
-      ))}
-
-      {/* X axis labels */}
-      {xIndices.map((idx) => (
-        <text key={idx} x={points[idx].x} y={H - 6} textAnchor="middle" className="fill-gray-400" style={{ fontSize: '8px' }}>
-          {filledData[idx].date.slice(5)}
-        </text>
-      ))}
-    </svg>
-  );
-}
+const childMap = new Map(getAllUsers().map(u => [u.id, u]));
 
 export default function ParentDashboard() {
   const children = getChildren();
-  const [activeChild, setActiveChild] = useState(children[0]?.id || 'cyan');
-  const [data, setData] = useState<ParentData | null>(null);
+  const navigate = useNavigate();
+  const [childData, setChildData] = useState<Record<string, ParentDashboardData>>({});
   const [loading, setLoading] = useState(true);
-  const [range, setRange] = useState<'week' | 'month'>('week');
+  const [activities, setActivities] = useState<any[]>([]);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchAll = async () => {
       setLoading(true);
+      const results: Record<string, ParentDashboardData> = {};
+      await Promise.all(children.map(async (child) => {
+        try {
+          const res = await fetch(`/api/parent?child=${child.id}&range=week`);
+          const data = await res.json();
+          results[child.id] = { today: data.today, history: data.history || [], byTag: data.byTag || [] };
+
+          // Memory game
+          const modRes = await fetch(`/api/modules?userId=${child.id}`);
+          const modData = await modRes.json();
+          const mgMod = (modData.modules || []).find((m: any) => m.module === 'memory_game' && m.isTask);
+          if (mgMod) {
+            try {
+              const today = new Date().toISOString().slice(0, 10);
+              const mgRes = await fetch(`/api/memory-game?userId=${child.id}&date=${today}&type=matryoshka`);
+              const mgData = await mgRes.json();
+              results[child.id].memoryGames = { completed: mgData.completed || 0, target: mgMod.dailyTarget || 5 };
+            } catch {}
+          }
+        } catch {}
+      }));
+      setChildData(results);
+      setLoading(false);
+
+      // Fetch recent activity
       try {
-        const res = await fetch(`/api/parent?child=${activeChild}&range=${range}`);
-        const json = await res.json();
-        setData(json);
-      } catch (e) {
-        console.error(e);
-      } finally {
-        setLoading(false);
-      }
+        const actRes = await fetch('/api/parent/activity?limit=15');
+        const actData = await actRes.json();
+        setActivities(actData.events || []);
+      } catch {}
     };
-    fetchData();
-  }, [activeChild, range]);
-
-
-  const rateColor = (rate: number) => {
-    if (rate >= 0.8) return 'text-green-600 dark:text-green-400';
-    if (rate >= 0.6) return 'text-amber-600 dark:text-amber-400';
-    return 'text-red-600 dark:text-red-400';
-  };
-
-  const rateBg = (rate: number) => {
-    if (rate >= 0.8) return 'bg-green-50 dark:bg-green-900/20';
-    if (rate >= 0.6) return 'bg-amber-50 dark:bg-amber-900/20';
-    return 'bg-red-50 dark:bg-red-900/20';
-  };
+    fetchAll();
+  }, []);
 
   return (
-    <Layout userId="parent" maxWidth="max-w-3xl">
-      {/* Child tabs with avatars */}
-        <div className="flex gap-3 mb-6">
-          {children.map((child) => (
-            <button
-              key={child.id}
-              onClick={() => setActiveChild(child.id)}
-              className={`flex-1 flex items-center justify-center gap-2.5 py-3 rounded-xl font-medium transition ${
-                activeChild === child.id
-                  ? 'bg-blue-600 text-white shadow-md'
-                  : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 shadow-sm hover:shadow-md'
-              }`}
-            >
-              <img
-                src={child.avatar}
-                alt={child.name}
-                className={`w-7 h-7 rounded-full object-cover ${activeChild === child.id ? 'ring-2 ring-white/50' : ''}`}
-              />
-              {child.name}
-            </button>
-          ))}
+    <Layout userId="parent">
+      <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">今日概览</h2>
+
+      {loading ? (
+        <div className="text-center text-gray-400 py-12 text-sm">加载中...</div>
+      ) : (
+        <div className="grid grid-cols-2 gap-4">
+          {children.map((child) => {
+            const d = childData[child.id];
+            if (!d) return null;
+            const hasQuiz = d.today.total > 0;
+            const hasMg = !!d.memoryGames;
+            const hasAny = hasQuiz || hasMg;
+            const allDone = hasQuiz
+              ? d.today.completed >= d.today.total && (!hasMg || d.memoryGames!.completed >= d.memoryGames!.target)
+              : hasMg
+                ? d.memoryGames!.completed >= d.memoryGames!.target
+                : false;
+
+            return (
+              <button
+                key={child.id}
+                onClick={() => navigate(`/parent/${child.id}`)}
+                className="w-full bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-md transition active:scale-[0.98] text-left overflow-hidden"
+              >
+                {/* Header */}
+                <div className="flex items-center gap-3 p-4 pb-0">
+                  <img src={child.avatar} alt={child.name} className="w-10 h-10 rounded-full object-cover" />
+                  <div className="flex-1">
+                    <div className="font-semibold text-gray-900 dark:text-gray-100">{child.name}</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                      {!hasAny ? '今日暂无任务' : allDone ? '✅ 全部完成' : '⏳ 进行中'}
+                    </div>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                </div>
+
+                {/* Stats */}
+                <div className="px-4 pb-4 pt-3">
+                  {hasAny ? (
+                    <>
+                      {/* One row: rings + accuracy + sparkline */}
+                      <div className="flex items-center gap-2">
+                        {hasQuiz && (
+                          <ProgressRing value={d.today.completed} max={d.today.total} color="#3B82F6" size={44} />
+                        )}
+                        {hasMg && (
+                          <ProgressRing value={d.memoryGames!.completed} max={d.memoryGames!.target} color="#F59E0B" size={44} />
+                        )}
+                        {/* Accuracy */}
+                        {hasQuiz && d.today.total > 0 && (
+                          <div className="text-center flex-shrink-0">
+                            <div className={`text-base font-bold leading-tight ${rateColor(d.today.rate)}`}>
+                              {Math.round(d.today.rate * 100)}%
+                            </div>
+                            <div className="text-[10px] text-gray-500 dark:text-gray-400">正确率</div>
+                          </div>
+                        )}
+                        {!hasQuiz && hasMg && d.memoryGames!.completed > 0 && (
+                          <div className="text-center flex-shrink-0">
+                            <div className={`text-base font-bold leading-tight ${rateColor(d.memoryAvgAccuracy || 0)}`}>
+                              {Math.round((d.memoryAvgAccuracy || 0) * 100)}%
+                            </div>
+                            <div className="text-[10px] text-gray-500 dark:text-gray-400">准确率</div>
+                          </div>
+                        )}
+                        {/* Sparkline fills remaining space */}
+                        {d.history.length > 1 && (
+                          <div className="flex-1 min-w-0">
+                            <MiniSparkline data={d.history} />
+                          </div>
+                        )}
+                        {/* Flat line for memory-only users with no quiz history */}
+                        {d.history.length <= 1 && hasMg && (
+                          <div className="flex-1 min-w-0">
+                            <svg viewBox="0 0 120 36" className="w-full" style={{ height: '36px' }}>
+                              <line x1="4" y1="18" x2="116" y2="18" stroke="#10B981" strokeWidth="1.5" opacity="0.4" />
+                              <circle cx="116" cy="18" r="2.5" fill="#10B981" />
+                            </svg>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Tag badges */}
+                      {d.byTag.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 mt-2.5">
+                          {d.byTag.map(t => (
+                            <span key={t.tag} className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium ${
+                              t.rate >= 0.8 ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400'
+                              : t.rate >= 0.6 ? 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400'
+                              : 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400'
+                            }`}>
+                              {t.tag} {Math.round(t.rate * 100)}%
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                      {/* Memory game badge for memory-only users */}
+                      {!hasQuiz && hasMg && (
+                        <div className="flex flex-wrap gap-1.5 mt-2.5">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400">
+                            🧩 记忆游戏 {d.memoryGames!.completed}/{d.memoryGames!.target}
+                          </span>
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <div className="text-sm text-gray-400 dark:text-gray-500 py-1">点击查看详情和配置</div>
+                  )}
+                </div>
+              </button>
+            );
+          })}
         </div>
+      )}
 
-        {loading ? (
-          <div className="text-center text-gray-400 dark:text-gray-500 py-12">加载中...</div>
-        ) : data ? (
-          <>
-            {/* Today overview */}
-            <div className="grid grid-cols-3 gap-3 mb-6">
-              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 text-center">
-                <Target className="w-5 h-5 text-blue-500 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                  {data.today.completed}/{data.today.total}
-                </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">今日完成</div>
-              </div>
-              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 text-center">
-                <CheckCircle className="w-5 h-5 text-green-500 mx-auto mb-2" />
-                <div className={`text-2xl font-bold ${rateColor(data.today.rate)}`}>
-                  {data.today.total > 0 ? Math.round(data.today.rate * 100) : 0}%
-                </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">正确率</div>
-              </div>
-              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 text-center">
-                <BookOpen className="w-5 h-5 text-amber-500 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                  {data.today.correct}
-                </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">答对题数</div>
-              </div>
-            </div>
-
-            {/* By tag */}
-            {data.byTag.length > 0 && (
-              <div className="mb-6">
-                <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">按科目</h3>
-                <div className="space-y-2">
-                  {data.byTag.map((t) => (
-                    <div key={t.tag} className={`flex items-center justify-between p-3 rounded-xl ${rateBg(t.rate)}`}>
-                      <span className="text-sm font-medium text-gray-900 dark:text-gray-100">{t.tag}</span>
-                      <div className="flex items-center gap-3">
-                        <span className="text-xs text-gray-500 dark:text-gray-400">{t.correct}/{t.total}</span>
-                        <span className={`text-sm font-bold ${rateColor(t.rate)}`}>
-                          {Math.round(t.rate * 100)}%
-                        </span>
+      {/* Activity Timeline */}
+      {activities.length > 0 && (
+        <div className="mt-6">
+          <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">最近动态</h3>
+          <div className="space-y-1">
+            {activities.map((act, i) => {
+              const child = childMap.get(act.userId);
+              const ago = formatAgo(act.ts);
+              if (act.type === 'quiz_complete') {
+                const rate = Math.round(act.data.rate * 100);
+                const emoji = rate >= 80 ? '🎉' : rate >= 60 ? '📝' : '💪';
+                return (
+                  <div key={i} className="flex items-start gap-3 py-2.5 px-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/50 transition">
+                    <img src={child?.avatar || ''} alt="" className="w-7 h-7 rounded-full object-cover mt-0.5 flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm text-gray-900 dark:text-gray-100">
+                        <span className="font-medium">{child?.name}</span>
+                        {' 完成了 '}
+                        <span className="font-medium">{act.data.tag}</span>
+                        {' '}{emoji}
+                      </div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                        {act.data.correct}/{act.data.total} 正确 · {rate}%
                       </div>
                     </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Trend chart */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">正确率趋势</h3>
-                <div className="flex bg-gray-100 dark:bg-gray-700 rounded-lg p-0.5">
-                  <button
-                    onClick={() => setRange('week')}
-                    className={`px-3 py-1 text-xs font-medium rounded-md transition ${
-                      range === 'week'
-                        ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-gray-100 shadow-sm'
-                        : 'text-gray-500 dark:text-gray-400'
-                    }`}
-                  >
-                    7天
-                  </button>
-                  <button
-                    onClick={() => setRange('month')}
-                    className={`px-3 py-1 text-xs font-medium rounded-md transition ${
-                      range === 'month'
-                        ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-gray-100 shadow-sm'
-                        : 'text-gray-500 dark:text-gray-400'
-                    }`}
-                  >
-                    30天
-                  </button>
-                </div>
-              </div>
-              <TrendChart data={data.history} range={range} />
-            </div>
-          </>
-        ) : (
-          <div className="text-center text-gray-400 dark:text-gray-500 py-12">加载失败</div>
-        )}
+                    <span className="text-[11px] text-gray-400 dark:text-gray-500 flex-shrink-0 mt-0.5">{ago}</span>
+                  </div>
+                );
+              }
+              if (act.type === 'memory_game') {
+                const acc = Math.round(act.data.accuracy * 100);
+                const dur = act.data.durationSec ? `${act.data.durationSec}秒` : '';
+                return (
+                  <div key={i} className="flex items-start gap-3 py-2.5 px-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/50 transition">
+                    <img src={child?.avatar || ''} alt="" className="w-7 h-7 rounded-full object-cover mt-0.5 flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm text-gray-900 dark:text-gray-100">
+                        <span className="font-medium">{child?.name}</span>
+                        {' 玩了一轮记忆游戏 🧩'}
+                      </div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                        {act.data.correct}/{act.data.total} 正确 · {acc}%{dur && ` · ${dur}`}
+                      </div>
+                    </div>
+                    <span className="text-[11px] text-gray-400 dark:text-gray-500 flex-shrink-0 mt-0.5">{ago}</span>
+                  </div>
+                );
+              }
+              if (act.type === 'quiz_created') {
+                const targetChild = childMap.get(act.userId);
+                return (
+                  <div key={i} className="flex items-start gap-3 py-2.5 px-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/50 transition">
+                    <img src="/avatar-chanting.jpg" alt="春庭" className="w-7 h-7 rounded-full object-cover mt-0.5 flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm text-gray-900 dark:text-gray-100">
+                        <span className="font-medium">春庭</span>
+                        {' 给 '}
+                        <span className="font-medium">{targetChild?.name || act.userId}</span>
+                        {' 出了 '}
+                        <span className="font-medium">{act.data.tag}</span>
+                        {` ${act.data.count}题 📋`}
+                      </div>
+                    </div>
+                    <span className="text-[11px] text-gray-400 dark:text-gray-500 flex-shrink-0 mt-0.5">{ago}</span>
+                  </div>
+                );
+              }
+              return null;
+            })}
+          </div>
+        </div>
+      )}
     </Layout>
   );
 }

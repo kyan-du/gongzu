@@ -6,6 +6,7 @@ import DailyView from './pages/DailyView';
 import Quiz from './pages/Quiz';
 import Result from './pages/Result';
 import ParentDashboard from './pages/ParentDashboard';
+import ParentChild from './pages/ParentChild';
 import Mistakes from './pages/Mistakes';
 import Home from './pages/Home';
 import Vocab from './pages/Vocab';
@@ -43,6 +44,7 @@ function App() {
         <Route path="/:userId/result/:quizId" element={<Result />} />
         {/* Parent dashboard */}
         <Route path="/parent" element={<ParentDashboard />} />
+        <Route path="/parent/:childId" element={<ParentChild />} />
       </Routes>
     </BrowserRouter>
   );

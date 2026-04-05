@@ -12,12 +12,35 @@ interface HeaderProps {
   backTo?: string;
 }
 
+// Module → menu item mapping
+interface MenuEntry { module: string; label: string; icon: typeof BookX; route: (uid: string) => string; }
+const MODULE_MENUS: MenuEntry[] = [
+  { module: 'mistakes', label: '错题本', icon: BookX, route: uid => `/${uid}/mistakes` },
+  { module: 'vocab',    label: '单词本', icon: BookOpen, route: uid => `/${uid}/vocab` },
+];
+
 export default function Header({ userId, maxWidth, showBack, backTo }: HeaderProps) {
   const navigate = useNavigate();
   const [showMenu, setShowMenu] = useState(false);
   const [theme, setTheme] = useState(getStoredTheme);
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
+  const [enabledModules, setEnabledModules] = useState<Set<string>>(new Set());
   const menuRef = useRef<HTMLDivElement>(null);
+
+  // Fetch user's enabled modules for menu rendering
+  useEffect(() => {
+    if (!userId || userId === 'parent') return;
+    fetch(`/api/modules?userId=${userId}`)
+      .then(r => r.json())
+      .then((d: any) => {
+        const enabled = new Set<string>();
+        for (const m of (d.modules || [])) {
+          if (m.enabled) enabled.add(m.module);
+        }
+        setEnabledModules(enabled);
+      })
+      .catch(() => {});
+  }, [userId]);
 
   // Handle undefined userId - redirect to home
   useEffect(() => {
@@ -49,7 +72,7 @@ export default function Header({ userId, maxWidth, showBack, backTo }: HeaderPro
 
   return (
     <div className="bg-white dark:bg-gray-800 shadow-sm">
-      <div className={`${maxWidth || 'max-w-2xl'} mx-auto px-4 py-3 flex items-center justify-between`}>
+      <div className={`${maxWidth || 'max-w-3xl'} mx-auto px-4 py-3 flex items-center justify-between`}>
         <div className="flex items-center gap-1">
           {showBack && (
             <button
@@ -90,26 +113,19 @@ export default function Header({ userId, maxWidth, showBack, backTo }: HeaderPro
                 </div>
               </div>
               <div className="h-px bg-gray-100 dark:bg-gray-700 mx-3 my-1" />
-              {/* Mistakes book */}
-              <button
-                onClick={() => { setShowMenu(false); navigate(`/${userId}/mistakes`); }}
-                className="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
-              >
-                <span className="flex items-center gap-2.5">
-                  <BookX className="w-4 h-4 text-gray-400 dark:text-gray-500" />
-                  错题本
-                </span>
-              </button>
-              {/* Word book */}
-              <button
-                onClick={() => { setShowMenu(false); navigate(`/${userId}/vocab`); }}
-                className="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
-              >
-                <span className="flex items-center gap-2.5">
-                  <BookOpen className="w-4 h-4 text-gray-400 dark:text-gray-500" />
-                  单词本
-                </span>
-              </button>
+              {/* Dynamic module menu items */}
+              {MODULE_MENUS.filter(m => enabledModules.has(m.module)).map(m => (
+                <button
+                  key={m.module}
+                  onClick={() => { setShowMenu(false); navigate(m.route(userId)); }}
+                  className="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                >
+                  <span className="flex items-center gap-2.5">
+                    <m.icon className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+                    {m.label}
+                  </span>
+                </button>
+              ))}
               {/* Switch user group */}
               <button
                 onClick={() => setExpandedSection(expandedSection === 'user' ? null : 'user')}

@@ -93,9 +93,9 @@ async function getTodayStats(db: D1Database, userId: string) {
     return { total: 0, completed: 0, correct: 0, rate: 0 };
   }
 
-  // 今天的提交记录（submitted_at 是毫秒时间戳）
-  const startOfDay = new Date(today).getTime();
-  const endOfDay = startOfDay + 24 * 60 * 60 * 1000;
+  // 今天的提交记录（submitted_at 是秒级 unix 时间戳）
+  const startOfDay = Math.floor(new Date(today + 'T00:00:00').getTime() / 1000);
+  const endOfDay = startOfDay + 24 * 60 * 60;
 
   const submissionsResult = await db.prepare(
     'SELECT correct FROM submissions WHERE user_id = ? AND submitted_at >= ? AND submitted_at < ?'
@@ -132,8 +132,8 @@ async function getHistoryStats(db: D1Database, userId: string, days: number): Pr
     }
 
     // 当天提交记录
-    const startOfDay = new Date(dateStr).getTime();
-    const endOfDay = startOfDay + 24 * 60 * 60 * 1000;
+    const startOfDay = Math.floor(new Date(dateStr + 'T00:00:00').getTime() / 1000);
+    const endOfDay = startOfDay + 24 * 60 * 60;
 
     const submissionsResult = await db.prepare(
       'SELECT correct FROM submissions WHERE user_id = ? AND submitted_at >= ? AND submitted_at < ?'
@@ -171,8 +171,8 @@ async function getTagStats(db: D1Database, userId: string): Promise<TagStats[]> 
     entry.quizIds.push(quiz.id as string);
   }
 
-  const startOfDay = new Date(today).getTime();
-  const endOfDay = startOfDay + 24 * 60 * 60 * 1000;
+  const startOfDay = Math.floor(new Date(today + 'T00:00:00').getTime() / 1000);
+  const endOfDay = startOfDay + 24 * 60 * 60;
 
   const byTag: TagStats[] = [];
   for (const [tag, { total, quizIds }] of tagMap) {
