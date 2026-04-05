@@ -92,6 +92,9 @@ export default function Home() {
   // 获取用户模块配置
   useEffect(() => {
     if (!userId) return;
+    // Clear calendar cache when user switches
+    setMonthlyCache({});
+    setMonthlyData({});
     fetch(`/api/modules?userId=${userId}`)
       .then(r => r.json())
       .then((data: any) => setUserModules(data.modules || []))
