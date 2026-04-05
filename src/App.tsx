@@ -20,7 +20,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/login/select" element={<SelectUser />} />
+        <Route path="/home" element={<SelectUser />} />
         <Route path="/cyan" element={<Navigate to="/cyan/home" replace />} />
         <Route path="/ryan" element={<Navigate to="/ryan/home" replace />} />
         {/* Main view: today or specific date */}

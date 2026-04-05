@@ -20,7 +20,7 @@ export default function Login() {
         setUser(userId);
         navigate(`/${userId}/home`, { replace: true });
       } else {
-        navigate('/login/select', { replace: true });
+        navigate('/home', { replace: true });
       }
     }
   }, []);
@@ -35,7 +35,7 @@ export default function Login() {
       if (userId) {
         navigate(`/${userId}/home`);
       } else {
-        navigate('/login/select');
+        navigate('/home');
       }
     } catch (err: any) {
       setError(err.message || '密码错误，请重试');

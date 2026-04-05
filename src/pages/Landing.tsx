@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { isLoggedIn, getUser } from '../lib/api';
+import { isLoggedIn } from '../lib/api';
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -10,21 +10,13 @@ export default function Landing() {
   // Auto-redirect if already logged in
   useEffect(() => {
     if (isLoggedIn()) {
-      const user = getUser();
-      if (user) {
-        navigate(`/${user}/home`, { replace: true });
-      }
+      navigate('/home', { replace: true });
     }
   }, [navigate]);
 
   const handleEnter = () => {
     if (isLoggedIn()) {
-      const user = getUser();
-      if (user) {
-        navigate(`/${user}/home`);
-        return;
-      }
-      navigate('/login/select');
+      navigate('/home');
       return;
     }
     navigate('/login');
