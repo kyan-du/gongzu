@@ -22,10 +22,18 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
      ORDER BY created_at ASC`
   ).bind(userId, date, gameType).all();
 
-  const dailyTarget = 5;
-  const completed = games.results?.length || 0;
-  const avgAccuracy = completed > 0
-    ? Math.round((games.results || []).reduce((sum: number, g: any) => sum + g.accuracy, 0) / completed)
+  // 读用户配置的 dailyTarget
+  const modRow = await context.env.DB.prepare(
+    `SELECT daily_target FROM user_modules WHERE user_id = ? AND module = 'memory_game'`
+  ).bind(userId).first<{ daily_target: number | null }>();
+  const dailyTarget = modRow?.daily_target || 5;
+
+  const allGames = games.results || [];
+  const completed = allGames.length;
+  // 准确率只算前 N 轮（N = dailyTarget），完成任务后继续玩不影响成绩
+  const scoredGames = allGames.slice(0, dailyTarget);
+  const avgAccuracy = scoredGames.length > 0
+    ? Math.round(scoredGames.reduce((sum: number, g: any) => sum + g.accuracy, 0) / scoredGames.length * 100) / 100
     : 0;
 
   return Response.json({
