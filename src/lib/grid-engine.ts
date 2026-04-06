@@ -703,7 +703,7 @@ function generateChoices(matrix: Matrix, hiddenCells: { row: number; col: number
   candidateMap.set(JSON.stringify({ type: 'blank' }), { type: 'blank' });
   candidateMap.set(JSON.stringify({ type: 'broken' }), { type: 'broken' });
   
-  // pass 选项：用🔍表示"不确定"
+  // pass 选项单独处理，不进 candidateMap，确保永远出现在备选列表末尾
   const passOption: PassContent = { 
     type: 'pass', 
     emoji: '🔍',
@@ -711,7 +711,6 @@ function generateChoices(matrix: Matrix, hiddenCells: { row: number; col: number
     mirror: 'none',
     scaled: false
   };
-  candidateMap.set(JSON.stringify(passOption), passOption);
 
   if (candidateMap.size < 12) {
     const visible: CellContent[] = [];
@@ -743,7 +742,9 @@ function generateChoices(matrix: Matrix, hiddenCells: { row: number; col: number
     }
   }
 
-  const result = [...correct, ...shuffle(distractors)].slice(0, 18);
+  const result = [...correct, ...shuffle(distractors)].slice(0, 17);
+  // 🔍永远在末尾，不被 shuffle 也不被截断
+  result.push(passOption);
 
   return shuffle(result);
 }
@@ -949,16 +950,21 @@ export function checkAnswer(
   matrix: Matrix,
   hidden: { row: number; col: number },
   answers: MiniGrid
-): { correct: number; total: number; details: boolean[] } {
+): { correct: number; total: number; details: ('correct' | 'wrong' | 'pass')[] } {
   const correctGrid = matrix[hidden.row][hidden.col];
   let correct = 0;
-  const details: boolean[] = [];
+  const details: ('correct' | 'wrong' | 'pass')[] = [];
 
   for (let i = 0; i < 4; i++) {
-    const isCorrect = JSON.stringify(correctGrid[i]) === JSON.stringify(answers[i]);
-    details.push(isCorrect);
-    if (isCorrect) {
-      correct++;
+    if (answers[i] && (answers[i] as any).type === 'pass') {
+      // 🔍 诚实分：0.25 分（知道自己不知道）
+      details.push('pass');
+      correct += 0.25;
+    } else if (JSON.stringify(correctGrid[i]) === JSON.stringify(answers[i])) {
+      details.push('correct');
+      correct += 1;
+    } else {
+      details.push('wrong');
     }
   }
 
