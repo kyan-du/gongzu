@@ -231,7 +231,14 @@ export function applyElementTransform(cell: CellContent, transform: string): Cel
     return cell;
   }
 
-  const result = { ...cell };
+  const result: EmojiContent = {
+    type: 'emoji',
+    emoji: cell.emoji,
+    rotation: cell.rotation || 0,
+    mirror: cell.mirror || 'none',
+    scaled: cell.scaled || false,
+    grown: cell.grown || false,
+  };
 
   switch (transform) {
     case 'none':
@@ -265,7 +272,14 @@ export function applySizeTransform(cell: CellContent, transform: string): CellCo
     return cell;
   }
 
-  const result = { ...cell };
+  const result: EmojiContent = {
+    type: 'emoji',
+    emoji: cell.emoji,
+    rotation: cell.rotation || 0,
+    mirror: cell.mirror || 'none',
+    scaled: cell.scaled || false,
+    grown: cell.grown || false,
+  };
 
   switch (transform) {
     case 'none':
@@ -486,7 +500,10 @@ function generateValidRules(): PuzzleRules {
 
 // ── 构建矩阵 ──
 
-function buildMatrix(rules: PuzzleRules): Matrix {
+/**
+ * 合并类矩阵：col1 + col2 独立生成，col3 = merge(col1, col2)
+ */
+function buildMergeMatrix(rules: PuzzleRules): Matrix {
   // 根据变换选择兼容的主题
   const isMirror = rules.elementTransform === 'mirror-h' || rules.elementTransform === 'mirror-v';
   const isRotate = ['rotate-cw-90', 'rotate-180', 'rotate-ccw-90'].includes(rules.elementTransform);
@@ -521,7 +538,7 @@ function buildMatrix(rules: PuzzleRules): Matrix {
     const col1: CellContent[] = [];
     for (let i = 0; i < 4; i++) {
       const emoji = emojiPool[row * 4 + i] || randomChoice(emojiPool);
-      col1.push({ type: 'emoji', emoji, rotation: 0, mirror: 'none', scaled: false });
+      col1.push({ type: 'emoji', emoji, rotation: 0, mirror: 'none', scaled: false, grown: false });
     }
 
     // col2 = applyTransforms(col1, rules)
@@ -533,7 +550,104 @@ function buildMatrix(rules: PuzzleRules): Matrix {
     matrix.push([col1 as MiniGrid, col2, col3]);
   }
 
-  // 验证：col3 不能全是 blank 或全是 broken（太简单）
+  return matrix;
+}
+
+/**
+ * 递推类矩阵：col1 → transform → col2 → transform → col3
+ */
+function buildTransformMatrix(rules: PuzzleRules): Matrix {
+  const isMirror = rules.elementTransform === 'mirror-h' || rules.elementTransform === 'mirror-v';
+  const isRotate = ['rotate-cw-90', 'rotate-180', 'rotate-ccw-90'].includes(rules.elementTransform);
+
+  let availableThemes: string[];
+  if (isMirror) {
+    availableThemes = MIRROR_SAFE_THEMES;
+  } else if (isRotate) {
+    availableThemes = ROTATE_THEMES;
+  } else {
+    availableThemes = ALL_THEMES;
+  }
+
+  const groupKey = randomChoice(availableThemes) as keyof typeof EMOJI_GROUPS;
+  let emojiPool = [...EMOJI_GROUPS[groupKey]];
+
+  if (isMirror && MIRROR_EXCLUDE[groupKey]) {
+    const exclude = new Set(MIRROR_EXCLUDE[groupKey]);
+    emojiPool = emojiPool.filter(e => !exclude.has(e));
+  }
+  if (isRotate && ROTATE_EXCLUDE[groupKey]) {
+    const exclude = new Set(ROTATE_EXCLUDE[groupKey]);
+    emojiPool = emojiPool.filter(e => !exclude.has(e));
+  }
+
+  emojiPool = shuffle(emojiPool);
+
+  const matrix: Matrix = [];
+
+  for (let row = 0; row < 3; row++) {
+    const col1: CellContent[] = [];
+    for (let i = 0; i < 4; i++) {
+      const emoji = emojiPool[row * 4 + i] || randomChoice(emojiPool);
+      col1.push({ type: 'emoji', emoji, rotation: 0, mirror: 'none', scaled: false, grown: false });
+    }
+
+    // 递推：col1 → col2 → col3
+    const col2 = applyTransforms(col1 as MiniGrid, rules);
+    const col3 = applyTransforms(col2, rules);
+
+    matrix.push([col1 as MiniGrid, col2, col3]);
+  }
+
+  return matrix;
+}
+
+/**
+ * 混合类矩阵：col1 → transform → col2，col3 = merge(col1, col2)
+ */
+function buildMixedMatrix(rules: PuzzleRules): Matrix {
+  const isMirror = rules.elementTransform === 'mirror-h' || rules.elementTransform === 'mirror-v';
+  const isRotate = ['rotate-cw-90', 'rotate-180', 'rotate-ccw-90'].includes(rules.elementTransform);
+
+  let availableThemes: string[];
+  if (isMirror) {
+    availableThemes = MIRROR_SAFE_THEMES;
+  } else if (isRotate) {
+    availableThemes = ROTATE_THEMES;
+  } else {
+    availableThemes = ALL_THEMES;
+  }
+
+  const groupKey = randomChoice(availableThemes) as keyof typeof EMOJI_GROUPS;
+  let emojiPool = [...EMOJI_GROUPS[groupKey]];
+
+  if (isMirror && MIRROR_EXCLUDE[groupKey]) {
+    const exclude = new Set(MIRROR_EXCLUDE[groupKey]);
+    emojiPool = emojiPool.filter(e => !exclude.has(e));
+  }
+  if (isRotate && ROTATE_EXCLUDE[groupKey]) {
+    const exclude = new Set(ROTATE_EXCLUDE[groupKey]);
+    emojiPool = emojiPool.filter(e => !exclude.has(e));
+  }
+
+  emojiPool = shuffle(emojiPool);
+
+  const matrix: Matrix = [];
+
+  for (let row = 0; row < 3; row++) {
+    const col1: CellContent[] = [];
+    for (let i = 0; i < 4; i++) {
+      const emoji = emojiPool[row * 4 + i] || randomChoice(emojiPool);
+      col1.push({ type: 'emoji', emoji, rotation: 0, mirror: 'none', scaled: false, grown: false });
+    }
+
+    // 混合：col1 → transform → col2，col3 = merge(col1, col2)
+    const col2 = applyTransforms(col1 as MiniGrid, rules);
+    const col3 = mergeMiniGrids(col1 as MiniGrid, col2, rules);
+
+    matrix.push([col1 as MiniGrid, col2, col3]);
+  }
+
   return matrix;
 }
 
@@ -768,8 +882,33 @@ export function describeAnalysis(rules: PuzzleRules): string {
 export function generatePuzzle(): GamePuzzle {
   const rules = generateValidRules();
 
-  const phase1Matrix = buildMatrix(rules);
-  const phase2Matrix = buildMatrix(rules);
+  // 随机选择题型：合并 40% / 递推 30% / 混合 30%
+  const rand = Math.random();
+  let puzzleType: 'merge' | 'transform' | 'mixed';
+  if (rand < 0.4) {
+    puzzleType = 'merge';
+  } else if (rand < 0.7) {
+    puzzleType = 'transform';
+  } else {
+    puzzleType = 'mixed';
+  }
+
+  // 根据题型选择构建函数
+  let buildFn: (rules: PuzzleRules) => Matrix;
+  switch (puzzleType) {
+    case 'merge':
+      buildFn = buildMergeMatrix;
+      break;
+    case 'transform':
+      buildFn = buildTransformMatrix;
+      break;
+    case 'mixed':
+      buildFn = buildMixedMatrix;
+      break;
+  }
+
+  const phase1Matrix = buildFn(rules);
+  const phase2Matrix = buildFn(rules);
 
   const phase1Hidden = { row: 2, col: 2 };
   const phase2Hidden = [
