@@ -522,7 +522,7 @@ describe('主题分类覆盖度 & 变换覆盖度', () => {
     };
 
     // Run more trials for themes in MIXED_THEMES since they appear less frequently
-    for (let i = 0; i < 500; i++) {
+    for (let i = 0; i < 2000; i++) {
       const puzzle = generatePuzzle();
       // 通过查看矩阵中的 emoji 反推主题
       for (const row of puzzle.matrix) {
