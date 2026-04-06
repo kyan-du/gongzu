@@ -86,8 +86,23 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   const dailyNewWords = settingsRow?.daily_new_words ?? 15;
   const dailyTotalLimit = settingsRow?.daily_total_limit ?? 20;
 
+  // Count how many NEW words the user already learned today
+  // (words that had their FIRST-EVER review today)
+  const todayStart = new Date(today + 'T00:00:00Z').getTime();
+  const newLearnedTodayRow = await db.prepare(`
+    SELECT COUNT(DISTINCT vr.vocabulary_id) as cnt
+    FROM vocabulary_reviews vr
+    WHERE vr.user_id = ?
+    AND vr.reviewed_at >= ?
+    AND (SELECT COUNT(*) FROM vocabulary_reviews vr2
+         WHERE vr2.user_id = vr.user_id AND vr2.vocabulary_id = vr.vocabulary_id
+         AND vr2.reviewed_at < ?) = 0
+  `).bind(userId, todayStart, todayStart).first() as any;
+  const newLearnedToday = newLearnedTodayRow?.cnt || 0;
+
   const reviewCount = reviewWords.results?.length || 0;
-  const newLimit = Math.max(0, Math.min(dailyNewWords, dailyTotalLimit - reviewCount));
+  const remainingNewQuota = Math.max(0, dailyNewWords - newLearnedToday);
+  const newLimit = Math.max(0, Math.min(remainingNewQuota, dailyTotalLimit - reviewCount));
 
   const newWords = await db.prepare(`
     SELECT v.id, v.word, v.meaning, v.phonetic, v.example, v.example_cn

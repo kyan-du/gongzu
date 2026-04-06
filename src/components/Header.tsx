@@ -76,7 +76,7 @@ export default function Header({ userId, maxWidth, showBack, backTo }: HeaderPro
         <div className="flex items-center gap-1">
           {showBack && (
             <button
-              onClick={() => navigate(backTo || `/${userId}/home`)}
+              onClick={() => navigate(backTo || (userId === 'parent' ? '/parent' : `/${userId}/home`))}
               className="p-1.5 -ml-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition"
               aria-label="返回"
             >
@@ -84,7 +84,7 @@ export default function Header({ userId, maxWidth, showBack, backTo }: HeaderPro
             </button>
           )}
           <button
-            onClick={() => navigate(`/${userId}/home`)}
+            onClick={() => navigate(userId === 'parent' ? '/parent' : `/${userId}/home`)}
             className="flex items-center gap-3 hover:opacity-80 transition"
           >
           <img src="/logo-night-64.png" alt="拱卒" className="w-8 h-8 dark:hidden" />

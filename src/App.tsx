@@ -48,6 +48,7 @@ function App() {
         <Route path="/:userId/result/:quizId" element={<Result />} />
         {/* Parent dashboard */}
         <Route path="/parent" element={<ParentDashboard />} />
+        <Route path="/parent/home" element={<Navigate to="/parent" replace />} />
         <Route path="/parent/:childId" element={<ParentChild />} />
       </Routes>
     </BrowserRouter>
