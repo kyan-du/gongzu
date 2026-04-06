@@ -41,8 +41,9 @@ const CELL_SIZES = {
       size: '28px',
     },
     question: {
-      fontSize: '1.5rem',
+      fontSize: '2.2rem',
       subSize: '0.4em',
+      offset: { x: 3, y: -2 },
     },
   },
 } as const;
