@@ -586,6 +586,56 @@ describe('主题分类覆盖度 & 变换覆盖度', () => {
     expect(grownCellFound, 'no cell with grown:true found in 200 trials').toBe(true);
   });
 
+  it('形近字组每组内字符两两不同', () => {
+    const hanziGroups = {
+      hanzi: ['戍', '戊', '戌', '戎', '己', '已', '巳', '末', '未', '刺', '剌', '壤', '攘', '甲', '由'],
+      hanzi2: ['折', '拆', '侯', '候', '拔', '拨', '辩', '辨', '瓣', '辫', '炙', '灸', '毫', '豪', '鉴'],
+      hanzi3: ['棘', '枣', '壁', '璧', '睛', '晴', '情', '清', '请', '精', '蜻', '靖', '菁', '倩', '婧'],
+    };
+
+    for (const [name, chars] of Object.entries(hanziGroups)) {
+      // 无重复
+      const unique = new Set(chars);
+      expect(unique.size, `${name} 组有重复字符`).toBe(chars.length);
+
+      // 每个都是单字符（不是多字组合）
+      for (const ch of chars) {
+        expect([...ch].length, `${name} 组的 "${ch}" 不是单字符`).toBe(1);
+      }
+    }
+  });
+
+  it('形近字组不做旋转/镜像（在 SYMMETRIC_THEMES 中）', () => {
+    // 形近字旋转没意义，应该在对称组里（不会被选中做旋转变换）
+    // 跑 200 次，如果抽到 hanzi 组，规则不应该有旋转/镜像
+    for (let i = 0; i < 200; i++) {
+      const puzzle = generatePuzzle();
+
+      // 检查矩阵里有没有汉字
+      let hasHanzi = false;
+      for (const row of puzzle.matrix) {
+        for (const miniGrid of row) {
+          for (const cell of miniGrid) {
+            if (cell.type === 'emoji' && /[\u4e00-\u9fff]/.test(cell.emoji)) {
+              hasHanzi = true;
+              break;
+            }
+          }
+          if (hasHanzi) break;
+        }
+        if (hasHanzi) break;
+      }
+
+      if (hasHanzi) {
+        // 不应该有旋转/镜像变换
+        expect(
+          puzzle.rules.elementTransform,
+          `汉字组出现了 elementTransform=${puzzle.rules.elementTransform}`
+        ).toBe('none');
+      }
+    }
+  });
+
   it('scale-up 的口诀和解析不含 undefined', () => {
     const rules = makeRules({ sizeTransform: 'scale-up' });
     const mnemonic = generateMnemonic(rules);

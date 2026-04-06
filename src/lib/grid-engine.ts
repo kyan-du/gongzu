@@ -375,14 +375,13 @@ function generateValidRules(): PuzzleRules {
   const sizeTransform = randomChoice(allSizeTransforms);
   const positionTransform = randomChoice(allPositionTransforms);
 
-  // 当有元素/尺寸变换但没有位置变换时，col1 和 col2 的 emoji 字符相同，
-  // cellEqual 全返回 true，只走 same 分支。
+  // 当有元素/尺寸变换时，col1 和 col2 的 emoji 字符相同（只是旋转/镜像/缩放不同），
+  // cellEqual 可能全返回 true，只走 same 分支。
   // 如果 same = blank/broken，整个 col3 就全是 blank/broken，规律太简单。
-  // 此时限制 same action 不能是 blank 或 broken。
-  const onlySameBranch =
-    (elementTransform !== 'none' || sizeTransform !== 'none') && positionTransform === 'none';
+  // 即使有位置变换，某些位置上 emoji 仍可能相同，所以只要有元素/尺寸变换就限制。
+  const hasNonPositionTransform = elementTransform !== 'none' || sizeTransform !== 'none';
 
-  if (onlySameBranch) {
+  if (hasNonPositionTransform) {
     const safeSameActions: SameAction[] = ['keep', 'swap-lr', 'shrink'];
 
     do {
@@ -445,17 +444,6 @@ function buildMatrix(rules: PuzzleRules): Matrix {
   }
 
   // 验证：col3 不能全是 blank 或全是 broken（太简单）
-  for (const row of matrix) {
-    const col3 = row[2];
-    const allBlank = col3.every(c => c.type === 'blank');
-    const allBroken = col3.every(c => c.type === 'broken');
-    const allSame = col3.every(c => c.type === col3[0].type && c.type !== 'emoji');
-    if (allBlank || allBroken || allSame) {
-      // 递归重建（会重新选规则）
-      return buildMatrix(rules);
-    }
-  }
-
   return matrix;
 }
 
