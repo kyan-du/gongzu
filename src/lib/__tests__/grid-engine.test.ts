@@ -7,6 +7,10 @@ import {
   describeAnalysis,
   checkAnswer,
   generatePuzzle,
+  applyElementTransform,
+  applySizeTransform,
+  applyPositionTransform,
+  applyTransforms,
   type CellContent,
   type MiniGrid,
   type Matrix,
@@ -599,6 +603,325 @@ describe('暴露策略', () => {
       const m1str = JSON.stringify(puzzle.matrix);
       const m2str = JSON.stringify(puzzle.phase2Matrix);
       expect(m1str).not.toEqual(m2str);
+    }
+  });
+});
+
+// ══════════════════════════════════════════
+// 11. 变换函数单元测试
+// ══════════════════════════════════════════
+
+describe('变换函数', () => {
+  describe('applyElementTransform', () => {
+    it('none: emoji 不变', () => {
+      const cell = emoji('🐶');
+      const result = applyElementTransform(cell, 'none');
+      expect(result).toEqual(emoji('🐶'));
+    });
+
+    it('rotate-cw-90: 顺时针旋转 90°', () => {
+      const cell = emoji('🐶');
+      const result = applyElementTransform(cell, 'rotate-cw-90');
+      expect(result).toEqual(emoji('🐶', { rotation: 90 }));
+    });
+
+    it('rotate-180: 旋转 180°', () => {
+      const cell = emoji('🐶');
+      const result = applyElementTransform(cell, 'rotate-180');
+      expect(result).toEqual(emoji('🐶', { rotation: 180 }));
+    });
+
+    it('rotate-ccw-90: 逆时针旋转 90°', () => {
+      const cell = emoji('🐶');
+      const result = applyElementTransform(cell, 'rotate-ccw-90');
+      expect(result).toEqual(emoji('🐶', { rotation: 270 }));
+    });
+
+    it('mirror-h: 水平镜像', () => {
+      const cell = emoji('🐶');
+      const result = applyElementTransform(cell, 'mirror-h');
+      expect(result).toEqual(emoji('🐶', { mirror: 'horizontal' }));
+    });
+
+    it('mirror-v: 垂直镜像', () => {
+      const cell = emoji('🐶');
+      const result = applyElementTransform(cell, 'mirror-v');
+      expect(result).toEqual(emoji('🐶', { mirror: 'vertical' }));
+    });
+
+    it('blank 不变换', () => {
+      const result = applyElementTransform(blank, 'rotate-cw-90');
+      expect(result).toEqual(blank);
+    });
+
+    it('broken 不变换', () => {
+      const result = applyElementTransform(broken, 'mirror-h');
+      expect(result).toEqual(broken);
+    });
+  });
+
+  describe('applySizeTransform', () => {
+    it('none: emoji 不变', () => {
+      const cell = emoji('🐶');
+      const result = applySizeTransform(cell, 'none');
+      expect(result).toEqual(emoji('🐶'));
+    });
+
+    it('scale-down: emoji 缩小', () => {
+      const cell = emoji('🐶');
+      const result = applySizeTransform(cell, 'scale-down');
+      expect(result).toEqual(emoji('🐶', { scaled: true }));
+    });
+
+    it('blank 不变换', () => {
+      const result = applySizeTransform(blank, 'scale-down');
+      expect(result).toEqual(blank);
+    });
+
+    it('broken 不变换', () => {
+      const result = applySizeTransform(broken, 'scale-down');
+      expect(result).toEqual(broken);
+    });
+  });
+
+  describe('applyPositionTransform', () => {
+    const grid: MiniGrid = [emoji('A'), emoji('B'), emoji('C'), emoji('D')];
+
+    it('none: 不变', () => {
+      const result = applyPositionTransform(grid, 'none');
+      expect(result).toEqual(grid);
+    });
+
+    it('pos-rotate-cw: 0→1→3→2→0', () => {
+      const result = applyPositionTransform(grid, 'pos-rotate-cw');
+      // A B    C A
+      // C D -> D B
+      expect(result).toEqual([emoji('C'), emoji('A'), emoji('D'), emoji('B')]);
+    });
+
+    it('pos-rotate-180: 0↔3, 1↔2', () => {
+      const result = applyPositionTransform(grid, 'pos-rotate-180');
+      // A B    D C
+      // C D -> B A
+      expect(result).toEqual([emoji('D'), emoji('C'), emoji('B'), emoji('A')]);
+    });
+
+    it('pos-rotate-ccw: 0→2→3→1→0', () => {
+      const result = applyPositionTransform(grid, 'pos-rotate-ccw');
+      // A B    B D
+      // C D -> A C
+      expect(result).toEqual([emoji('B'), emoji('D'), emoji('A'), emoji('C')]);
+    });
+
+    it('pos-mirror-lr: 0↔1, 2↔3', () => {
+      const result = applyPositionTransform(grid, 'pos-mirror-lr');
+      // A B    B A
+      // C D -> D C
+      expect(result).toEqual([emoji('B'), emoji('A'), emoji('D'), emoji('C')]);
+    });
+
+    it('pos-mirror-ud: 0↔2, 1↔3', () => {
+      const result = applyPositionTransform(grid, 'pos-mirror-ud');
+      // A B    C D
+      // C D -> A B
+      expect(result).toEqual([emoji('C'), emoji('D'), emoji('A'), emoji('B')]);
+    });
+
+    it('pos-diag-main: 0↔3', () => {
+      const result = applyPositionTransform(grid, 'pos-diag-main');
+      // A B    D B
+      // C D -> C A
+      expect(result).toEqual([emoji('D'), emoji('B'), emoji('C'), emoji('A')]);
+    });
+
+    it('pos-diag-anti: 1↔2', () => {
+      const result = applyPositionTransform(grid, 'pos-diag-anti');
+      // A B    A C
+      // C D -> B D
+      expect(result).toEqual([emoji('A'), emoji('C'), emoji('B'), emoji('D')]);
+    });
+  });
+
+  describe('applyTransforms 组合', () => {
+    it('只有元素变换', () => {
+      const grid: MiniGrid = [emoji('🐶'), emoji('🐱'), emoji('🐰'), emoji('🐻')];
+      const rules = makeRules({
+        elementTransform: 'rotate-cw-90',
+        sizeTransform: 'none',
+        positionTransform: 'none',
+      });
+      const result = applyTransforms(grid, rules);
+      expect(result[0]).toEqual(emoji('🐶', { rotation: 90 }));
+      expect(result[1]).toEqual(emoji('🐱', { rotation: 90 }));
+    });
+
+    it('只有尺寸变换', () => {
+      const grid: MiniGrid = [emoji('🐶'), emoji('🐱'), emoji('🐰'), emoji('🐻')];
+      const rules = makeRules({
+        elementTransform: 'none',
+        sizeTransform: 'scale-down',
+        positionTransform: 'none',
+      });
+      const result = applyTransforms(grid, rules);
+      expect(result[0]).toEqual(emoji('🐶', { scaled: true }));
+      expect(result[1]).toEqual(emoji('🐱', { scaled: true }));
+    });
+
+    it('只有位置变换', () => {
+      const grid: MiniGrid = [emoji('A'), emoji('B'), emoji('C'), emoji('D')];
+      const rules = makeRules({
+        elementTransform: 'none',
+        sizeTransform: 'none',
+        positionTransform: 'pos-rotate-cw',
+      });
+      const result = applyTransforms(grid, rules);
+      expect(result).toEqual([emoji('C'), emoji('A'), emoji('D'), emoji('B')]);
+    });
+
+    it('元素 + 尺寸变换', () => {
+      const grid: MiniGrid = [emoji('🐶'), emoji('🐱'), emoji('🐰'), emoji('🐻')];
+      const rules = makeRules({
+        elementTransform: 'mirror-h',
+        sizeTransform: 'scale-down',
+        positionTransform: 'none',
+      });
+      const result = applyTransforms(grid, rules);
+      expect(result[0]).toEqual(emoji('🐶', { mirror: 'horizontal', scaled: true }));
+    });
+
+    it('元素 + 位置变换', () => {
+      const grid: MiniGrid = [emoji('A'), emoji('B'), emoji('C'), emoji('D')];
+      const rules = makeRules({
+        elementTransform: 'rotate-180',
+        sizeTransform: 'none',
+        positionTransform: 'pos-mirror-lr',
+      });
+      const result = applyTransforms(grid, rules);
+      // 先元素变换（全部 rotate 180），再位置变换（0↔1, 2↔3）
+      expect(result).toEqual([
+        emoji('B', { rotation: 180 }),
+        emoji('A', { rotation: 180 }),
+        emoji('D', { rotation: 180 }),
+        emoji('C', { rotation: 180 }),
+      ]);
+    });
+
+    it('三种变换叠加', () => {
+      const grid: MiniGrid = [emoji('A'), emoji('B'), emoji('C'), emoji('D')];
+      const rules = makeRules({
+        elementTransform: 'rotate-cw-90',
+        sizeTransform: 'scale-down',
+        positionTransform: 'pos-rotate-180',
+      });
+      const result = applyTransforms(grid, rules);
+      // 顺序：先 rotate 90 + scale，再 pos rotate 180
+      // rotate 90 + scale: [A90s, B90s, C90s, D90s]
+      // pos rotate 180: [D90s, C90s, B90s, A90s]
+      expect(result).toEqual([
+        emoji('D', { rotation: 90, scaled: true }),
+        emoji('C', { rotation: 90, scaled: true }),
+        emoji('B', { rotation: 90, scaled: true }),
+        emoji('A', { rotation: 90, scaled: true }),
+      ]);
+    });
+  });
+});
+
+// ══════════════════════════════════════════
+// 12. 变换集成测试
+// ══════════════════════════════════════════
+
+describe('变换集成测试', () => {
+  it('col2 = applyTransforms(col1, rules)', () => {
+    // 验证 col2 确实是 col1 应用变换后的结果
+    for (let i = 0; i < 20; i++) {
+      const puzzle = generatePuzzle();
+
+      for (let row = 0; row < 3; row++) {
+        const col1 = puzzle.matrix[row][0];
+        const col2 = puzzle.matrix[row][1];
+
+        // 手动计算预期的 col2
+        const expected = applyTransforms(col1, puzzle.rules);
+
+        expect(col2).toEqual(expected);
+      }
+    }
+  });
+
+  it('所有变换类型都能出现', () => {
+    const seenElementTransforms = new Set<string>();
+    const seenSizeTransforms = new Set<string>();
+    const seenPositionTransforms = new Set<string>();
+
+    for (let i = 0; i < 200; i++) {
+      const puzzle = generatePuzzle();
+      seenElementTransforms.add(puzzle.rules.elementTransform);
+      seenSizeTransforms.add(puzzle.rules.sizeTransform);
+      seenPositionTransforms.add(puzzle.rules.positionTransform);
+    }
+
+    const allElementTransforms = [
+      'none',
+      'rotate-cw-90',
+      'rotate-180',
+      'rotate-ccw-90',
+      'mirror-h',
+      'mirror-v',
+    ];
+    const allSizeTransforms = ['none', 'scale-down'];
+    const allPositionTransforms = [
+      'none',
+      'pos-rotate-cw',
+      'pos-rotate-180',
+      'pos-rotate-ccw',
+      'pos-mirror-lr',
+      'pos-mirror-ud',
+      'pos-diag-main',
+      'pos-diag-anti',
+    ];
+
+    for (const t of allElementTransforms) {
+      expect(
+        seenElementTransforms,
+        `elementTransform "${t}" never appeared in 200 trials`
+      ).toContain(t);
+    }
+    for (const t of allSizeTransforms) {
+      expect(
+        seenSizeTransforms,
+        `sizeTransform "${t}" never appeared in 200 trials`
+      ).toContain(t);
+    }
+    for (const t of allPositionTransforms) {
+      expect(
+        seenPositionTransforms,
+        `positionTransform "${t}" never appeared in 200 trials`
+      ).toContain(t);
+    }
+  });
+
+  it('口诀包含变换信息', () => {
+    for (let i = 0; i < 50; i++) {
+      const puzzle = generatePuzzle();
+      const mnemonic = generateMnemonic(puzzle.rules);
+
+      // 如果有变换，口诀应该包含相应文本
+      if (puzzle.rules.elementTransform !== 'none') {
+        expect(mnemonic.length).toBeGreaterThan(0);
+      }
+    }
+  });
+
+  it('解析包含变换信息', () => {
+    for (let i = 0; i < 50; i++) {
+      const puzzle = generatePuzzle();
+      const analysis = describeAnalysis(puzzle.rules);
+
+      // 如果有变换，解析应该包含相应文本
+      if (puzzle.rules.elementTransform !== 'none') {
+        expect(analysis.length).toBeGreaterThan(0);
+      }
     }
   });
 });

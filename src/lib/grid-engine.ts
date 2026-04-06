@@ -65,6 +65,11 @@ export interface GamePuzzle {
 
 // ── Emoji 素材 ──
 
+// 主题分类：用于变换约束
+const DIRECTIONAL_THEMES = ['animals', 'birds', 'transport', 'insects'];
+const SYMMETRIC_THEMES = ['fruits', 'vegetables', 'food', 'sports', 'flowers'];
+const MIXED_THEMES = ['weather', 'faces', 'hands', 'music', 'objects'];
+
 const EMOJI_GROUPS = {
   animals: ['🐶', '🐱', '🐭', '🐹', '🐰', '🐸', '🐵', '🐷', '🐻', '🐼', '🦊', '🐨', '🦁', '🐯', '🐮'],
   birds: ['🐔', '🐧', '🐦', '🐤', '🦆', '🦅', '🦉', '🦜', '🦚', '🦩', '🕊️', '🦢', '🦤', '🐓', '🦃'],
@@ -109,6 +114,112 @@ function cellEqual(a: CellContent, b: CellContent): boolean {
   return normalizeCell(a) === normalizeCell(b);
 }
 
+// ── 变换逻辑 ──
+
+/**
+ * @internal
+ * 应用元素变换（旋转/镜像）到单个 cell
+ */
+export function applyElementTransform(cell: CellContent, transform: string): CellContent {
+  if (cell.type !== 'emoji') {
+    return cell;
+  }
+
+  const result = { ...cell };
+
+  switch (transform) {
+    case 'none':
+      break;
+    case 'rotate-cw-90':
+      result.rotation = 90;
+      break;
+    case 'rotate-180':
+      result.rotation = 180;
+      break;
+    case 'rotate-ccw-90':
+      result.rotation = 270;
+      break;
+    case 'mirror-h':
+      result.mirror = 'horizontal';
+      break;
+    case 'mirror-v':
+      result.mirror = 'vertical';
+      break;
+  }
+
+  return result;
+}
+
+/**
+ * @internal
+ * 应用尺寸变换到单个 cell
+ */
+export function applySizeTransform(cell: CellContent, transform: string): CellContent {
+  if (cell.type !== 'emoji') {
+    return cell;
+  }
+
+  const result = { ...cell };
+
+  switch (transform) {
+    case 'none':
+      break;
+    case 'scale-down':
+      result.scaled = true;
+      break;
+  }
+
+  return result;
+}
+
+/**
+ * @internal
+ * 应用位置变换到 2×2 宫格
+ */
+export function applyPositionTransform(grid: MiniGrid, transform: string): MiniGrid {
+  const [c0, c1, c2, c3] = grid;
+
+  switch (transform) {
+    case 'none':
+      return grid;
+    case 'pos-rotate-cw':
+      return [c2, c0, c3, c1]; // 0→1→3→2→0
+    case 'pos-rotate-180':
+      return [c3, c2, c1, c0]; // 0↔3, 1↔2
+    case 'pos-rotate-ccw':
+      return [c1, c3, c0, c2]; // 0→2→3→1→0
+    case 'pos-mirror-lr':
+      return [c1, c0, c3, c2]; // 0↔1, 2↔3
+    case 'pos-mirror-ud':
+      return [c2, c3, c0, c1]; // 0↔2, 1↔3
+    case 'pos-diag-main':
+      return [c3, c1, c2, c0]; // 0↔3
+    case 'pos-diag-anti':
+      return [c0, c2, c1, c3]; // 1↔2
+    default:
+      return grid;
+  }
+}
+
+/**
+ * @internal
+ * 组合应用三层变换：先元素 → 再尺寸 → 再位置
+ */
+export function applyTransforms(grid: MiniGrid, rules: PuzzleRules): MiniGrid {
+  // 1. 元素变换
+  let transformed: CellContent[] = grid.map(cell =>
+    applyElementTransform(cell, rules.elementTransform)
+  );
+
+  // 2. 尺寸变换
+  transformed = transformed.map(cell =>
+    applySizeTransform(cell, rules.sizeTransform)
+  );
+
+  // 3. 位置变换
+  return applyPositionTransform(transformed as MiniGrid, rules.positionTransform);
+}
+
 // ── 合并逻辑 ──
 
 function applyMergeRule(col1Cell: CellContent, col2Cell: CellContent, rule: SameAction | DiffAction): CellContent {
@@ -144,6 +255,9 @@ function applyMergeRule(col1Cell: CellContent, col2Cell: CellContent, rule: Same
         return { type: 'broken' };
     }
   }
+
+  // Fallback (should never reach here)
+  return col1Cell;
 }
 
 function mergeMiniGrids(col1: MiniGrid, col2: MiniGrid, rules: PuzzleRules): MiniGrid {
@@ -203,48 +317,60 @@ function generateValidRules(): PuzzleRules {
     }
   } while (true);
 
-  return { 
-    topRow, 
+  // 随机选择变换
+  const allElementTransforms = [
+    'none',
+    'rotate-cw-90',
+    'rotate-180',
+    'rotate-ccw-90',
+    'mirror-h',
+    'mirror-v',
+  ];
+
+  const allSizeTransforms = ['none', 'scale-down'];
+
+  const allPositionTransforms = [
+    'none',
+    'pos-rotate-cw',
+    'pos-rotate-180',
+    'pos-rotate-ccw',
+    'pos-mirror-lr',
+    'pos-mirror-ud',
+    'pos-diag-main',
+    'pos-diag-anti',
+  ];
+
+  const elementTransform = randomChoice(allElementTransforms);
+  const sizeTransform = randomChoice(allSizeTransforms);
+  const positionTransform = randomChoice(allPositionTransforms);
+
+  return {
+    topRow,
     bottomRow,
-    elementTransform: 'none',
-    sizeTransform: 'none',
-    positionTransform: 'none',
+    elementTransform,
+    sizeTransform,
+    positionTransform,
     mergeStrategy: {},
   };
 }
 
-// ── 控制暴露策略 ──
-
-type RowPairing = { top: 'same' | 'diff'; bottom: 'same' | 'diff' };
-
-function generateCol2WithPairing(col1: MiniGrid, pairing: RowPairing, emojiPool: string[]): MiniGrid {
-  const result: CellContent[] = [];
-
-  for (let i = 0; i < 4; i++) {
-    const isTopRow = i < 2;
-    const targetPairing = isTopRow ? pairing.top : pairing.bottom;
-
-    if (targetPairing === 'same') {
-      result.push(col1[i]);
-    } else {
-      if (col1[i].type === 'emoji') {
-        const col1Cell = col1[i] as EmojiContent;
-        const otherEmojis = emojiPool.filter(e => e !== col1Cell.emoji);
-        const newEmoji = randomChoice(otherEmojis.length > 0 ? otherEmojis : emojiPool);
-        result.push({ type: 'emoji', emoji: newEmoji });
-      } else {
-        result.push(col1[i]);
-      }
-    }
-  }
-
-  return result as MiniGrid;
-}
-
 // ── 构建矩阵 ──
 
-function buildMatrix(rules: PuzzleRules, pairing: RowPairing): Matrix {
-  const groupKey = randomChoice(Object.keys(EMOJI_GROUPS)) as keyof typeof EMOJI_GROUPS;
+function buildMatrix(rules: PuzzleRules): Matrix {
+  // 根据变换选择主题
+  const hasRotationOrMirror =
+    rules.elementTransform !== 'none' && rules.elementTransform !== 'scale-down';
+
+  let availableThemes: string[];
+  if (hasRotationOrMirror) {
+    // 只选有朝向的主题
+    availableThemes = DIRECTIONAL_THEMES;
+  } else {
+    // 所有主题都可用
+    availableThemes = [...DIRECTIONAL_THEMES, ...SYMMETRIC_THEMES, ...MIXED_THEMES];
+  }
+
+  const groupKey = randomChoice(availableThemes) as keyof typeof EMOJI_GROUPS;
   const emojiPool = shuffle([...EMOJI_GROUPS[groupKey]]);
 
   const matrix: Matrix = [];
@@ -253,10 +379,13 @@ function buildMatrix(rules: PuzzleRules, pairing: RowPairing): Matrix {
     const col1: CellContent[] = [];
     for (let i = 0; i < 4; i++) {
       const emoji = emojiPool[row * 4 + i] || randomChoice(emojiPool);
-      col1.push({ type: 'emoji', emoji });
+      col1.push({ type: 'emoji', emoji, rotation: 0, mirror: 'none', scaled: false });
     }
 
-    const col2 = generateCol2WithPairing(col1 as MiniGrid, pairing, emojiPool);
+    // col2 = applyTransforms(col1, rules)
+    const col2 = applyTransforms(col1 as MiniGrid, rules);
+
+    // col3 = merge(col1, col2)
     const col3 = mergeMiniGrids(col1 as MiniGrid, col2, rules);
 
     matrix.push([col1 as MiniGrid, col2, col3]);
@@ -277,7 +406,7 @@ function generateChoices(matrix: Matrix, hiddenCells: { row: number; col: number
   for (const row of matrix) {
     for (const miniGrid of row) {
       for (const cell of miniGrid) {
-        if (cell.type === 'emoji') allEmojis.add(cell.emoji);
+        if (cell && cell.type === 'emoji') allEmojis.add(cell.emoji);
       }
     }
   }
@@ -347,7 +476,7 @@ function generateChoices(matrix: Matrix, hiddenCells: { row: number; col: number
     for (const row of matrix) {
       for (const miniGrid of row) {
         for (const cell of miniGrid) {
-          visible.push(cell);
+          if (cell) visible.push(cell);
         }
       }
     }
@@ -390,12 +519,47 @@ export function generateMnemonic(rules: PuzzleRules): string {
     second: '留右',
   };
 
+  const transformDict: Record<string, string> = {
+    'none': '无',
+    'rotate-cw-90': '右旋90°',
+    'rotate-180': '旋转180°',
+    'rotate-ccw-90': '左旋90°',
+    'mirror-h': '左右镜像',
+    'mirror-v': '上下镜像',
+    'scale-down': '缩小',
+    'pos-rotate-cw': '位置顺转',
+    'pos-rotate-180': '位置180°',
+    'pos-rotate-ccw': '位置逆转',
+    'pos-mirror-lr': '位置左右翻',
+    'pos-mirror-ud': '位置上下翻',
+    'pos-diag-main': '位置主对角',
+    'pos-diag-anti': '位置副对角',
+  };
+
   const topSame = dict[rules.topRow.same] || rules.topRow.same;
   const topDiff = dict[rules.topRow.diff] || rules.topRow.diff;
   const bottomSame = dict[rules.bottomRow.same] || rules.bottomRow.same;
   const bottomDiff = dict[rules.bottomRow.diff] || rules.bottomRow.diff;
 
-  return `上同[${topSame}] 上异[${topDiff}] / 下同[${bottomSame}] 下异[${bottomDiff}]`;
+  let result = `上同[${topSame}] 上异[${topDiff}] / 下同[${bottomSame}] 下异[${bottomDiff}]`;
+
+  // 添加变换信息
+  const transforms: string[] = [];
+  if (rules.elementTransform && rules.elementTransform !== 'none') {
+    transforms.push(transformDict[rules.elementTransform] || rules.elementTransform);
+  }
+  if (rules.sizeTransform && rules.sizeTransform !== 'none') {
+    transforms.push(transformDict[rules.sizeTransform] || rules.sizeTransform);
+  }
+  if (rules.positionTransform && rules.positionTransform !== 'none') {
+    transforms.push(transformDict[rules.positionTransform] || rules.positionTransform);
+  }
+
+  if (transforms.length > 0) {
+    result += ` | ${transforms.join(' + ')}`;
+  }
+
+  return result;
 }
 
 // ── 解析生成 ──
@@ -411,12 +575,47 @@ export function describeAnalysis(rules: PuzzleRules): string {
     second: '留第二列',
   };
 
+  const transformDict: Record<string, string> = {
+    'none': '无',
+    'rotate-cw-90': '顺时针旋转90°',
+    'rotate-180': '旋转180°',
+    'rotate-ccw-90': '逆时针旋转90°',
+    'mirror-h': '水平镜像',
+    'mirror-v': '垂直镜像',
+    'scale-down': '图案缩小',
+    'pos-rotate-cw': '位置顺时针旋转',
+    'pos-rotate-180': '位置旋转180°',
+    'pos-rotate-ccw': '位置逆时针旋转',
+    'pos-mirror-lr': '位置左右镜像',
+    'pos-mirror-ud': '位置上下镜像',
+    'pos-diag-main': '位置主对角线交换',
+    'pos-diag-anti': '位置副对角线交换',
+  };
+
   const topSame = dict[rules.topRow.same] || rules.topRow.same;
   const topDiff = dict[rules.topRow.diff] || rules.topRow.diff;
   const bottomSame = dict[rules.bottomRow.same] || rules.bottomRow.same;
   const bottomDiff = dict[rules.bottomRow.diff] || rules.bottomRow.diff;
 
-  return `上行：相同→${topSame}，不同→${topDiff}；下行：相同→${bottomSame}，不同→${bottomDiff}`;
+  let result = `上行：相同→${topSame}，不同→${topDiff}；下行：相同→${bottomSame}，不同→${bottomDiff}`;
+
+  // 添加变换信息
+  const transforms: string[] = [];
+  if (rules.elementTransform && rules.elementTransform !== 'none') {
+    transforms.push(transformDict[rules.elementTransform] || rules.elementTransform);
+  }
+  if (rules.sizeTransform && rules.sizeTransform !== 'none') {
+    transforms.push(transformDict[rules.sizeTransform] || rules.sizeTransform);
+  }
+  if (rules.positionTransform && rules.positionTransform !== 'none') {
+    transforms.push(transformDict[rules.positionTransform] || rules.positionTransform);
+  }
+
+  if (transforms.length > 0) {
+    result += `；变换：${transforms.join(' + ')}`;
+  }
+
+  return result;
 }
 
 // ── 主生成函数 ──
@@ -424,20 +623,8 @@ export function describeAnalysis(rules: PuzzleRules): string {
 export function generatePuzzle(): GamePuzzle {
   const rules = generateValidRules();
 
-  const exposurePlans: RowPairing[] = [
-    { top: 'same', bottom: 'diff' },
-    { top: 'diff', bottom: 'same' },
-    { top: 'same', bottom: 'same' },
-    { top: 'diff', bottom: 'diff' },
-  ];
-
-  const phase1Pairing = randomChoice(exposurePlans);
-  const phase2Pairing = randomChoice(exposurePlans.filter(
-    p => !(p.top === phase1Pairing.top && p.bottom === phase1Pairing.bottom)
-  ));
-
-  const phase1Matrix = buildMatrix(rules, phase1Pairing);
-  const phase2Matrix = buildMatrix(rules, phase2Pairing);
+  const phase1Matrix = buildMatrix(rules);
+  const phase2Matrix = buildMatrix(rules);
 
   const phase1Hidden = { row: 2, col: 2 };
   const phase2Hidden = [
