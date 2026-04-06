@@ -507,34 +507,7 @@ function generateValidRules(): PuzzleRules {
 /**
  * 合并类矩阵：col1 + col2 独立生成，col3 = merge(col1, col2)
  */
-function buildMergeMatrix(rules: PuzzleRules): Matrix {
-  // 根据 cellTransforms 选择兼容的主题
-  const isMirror = rules.cellTransforms.some(t => t === 'mirror-h' || t === 'mirror-v');
-  const isRotate = rules.cellTransforms.some(t => ['rotate-cw-90', 'rotate-180', 'rotate-ccw-90'].includes(t));
-
-  let availableThemes: string[];
-  if (isMirror) {
-    availableThemes = MIRROR_SAFE_THEMES;
-  } else if (isRotate) {
-    availableThemes = ROTATE_THEMES;
-  } else {
-    availableThemes = ALL_THEMES;
-  }
-
-  const groupKey = randomChoice(availableThemes) as keyof typeof EMOJI_GROUPS;
-  let emojiPool = [...EMOJI_GROUPS[groupKey]];
-
-  // 排除组内不兼容该变换的单个 emoji
-  if (isMirror && MIRROR_EXCLUDE[groupKey]) {
-    const exclude = new Set(MIRROR_EXCLUDE[groupKey]);
-    emojiPool = emojiPool.filter(e => !exclude.has(e));
-  }
-  if (isRotate && ROTATE_EXCLUDE[groupKey]) {
-    const exclude = new Set(ROTATE_EXCLUDE[groupKey]);
-    emojiPool = emojiPool.filter(e => !exclude.has(e));
-  }
-
-  emojiPool = shuffle(emojiPool);
+function buildMergeMatrix(rules: PuzzleRules, emojiPool: string[]): Matrix {
 
   // 为每个位置生成 same/diff 分布（3行中至少1次same + 至少1次diff）
   const validPatterns: boolean[][] = [
@@ -587,33 +560,7 @@ function buildMergeMatrix(rules: PuzzleRules): Matrix {
 /**
  * 递推类矩阵：col1 → transform → col2 → transform → col3
  */
-function buildTransformMatrix(rules: PuzzleRules): Matrix {
-  const isMirror = rules.cellTransforms.some(t => t === 'mirror-h' || t === 'mirror-v');
-  const isRotate = rules.cellTransforms.some(t => ['rotate-cw-90', 'rotate-180', 'rotate-ccw-90'].includes(t));
-
-  let availableThemes: string[];
-  if (isMirror) {
-    availableThemes = MIRROR_SAFE_THEMES;
-  } else if (isRotate) {
-    availableThemes = ROTATE_THEMES;
-  } else {
-    availableThemes = ALL_THEMES;
-  }
-
-  const groupKey = randomChoice(availableThemes) as keyof typeof EMOJI_GROUPS;
-  let emojiPool = [...EMOJI_GROUPS[groupKey]];
-
-  if (isMirror && MIRROR_EXCLUDE[groupKey]) {
-    const exclude = new Set(MIRROR_EXCLUDE[groupKey]);
-    emojiPool = emojiPool.filter(e => !exclude.has(e));
-  }
-  if (isRotate && ROTATE_EXCLUDE[groupKey]) {
-    const exclude = new Set(ROTATE_EXCLUDE[groupKey]);
-    emojiPool = emojiPool.filter(e => !exclude.has(e));
-  }
-
-  emojiPool = shuffle(emojiPool);
-
+function buildTransformMatrix(rules: PuzzleRules, emojiPool: string[]): Matrix {
   const matrix: Matrix = [];
 
   for (let row = 0; row < 3; row++) {
@@ -636,32 +583,7 @@ function buildTransformMatrix(rules: PuzzleRules): Matrix {
 /**
  * 混合类矩阵：col1 → transform → col2，col3 = merge(col1, col2)
  */
-function buildMixedMatrix(rules: PuzzleRules): Matrix {
-  const isMirror = rules.cellTransforms.some(t => t === 'mirror-h' || t === 'mirror-v');
-  const isRotate = rules.cellTransforms.some(t => ['rotate-cw-90', 'rotate-180', 'rotate-ccw-90'].includes(t));
-
-  let availableThemes: string[];
-  if (isMirror) {
-    availableThemes = MIRROR_SAFE_THEMES;
-  } else if (isRotate) {
-    availableThemes = ROTATE_THEMES;
-  } else {
-    availableThemes = ALL_THEMES;
-  }
-
-  const groupKey = randomChoice(availableThemes) as keyof typeof EMOJI_GROUPS;
-  let emojiPool = [...EMOJI_GROUPS[groupKey]];
-
-  if (isMirror && MIRROR_EXCLUDE[groupKey]) {
-    const exclude = new Set(MIRROR_EXCLUDE[groupKey]);
-    emojiPool = emojiPool.filter(e => !exclude.has(e));
-  }
-  if (isRotate && ROTATE_EXCLUDE[groupKey]) {
-    const exclude = new Set(ROTATE_EXCLUDE[groupKey]);
-    emojiPool = emojiPool.filter(e => !exclude.has(e));
-  }
-
-  emojiPool = shuffle(emojiPool);
+function buildMixedMatrix(rules: PuzzleRules, emojiPool: string[]): Matrix {
 
   // 为每个位置生成 same/diff 分布（同 buildMergeMatrix）
   const validPatterns: boolean[][] = [
@@ -953,8 +875,33 @@ export function generatePuzzle(): GamePuzzle {
     puzzleType = 'mixed';
   }
 
+  // 选择 emoji pool（阶段一二共享同一套符号）
+  const isMirror = rules.cellTransforms.some(t => t === 'mirror-h' || t === 'mirror-v');
+  const isRotate = rules.cellTransforms.some(t => ['rotate-cw-90', 'rotate-180', 'rotate-ccw-90'].includes(t));
+
+  let availableThemes: string[];
+  if (isMirror) {
+    availableThemes = MIRROR_SAFE_THEMES;
+  } else if (isRotate) {
+    availableThemes = ROTATE_THEMES;
+  } else {
+    availableThemes = ALL_THEMES;
+  }
+
+  const groupKey = randomChoice(availableThemes) as keyof typeof EMOJI_GROUPS;
+  let emojiPool = [...EMOJI_GROUPS[groupKey]];
+
+  if (isMirror && MIRROR_EXCLUDE[groupKey]) {
+    const exclude = new Set(MIRROR_EXCLUDE[groupKey]);
+    emojiPool = emojiPool.filter(e => !exclude.has(e));
+  }
+  if (isRotate && ROTATE_EXCLUDE[groupKey]) {
+    const exclude = new Set(ROTATE_EXCLUDE[groupKey]);
+    emojiPool = emojiPool.filter(e => !exclude.has(e));
+  }
+
   // 根据题型选择构建函数
-  let buildFn: (rules: PuzzleRules) => Matrix;
+  let buildFn: (rules: PuzzleRules, pool: string[]) => Matrix;
   switch (puzzleType) {
     case 'merge':
       buildFn = buildMergeMatrix;
@@ -967,8 +914,9 @@ export function generatePuzzle(): GamePuzzle {
       break;
   }
 
-  const phase1Matrix = buildFn(rules);
-  const phase2Matrix = buildFn(rules);
+  // 阶段一二共享同一个 emoji pool（shuffle 各自独立）
+  const phase1Matrix = buildFn(rules, shuffle([...emojiPool]));
+  const phase2Matrix = buildFn(rules, shuffle([...emojiPool]));
 
   const phase1Hidden = { row: 2, col: 2 };
   const phase2Hidden = [
