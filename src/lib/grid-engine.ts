@@ -144,13 +144,6 @@ function computeThemeCompat(): Record<string, { rotate: boolean; mirror: boolean
   return result;
 }
 
-const THEME_TRANSFORM_COMPAT = computeThemeCompat();
-
-// 按变换能力分类（从 THEME_TRANSFORM_COMPAT 派生）
-const ROTATE_THEMES = Object.keys(THEME_TRANSFORM_COMPAT).filter(k => THEME_TRANSFORM_COMPAT[k].rotate);
-const MIRROR_SAFE_THEMES = Object.keys(THEME_TRANSFORM_COMPAT).filter(k => THEME_TRANSFORM_COMPAT[k].mirror);
-const ALL_THEMES = Object.keys(THEME_TRANSFORM_COMPAT);
-
 const EMOJI_GROUPS = {
   animals: ['🐶', '🐱', '🐭', '🐹', '🐰', '🐸', '🐵', '🐷', '🐻', '🐼', '🦊', '🐨', '🦁', '🐯', '🐮'],
   birds: ['🐔', '🐧', '🐦', '🐤', '🦆', '🦅', '🦉', '🦜', '🦚', '🦩', '🕊️', '🦢', '🦤', '🐓', '🦃'],
@@ -193,6 +186,13 @@ const EMOJI_GROUPS = {
   hanzi2: ['折', '拆', '侯', '候', '拔', '拨', '辩', '辨', '瓣', '辫', '炙', '灸', '毫', '豪', '鉴'],
   hanzi3: ['棘', '枣', '壁', '璧', '睛', '晴', '情', '清', '请', '精', '蜻', '靖', '菁', '倩', '婧'],
 };
+
+const THEME_TRANSFORM_COMPAT = computeThemeCompat();
+
+// 按变换能力分类（从 THEME_TRANSFORM_COMPAT 派生）
+const ROTATE_THEMES = Object.keys(THEME_TRANSFORM_COMPAT).filter(k => THEME_TRANSFORM_COMPAT[k].rotate);
+const MIRROR_SAFE_THEMES = Object.keys(THEME_TRANSFORM_COMPAT).filter(k => THEME_TRANSFORM_COMPAT[k].mirror);
+const ALL_THEMES = Object.keys(THEME_TRANSFORM_COMPAT);
 
 // ── 工具函数 ──
 
