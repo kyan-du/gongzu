@@ -722,9 +722,11 @@ export default function MemoryGrid() {
         borderClass?: string;
         /** 只显示答错位置的正确答案，答对位置留空 */
         onlyWrong?: { userCells: CellContent[] };
+        /** 全局起始编号（0-based），用于未作答显示 ?N */
+        baseIndex?: number;
       },
     ) => {
-      const { userCells, borderClass, onlyWrong } = opts || {};
+      const { userCells, borderClass, onlyWrong, baseIndex } = opts || {};
       const displayCells = userCells || miniGrid;
       const defaultBorder = 'border-[3px] border-gray-800 dark:border-gray-300';
 
@@ -775,7 +777,7 @@ export default function MemoryGrid() {
                     wrongCorrect ? <CellRenderer content={cell} size="small" /> : null
                   ) : (
                     <>
-                      <CellRenderer content={cell} size="small" index={showMark && isUnanswered ? i : undefined} />
+                      <CellRenderer content={cell} size="small" index={showMark && isUnanswered && baseIndex !== undefined ? baseIndex + i : undefined} />
                       {showMark && (
                         <div className="absolute top-0 right-0 z-20">
                           {isCorrect ? (
@@ -783,7 +785,7 @@ export default function MemoryGrid() {
                           ) : isPass ? (
                             <span className="text-xs font-bold text-yellow-600">🔍</span>
                           ) : isUnanswered ? (
-                            <span className="text-xs font-bold text-orange-500">❓</span>
+                            <span className="text-[10px] font-bold text-orange-500">?</span>
                           ) : (
                             <XCircle className="w-4 h-4 text-red-600 drop-shadow-sm" strokeWidth={3} />
                           )}
@@ -812,13 +814,14 @@ export default function MemoryGrid() {
               const key = `${rowIdx}-${colIdx}`;
               const userCells = userAnswersMap.get(key);
               const isHighlighted = highlightCells.some((h) => h.row === rowIdx && h.col === colIdx);
+              const hiddenIdx = highlightCells.findIndex((h) => h.row === rowIdx && h.col === colIdx);
               const borderClass = isHighlighted
                 ? 'border-[3px] border-blue-400 dark:border-blue-500'
                 : 'border-[3px] border-gray-800 dark:border-gray-300';
 
               return (
                 <div key={key}>
-                  {renderCell(miniGrid, { userCells, borderClass })}
+                  {renderCell(miniGrid, { userCells, borderClass, baseIndex: hiddenIdx >= 0 ? hiddenIdx * 4 : undefined })}
                 </div>
               );
             })}
