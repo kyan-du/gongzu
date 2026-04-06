@@ -509,19 +509,15 @@ function generateValidRules(): PuzzleRules {
  */
 function buildMergeMatrix(rules: PuzzleRules, emojiPool: string[]): Matrix {
 
-  // 为每个位置生成 same/diff 分布（3行中至少1次same + 至少1次diff）
-  const validPatterns: boolean[][] = [
-    [true, false, false],
-    [false, true, false],
-    [false, false, true],
-    [true, true, false],
-    [true, false, true],
-    [false, true, true],
-  ];
-  // sameDiffMap[position][row] = true 表示该位置该行是 same
+  // 为每个位置生成 same/diff 分布
+  // 核心约束：前2行（可观察行）必须 same 和 diff 各出现至少1次
+  // 这样观察者在答题前能推出该位置的两种规律
+  // 前2行一个 true 一个 false，第3行随机
   const sameDiffMap: boolean[][] = [];
   for (let i = 0; i < 4; i++) {
-    sameDiffMap.push(randomChoice(validPatterns));
+    const first2 = Math.random() < 0.5 ? [true, false] : [false, true];
+    const third = Math.random() < 0.5;
+    sameDiffMap.push([first2[0], first2[1], third]);
   }
 
   const matrix: Matrix = [];
@@ -585,18 +581,12 @@ function buildTransformMatrix(rules: PuzzleRules, emojiPool: string[]): Matrix {
  */
 function buildMixedMatrix(rules: PuzzleRules, emojiPool: string[]): Matrix {
 
-  // 为每个位置生成 same/diff 分布（同 buildMergeMatrix）
-  const validPatterns: boolean[][] = [
-    [true, false, false],
-    [false, true, false],
-    [false, false, true],
-    [true, true, false],
-    [true, false, true],
-    [false, true, true],
-  ];
+  // 前2行（可观察行）每个位置 same/diff 各至少1次
   const sameDiffMap: boolean[][] = [];
   for (let i = 0; i < 4; i++) {
-    sameDiffMap.push(randomChoice(validPatterns));
+    const first2 = Math.random() < 0.5 ? [true, false] : [false, true];
+    const third = Math.random() < 0.5;
+    sameDiffMap.push([first2[0], first2[1], third]);
   }
 
   const matrix: Matrix = [];
