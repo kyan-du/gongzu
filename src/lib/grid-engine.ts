@@ -536,22 +536,49 @@ function buildMergeMatrix(rules: PuzzleRules): Matrix {
 
   emojiPool = shuffle(emojiPool);
 
+  // 为每个位置生成 same/diff 分布（3行中至少1次same + 至少1次diff）
+  const validPatterns: boolean[][] = [
+    [true, false, false],
+    [false, true, false],
+    [false, false, true],
+    [true, true, false],
+    [true, false, true],
+    [false, true, true],
+  ];
+  // sameDiffMap[position][row] = true 表示该位置该行是 same
+  const sameDiffMap: boolean[][] = [];
+  for (let i = 0; i < 4; i++) {
+    sameDiffMap.push(randomChoice(validPatterns));
+  }
+
   const matrix: Matrix = [];
 
   for (let row = 0; row < 3; row++) {
     const col1: CellContent[] = [];
     for (let i = 0; i < 4; i++) {
-      const emoji = emojiPool[row * 4 + i] || randomChoice(emojiPool);
+      const emoji = emojiPool[(row * 4 + i) % emojiPool.length] || randomChoice(emojiPool);
       col1.push({ type: 'emoji', emoji, rotation: 0, mirror: 'none', scaled: false, grown: false });
     }
 
-    // col2 = applyTransforms(col1, rules)
-    const col2 = applyTransforms(col1 as MiniGrid, rules);
+    // 主动构造 col2，根据 sameDiffMap 决定每个位置是 same 还是 diff
+    const col2: CellContent[] = [];
+    for (let i = 0; i < 4; i++) {
+      if (sameDiffMap[i][row]) {
+        // same: 复制 col1 的 emoji
+        col2.push({ ...col1[i] });
+      } else {
+        // diff: 选一个不同的 emoji
+        const col1Emoji = (col1[i] as EmojiContent).emoji;
+        const diffPool = emojiPool.filter(e => e !== col1Emoji);
+        const diffEmoji = diffPool.length > 0 ? randomChoice(diffPool) : col1Emoji;
+        col2.push({ type: 'emoji', emoji: diffEmoji, rotation: 0, mirror: 'none', scaled: false, grown: false });
+      }
+    }
 
     // col3 = merge(col1, col2)
-    const col3 = mergeMiniGrids(col1 as MiniGrid, col2, rules);
+    const col3 = mergeMiniGrids(col1 as MiniGrid, col2 as MiniGrid, rules);
 
-    matrix.push([col1 as MiniGrid, col2, col3]);
+    matrix.push([col1 as MiniGrid, col2 as MiniGrid, col3]);
   }
 
   return matrix;
@@ -636,20 +663,52 @@ function buildMixedMatrix(rules: PuzzleRules): Matrix {
 
   emojiPool = shuffle(emojiPool);
 
+  // 为每个位置生成 same/diff 分布（同 buildMergeMatrix）
+  const validPatterns: boolean[][] = [
+    [true, false, false],
+    [false, true, false],
+    [false, false, true],
+    [true, true, false],
+    [true, false, true],
+    [false, true, true],
+  ];
+  const sameDiffMap: boolean[][] = [];
+  for (let i = 0; i < 4; i++) {
+    sameDiffMap.push(randomChoice(validPatterns));
+  }
+
   const matrix: Matrix = [];
 
   for (let row = 0; row < 3; row++) {
     const col1: CellContent[] = [];
     for (let i = 0; i < 4; i++) {
-      const emoji = emojiPool[row * 4 + i] || randomChoice(emojiPool);
+      const emoji = emojiPool[(row * 4 + i) % emojiPool.length] || randomChoice(emojiPool);
       col1.push({ type: 'emoji', emoji, rotation: 0, mirror: 'none', scaled: false, grown: false });
     }
 
-    // 混合：col1 → transform → col2，col3 = merge(col1, col2)
-    const col2 = applyTransforms(col1 as MiniGrid, rules);
-    const col3 = mergeMiniGrids(col1 as MiniGrid, col2, rules);
+    // 混合：主动构造 col2，确保 same/diff 分布合理
+    const col2: CellContent[] = [];
+    for (let i = 0; i < 4; i++) {
+      if (sameDiffMap[i][row]) {
+        col2.push({ ...col1[i] });
+      } else {
+        const col1Emoji = (col1[i] as EmojiContent).emoji;
+        const diffPool = emojiPool.filter(e => e !== col1Emoji);
+        const diffEmoji = diffPool.length > 0 ? randomChoice(diffPool) : col1Emoji;
+        col2.push({ type: 'emoji', emoji: diffEmoji, rotation: 0, mirror: 'none', scaled: false, grown: false });
+      }
+    }
 
-    matrix.push([col1 as MiniGrid, col2, col3]);
+    // 对 col2 应用位置级 cellTransforms（混合类的"变换"维度）
+    for (let i = 0; i < 4; i++) {
+      if (rules.cellTransforms[i] !== 'none' && col2[i].type === 'emoji') {
+        col2[i] = applyElementTransform(col2[i] as EmojiContent, rules.cellTransforms[i]);
+      }
+    }
+
+    const col3 = mergeMiniGrids(col1 as MiniGrid, col2 as MiniGrid, rules);
+
+    matrix.push([col1 as MiniGrid, col2 as MiniGrid, col3]);
   }
 
   return matrix;
