@@ -62,8 +62,8 @@ function CellRenderer({ content, size = 'normal', index }: { content: CellConten
   if (!content) {
     return (
       <div className="w-full h-full flex items-center justify-center">
-        <span className="text-gray-400 font-bold" style={{ fontSize: '1.2rem' }}>
-          ?{index !== undefined ? <sub style={{ fontSize: '0.7rem' }}>{index + 1}</sub> : ''}
+        <span className="text-gray-600 font-bold" style={{ fontSize: '1.4rem' }}>
+          ?{index !== undefined ? <sub style={{ fontSize: '0.75rem' }}>{index + 1}</sub> : ''}
         </span>
       </div>
     );
