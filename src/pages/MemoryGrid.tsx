@@ -293,19 +293,18 @@ export default function MemoryGrid() {
   }, [isFixture]);
 
   // 倒计时（fixture 的 result 阶段不启动）
+  const timeUpRef = useRef(false);
+
   useEffect(() => {
     if (phase === 'result') return;
     if (isFixture && initialPhase === 'result') return;
+    timeUpRef.current = false;
 
     timerRef.current = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
-          // 时间到，自动进入下一阶段
-          if (phase === 'watch1') setPhase('answer1');
-          else if (phase === 'answer1') handlePhase1Submit();
-          else if (phase === 'watch2') setPhase('answer2');
-          else if (phase === 'answer2') handlePhase2Submit();
-          return 90;
+          timeUpRef.current = true;
+          return 0;
         }
         return prev - 1;
       });
@@ -315,6 +314,18 @@ export default function MemoryGrid() {
       if (timerRef.current) clearInterval(timerRef.current);
     };
   }, [phase]);
+
+  // 时间到了，自动进入下一阶段（在 render cycle 外处理）
+  useEffect(() => {
+    if (timeLeft !== 0 || !timeUpRef.current) return;
+    timeUpRef.current = false;
+    if (timerRef.current) clearInterval(timerRef.current);
+
+    if (phase === 'watch1') { setPhase('answer1'); setTimeLeft(90); }
+    else if (phase === 'answer1') { handlePhase1Submit(); }
+    else if (phase === 'watch2') { setPhase('answer2'); setTimeLeft(90); }
+    else if (phase === 'answer2') { handlePhase2Submit(); }
+  }, [timeLeft]);
 
   // 找下一个未填的位置
   const findNextEmpty = (answers: (CellContent | null)[], fromIndex: number, max: number): number => {
