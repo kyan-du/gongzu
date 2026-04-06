@@ -15,6 +15,8 @@ interface DayStats {
   memoryGamesTarget: number;
   memoryTotal: number;
   memoryCorrect: number;
+  memoryMatryoshka: number;
+  memoryGrid: number;
 }
 
 // GET /api/status/monthly?userId=cyan&month=2026-04
@@ -73,7 +75,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       const completed = submittedSet.size >= questionIds.length;
 
       if (!days[date]) {
-        days[date] = { quizCount: 0, completedCount: 0, totalQuestions: 0, answeredQuestions: 0, correctAnswers: 0, reviewDue: 0, reviewDone: 0, memoryGames: 0, memoryGamesTarget: 5 };
+        days[date] = { quizCount: 0, completedCount: 0, totalQuestions: 0, answeredQuestions: 0, correctAnswers: 0, reviewDue: 0, reviewDone: 0, memoryGames: 0, memoryGamesTarget: 5, memoryTotal: 0, memoryCorrect: 0, memoryMatryoshka: 0, memoryGrid: 0 };
       }
       days[date].quizCount += 1;
       if (completed) days[date].completedCount += 1;
@@ -91,7 +93,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     for (const r of reviews.results) {
       const dueDate = (r.next_review_at as string).slice(0, 10);
       if (!days[dueDate]) {
-        days[dueDate] = { quizCount: 0, completedCount: 0, totalQuestions: 0, answeredQuestions: 0, correctAnswers: 0, reviewDue: 0, reviewDone: 0, memoryGames: 0, memoryGamesTarget: 5 };
+        days[dueDate] = { quizCount: 0, completedCount: 0, totalQuestions: 0, answeredQuestions: 0, correctAnswers: 0, reviewDue: 0, reviewDone: 0, memoryGames: 0, memoryGamesTarget: 5, memoryTotal: 0, memoryCorrect: 0, memoryMatryoshka: 0, memoryGrid: 0 };
       }
       days[dueDate].reviewDue += 1;
       // If last_review_at >= next_review_at, it was reviewed
@@ -102,17 +104,26 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 
     // 5. Fetch memory game data for the month
     const memGames = await context.env.DB.prepare(
-      `SELECT date, COUNT(*) as cnt, SUM(total) as total_cards, SUM(correct) as correct_cards FROM memory_games WHERE user_id = ? AND date >= ? AND date <= ? GROUP BY date`
+      `SELECT date, game_type, COUNT(*) as cnt, SUM(total) as total_cards, SUM(correct) as correct_cards FROM memory_games WHERE user_id = ? AND date >= ? AND date <= ? GROUP BY date, game_type`
     ).bind(userId, startDate, endDate).all();
 
     for (const mg of memGames.results) {
       const date = mg.date as string;
+      const gameType = mg.game_type as string;
       if (!days[date]) {
-        days[date] = { quizCount: 0, completedCount: 0, totalQuestions: 0, answeredQuestions: 0, correctAnswers: 0, reviewDue: 0, reviewDone: 0, memoryGames: 0, memoryGamesTarget: 5, memoryTotal: 0, memoryCorrect: 0 };
+        days[date] = { quizCount: 0, completedCount: 0, totalQuestions: 0, answeredQuestions: 0, correctAnswers: 0, reviewDue: 0, reviewDone: 0, memoryGames: 0, memoryGamesTarget: 5, memoryTotal: 0, memoryCorrect: 0, memoryMatryoshka: 0, memoryGrid: 0 };
       }
-      days[date].memoryGames = mg.cnt as number;
-      days[date].memoryTotal = mg.total_cards as number;
-      days[date].memoryCorrect = mg.correct_cards as number;
+      const cnt = mg.cnt as number;
+      days[date].memoryGames += cnt;
+      days[date].memoryTotal += (mg.total_cards as number) || 0;
+      days[date].memoryCorrect += (mg.correct_cards as number) || 0;
+
+      // 分别统计套娃和宫格
+      if (gameType === 'matryoshka') {
+        days[date].memoryMatryoshka = cnt;
+      } else if (gameType === 'grid') {
+        days[date].memoryGrid = cnt;
+      }
     }
 
     // 6. Streak calculation

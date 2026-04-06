@@ -36,6 +36,8 @@ interface MonthlyDayData {
   memoryGamesTarget: number;
   memoryTotal: number;
   memoryCorrect: number;
+  memoryMatryoshka: number;
+  memoryGrid: number;
 }
 
 function toDateStr(d: Date) {
@@ -69,7 +71,8 @@ export default function Home() {
   const [cardMastered, setCardMastered] = useState<number>(0);
   const [cardLearning, setCardLearning] = useState<number>(0);
   const [cardReviewDue, setCardReviewDue] = useState<number>(0);
-  const [memoryGameCompleted, setMemoryGameCompleted] = useState<number>(0);
+  const [matryoshkaCompleted, setMatryoshkaCompleted] = useState<number>(0);
+  const [gridCompleted, setGridCompleted] = useState<number>(0);
 
   // 用户模块配置（从 API 获取）
   interface UserModule {
@@ -163,9 +166,14 @@ export default function Home() {
   // 记忆游戏今日进度（仅启用了的用户）
   useEffect(() => {
     if (!userId || !modEnabled('memory_game')) return;
-    fetch(`/api/memory-game?userId=${userId}&date=${todayStr}&type=matryoshka`)
-      .then(r => r.json())
-      .then((data: any) => setMemoryGameCompleted(data.completed || 0))
+    Promise.all([
+      fetch(`/api/memory-game?userId=${userId}&date=${todayStr}&type=matryoshka`).then(r => r.json()),
+      fetch(`/api/memory-game?userId=${userId}&date=${todayStr}&type=grid`).then(r => r.json()),
+    ])
+      .then(([matryoshkaData, gridData]) => {
+        setMatryoshkaCompleted(matryoshkaData.completed || 0);
+        setGridCompleted(gridData.completed || 0);
+      })
       .catch(() => {});
   }, [userId, todayStr, userModules]);
 
@@ -502,32 +510,63 @@ export default function Home() {
               )}
               {/* 记忆游戏任务卡 — 仅 isTask 的用户 */}
               {modIsTask('memory_game') && selectedDate === todayStr && (
-                <button
-                  onClick={() => navigate(`/${userId}/memory`)}
-                  className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition active:scale-[0.98] mt-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br from-amber-50 to-blue-50 dark:from-amber-900/30 dark:to-blue-900/30">
-                      <Boxes className="w-5 h-5 text-amber-500 dark:text-amber-400" />
-                    </div>
-                    <div className="text-left">
-                      <div className="font-medium text-gray-900 dark:text-gray-100">记忆游戏</div>
-                      <div className="text-sm text-gray-500 dark:text-gray-400">
-                        {memoryGameCompleted >= modTarget('memory_game') ? '今日已完成' : `${memoryGameCompleted}/${modTarget('memory_game')} 完成`}
+                <>
+                  {/* 套娃记忆 */}
+                  <button
+                    onClick={() => navigate(`/${userId}/memory/matryoshka`)}
+                    className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition active:scale-[0.98] mt-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br from-red-50 to-pink-50 dark:from-red-900/30 dark:to-pink-900/30">
+                        <span className="text-xl">🪆</span>
+                      </div>
+                      <div className="text-left">
+                        <div className="font-medium text-gray-900 dark:text-gray-100">套娃记忆</div>
+                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                          {matryoshkaCompleted >= modTarget('memory_game') ? '今日已完成' : `${matryoshkaCompleted}/${modTarget('memory_game')} 完成`}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  {memoryGameCompleted >= modTarget('memory_game') ? (
-                    <div className="flex items-center gap-1 text-sm text-green-500 dark:text-green-400 font-medium">
-                      <CheckCircle className="w-3.5 h-3.5" />
-                      已完成
+                    {matryoshkaCompleted >= modTarget('memory_game') ? (
+                      <div className="flex items-center gap-1 text-sm text-green-500 dark:text-green-400 font-medium">
+                        <CheckCircle className="w-3.5 h-3.5" />
+                        已完成
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-1 text-sm text-amber-500 dark:text-amber-400 font-medium">
+                        <Clock className="w-3.5 h-3.5" />
+                        {matryoshkaCompleted > 0 ? `${matryoshkaCompleted}/${modTarget('memory_game')}` : '未完成'}
+                      </div>
+                    )}
+                  </button>
+
+                  {/* 宫格记忆 */}
+                  <button
+                    onClick={() => navigate(`/${userId}/memory/grid`)}
+                    className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition active:scale-[0.98] mt-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30">
+                        <span className="text-xl">🔲</span>
+                      </div>
+                      <div className="text-left">
+                        <div className="font-medium text-gray-900 dark:text-gray-100">宫格记忆</div>
+                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                          {gridCompleted >= modTarget('memory_game') ? '今日已完成' : `${gridCompleted}/${modTarget('memory_game')} 完成`}
+                        </div>
+                      </div>
                     </div>
-                  ) : (
-                    <div className="flex items-center gap-1 text-sm text-amber-500 dark:text-amber-400 font-medium">
-                      <Clock className="w-3.5 h-3.5" />
-                      {memoryGameCompleted > 0 ? `${memoryGameCompleted}/${modTarget('memory_game')}` : '未完成'}
-                    </div>
-                  )}
-                </button>
+                    {gridCompleted >= modTarget('memory_game') ? (
+                      <div className="flex items-center gap-1 text-sm text-green-500 dark:text-green-400 font-medium">
+                        <CheckCircle className="w-3.5 h-3.5" />
+                        已完成
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-1 text-sm text-amber-500 dark:text-amber-400 font-medium">
+                        <Clock className="w-3.5 h-3.5" />
+                        {gridCompleted > 0 ? `${gridCompleted}/${modTarget('memory_game')}` : '未完成'}
+                      </div>
+                    )}
+                  </button>
+                </>
               )}
               </>
             ) : (
@@ -610,32 +649,63 @@ export default function Home() {
 
                 {/* 记忆游戏任务卡 — 按模块配置 */}
                 {modEnabled('memory_game') && selectedDate === todayStr && (
-                  <button
-                    onClick={() => navigate(`/${userId}/memory`)}
-                    className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition active:scale-[0.98] mt-3">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br from-amber-50 to-blue-50 dark:from-amber-900/30 dark:to-blue-900/30">
-                        <Boxes className="w-5 h-5 text-amber-500 dark:text-amber-400" />
-                      </div>
-                      <div className="text-left">
-                        <div className="font-medium text-gray-900 dark:text-gray-100">记忆游戏</div>
-                        <div className="text-sm text-gray-500 dark:text-gray-400">
-                          {memoryGameCompleted >= modTarget('memory_game') ? '今日已完成' : `${memoryGameCompleted}/${modTarget('memory_game')} 完成`}
+                  <>
+                    {/* 套娃记忆 */}
+                    <button
+                      onClick={() => navigate(`/${userId}/memory/matryoshka`)}
+                      className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition active:scale-[0.98] mt-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br from-red-50 to-pink-50 dark:from-red-900/30 dark:to-pink-900/30">
+                          <span className="text-xl">🪆</span>
+                        </div>
+                        <div className="text-left">
+                          <div className="font-medium text-gray-900 dark:text-gray-100">套娃记忆</div>
+                          <div className="text-sm text-gray-500 dark:text-gray-400">
+                            {matryoshkaCompleted >= modTarget('memory_game') ? '今日已完成' : `${matryoshkaCompleted}/${modTarget('memory_game')} 完成`}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    {memoryGameCompleted >= modTarget('memory_game') ? (
-                      <div className="flex items-center gap-1 text-sm text-green-500 dark:text-green-400 font-medium">
-                        <CheckCircle className="w-3.5 h-3.5" />
-                        已完成
+                      {matryoshkaCompleted >= modTarget('memory_game') ? (
+                        <div className="flex items-center gap-1 text-sm text-green-500 dark:text-green-400 font-medium">
+                          <CheckCircle className="w-3.5 h-3.5" />
+                          已完成
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-1 text-sm text-amber-500 dark:text-amber-400 font-medium">
+                          <Clock className="w-3.5 h-3.5" />
+                          {matryoshkaCompleted > 0 ? `${matryoshkaCompleted}/${modTarget('memory_game')}` : '未完成'}
+                        </div>
+                      )}
+                    </button>
+
+                    {/* 宫格记忆 */}
+                    <button
+                      onClick={() => navigate(`/${userId}/memory/grid`)}
+                      className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition active:scale-[0.98] mt-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30">
+                          <span className="text-xl">🔲</span>
+                        </div>
+                        <div className="text-left">
+                          <div className="font-medium text-gray-900 dark:text-gray-100">宫格记忆</div>
+                          <div className="text-sm text-gray-500 dark:text-gray-400">
+                            {gridCompleted >= modTarget('memory_game') ? '今日已完成' : `${gridCompleted}/${modTarget('memory_game')} 完成`}
+                          </div>
+                        </div>
                       </div>
-                    ) : (
-                      <div className="flex items-center gap-1 text-sm text-amber-500 dark:text-amber-400 font-medium">
-                        <Clock className="w-3.5 h-3.5" />
-                        {memoryGameCompleted > 0 ? `${memoryGameCompleted}/${modTarget('memory_game')}` : '未完成'}
-                      </div>
-                    )}
-                  </button>
+                      {gridCompleted >= modTarget('memory_game') ? (
+                        <div className="flex items-center gap-1 text-sm text-green-500 dark:text-green-400 font-medium">
+                          <CheckCircle className="w-3.5 h-3.5" />
+                          已完成
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-1 text-sm text-amber-500 dark:text-amber-400 font-medium">
+                          <Clock className="w-3.5 h-3.5" />
+                          {gridCompleted > 0 ? `${gridCompleted}/${modTarget('memory_game')}` : '未完成'}
+                        </div>
+                      )}
+                    </button>
+                  </>
                 )}
               </>
             )}
