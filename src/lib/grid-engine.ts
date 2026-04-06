@@ -68,9 +68,88 @@ export interface GamePuzzle {
 // ── Emoji 素材 ──
 
 // 主题分类：用于变换约束
-const DIRECTIONAL_THEMES = ['animals', 'birds', 'ocean', 'transport', 'insects', 'letters', 'shapes', 'space', 'tools', 'electronics', 'bodyparts', 'dinosaurs', 'vehicles2', 'flags', 'arrows'];
-const SYMMETRIC_THEMES = ['fruits', 'vegetables', 'food', 'sports', 'flowers', 'hearts', 'sweets', 'christmas', 'gems', 'balls', 'hanzi', 'hanzi2', 'hanzi3'];
-const MIXED_THEMES = ['weather', 'faces', 'hands', 'music', 'objects', 'numbers', 'buildings', 'clothing', 'furniture', 'drinks', 'clocks', 'zodiac'];
+// ── 素材分类（基于变换兼容性审查） ──
+// 审查方法：debug-emoji-transforms.html 逐组截图 + 视觉分析
+// 日期：2026-04-06
+//
+// rotate: 旋转90°/180°/270°后视觉上有明显差异
+// mirror: 水平/垂直镜像后视觉上有明显差异
+// scale: 缩放（几乎全部适用，不单独标记）
+//
+// ── 对称性审查结果（2026-04-06 万手动标注） ──
+// axial = 轴对称 → 镜像后无明显变化 → MIRROR_EXCLUDE
+// central = 中心对称 → 旋转180°后无明显变化 → ROTATE_EXCLUDE
+
+// 轴对称 emoji 排除列表（镜像变换无效）
+const MIRROR_EXCLUDE: Record<string, string[]> = {
+  animals:     ['🐱','🐭','🐰','🦊','🐻','🐼','🐨','🐯','🐮','🐷','🐸','🐵'],
+  birds:       ['🦚'],
+  ocean:       ['🐙','🦀','🦞'],
+  insects:     ['🦋','🐞','🪲','🪳','🪰','🕷️'],
+  space:       ['🌑','🌕'],
+  tools:       ['🧲','🧰'],
+  electronics: ['🖨️','📺','🖱️'],
+  bodyparts:   ['👃','👄','🦷','💀','👅'],
+  vehicles2:   ['🚊'],
+  arrows:      ['⬆️','↕️','↔️'],
+  letters:     ['A','M','W'],
+  shapes:      ['▲','△','◆','◇','►','▷','◄','◁','▼','★','☆','●','○','■','□'],
+  numbers:     ['0'],
+  hanzi:       ['末','未'],
+  flowers:     ['🌼'],
+  hearts:      ['❤️','💜','💙','💚','💛','🧡','🤍','🖤','🤎','💗'],
+  christmas:   ['🤶','🌟'],
+  gems:        ['🔶','🔷','🔸','🔹'],
+  buildings:   ['🏥','⛪','🏛️','🕍','⛩️'],
+  clothing:    ['👕','👖','👗'],
+  furniture:   ['💡'],
+  drinks:      ['🍷','🥛'],
+  clocks:      ['🕕','🕛','⏳','⌛'],
+  zodiac:      ['♈','♉','♊','♎','♓','🔯'],
+  faces:       ['😀','😂','🥹','🤢','😡','😱','🤗'],
+  hands:       ['🤲','👐','🫶'],
+  music:       ['🎹'],
+  objects:     ['💡'],
+  weather:     ['☀️'],
+};
+
+// 中心对称 emoji 排除列表（旋转180°后无明显变化）
+const ROTATE_EXCLUDE: Record<string, string[]> = {
+  space:       ['🌑','🌕'],
+  electronics: ['📀'],
+  letters:     ['S'],
+  shapes:      ['◆','◇','●','○','■','□'],
+  numbers:     ['0'],
+  flowers:     ['🌼'],
+  christmas:   ['❄️'],
+  weather:     ['❄️'],
+};
+
+// 主题变换兼容性（基于审查结果自动推导）
+// rotate: 组内排除 ROTATE_EXCLUDE 后还剩 ≥ 12 个可用 emoji
+// mirror: 组内排除 MIRROR_EXCLUDE 后还剩 ≥ 12 个可用 emoji
+function computeThemeCompat(): Record<string, { rotate: boolean; mirror: boolean }> {
+  const MIN_USABLE = 12; // 3行×4格=12个不同 emoji
+  const result: Record<string, { rotate: boolean; mirror: boolean }> = {};
+  for (const [group, emojis] of Object.entries(EMOJI_GROUPS)) {
+    const mirrorExcl = new Set(MIRROR_EXCLUDE[group] || []);
+    const rotateExcl = new Set(ROTATE_EXCLUDE[group] || []);
+    const mirrorUsable = emojis.filter(e => !mirrorExcl.has(e)).length;
+    const rotateUsable = emojis.filter(e => !rotateExcl.has(e)).length;
+    result[group] = {
+      rotate: rotateUsable >= MIN_USABLE,
+      mirror: mirrorUsable >= MIN_USABLE,
+    };
+  }
+  return result;
+}
+
+const THEME_TRANSFORM_COMPAT = computeThemeCompat();
+
+// 按变换能力分类（从 THEME_TRANSFORM_COMPAT 派生）
+const ROTATE_THEMES = Object.keys(THEME_TRANSFORM_COMPAT).filter(k => THEME_TRANSFORM_COMPAT[k].rotate);
+const MIRROR_SAFE_THEMES = Object.keys(THEME_TRANSFORM_COMPAT).filter(k => THEME_TRANSFORM_COMPAT[k].mirror);
+const ALL_THEMES = Object.keys(THEME_TRANSFORM_COMPAT);
 
 const EMOJI_GROUPS = {
   animals: ['🐶', '🐱', '🐭', '🐹', '🐰', '🐸', '🐵', '🐷', '🐻', '🐼', '🦊', '🐨', '🦁', '🐯', '🐮'],
@@ -409,21 +488,33 @@ function generateValidRules(): PuzzleRules {
 // ── 构建矩阵 ──
 
 function buildMatrix(rules: PuzzleRules): Matrix {
-  // 根据变换选择主题
-  const hasRotationOrMirror =
-    rules.elementTransform !== 'none' && rules.elementTransform !== 'scale-down';
+  // 根据变换选择兼容的主题
+  const isMirror = rules.elementTransform === 'mirror-h' || rules.elementTransform === 'mirror-v';
+  const isRotate = ['rotate-cw-90', 'rotate-180', 'rotate-ccw-90'].includes(rules.elementTransform);
 
   let availableThemes: string[];
-  if (hasRotationOrMirror) {
-    // 只选有朝向的主题
-    availableThemes = DIRECTIONAL_THEMES;
+  if (isMirror) {
+    availableThemes = MIRROR_SAFE_THEMES;
+  } else if (isRotate) {
+    availableThemes = ROTATE_THEMES;
   } else {
-    // 所有主题都可用
-    availableThemes = [...DIRECTIONAL_THEMES, ...SYMMETRIC_THEMES, ...MIXED_THEMES];
+    availableThemes = ALL_THEMES;
   }
 
   const groupKey = randomChoice(availableThemes) as keyof typeof EMOJI_GROUPS;
-  const emojiPool = shuffle([...EMOJI_GROUPS[groupKey]]);
+  let emojiPool = [...EMOJI_GROUPS[groupKey]];
+
+  // 排除组内不兼容该变换的单个 emoji
+  if (isMirror && MIRROR_EXCLUDE[groupKey]) {
+    const exclude = new Set(MIRROR_EXCLUDE[groupKey]);
+    emojiPool = emojiPool.filter(e => !exclude.has(e));
+  }
+  if (isRotate && ROTATE_EXCLUDE[groupKey]) {
+    const exclude = new Set(ROTATE_EXCLUDE[groupKey]);
+    emojiPool = emojiPool.filter(e => !exclude.has(e));
+  }
+
+  emojiPool = shuffle(emojiPool);
 
   const matrix: Matrix = [];
 

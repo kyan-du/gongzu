@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Emoji 变换审查</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: system-ui; padding: 10px; background: #fff; }
+h2 { font-size: 14px; margin: 20px 0 8px; padding: 4px 8px; background: #333; color: #fff; display: flex; align-items: center; justify-content: space-between; }
+h2 .group-checks { display: flex; gap: 8px; }
+h2 label { font-weight: normal; font-size: 12px; color: #ccc; cursor: pointer; display: flex; align-items: center; gap: 2px; }
+h2 label input { cursor: pointer; }
+.row { display: flex; align-items: center; border-bottom: 1px solid #eee; padding: 4px 0; }
+.emoji-name { width: 50px; text-align: center; font-size: 11px; color: #666; flex-shrink: 0; }
+.cell { width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; font-size: 48px; border: 1px solid #f0f0f0; margin: 0 2px; flex-shrink: 0; }
+.checks { display: flex; gap: 6px; align-items: center; margin-left: 8px; flex-shrink: 0; }
+.checks label { font-size: 11px; color: #666; cursor: pointer; display: flex; align-items: center; gap: 2px; }
+.checks input[type="checkbox"] { cursor: pointer; width: 16px; height: 16px; }
+.header { display: flex; align-items: center; padding: 4px 0; font-size: 11px; font-weight: bold; color: #999; }
+.header span { width: 64px; text-align: center; margin: 0 2px; flex-shrink: 0; }
+.header .emoji-name { width: 50px; }
+
+/* 导出栏 */
+#export-bar {
+  position: sticky; top: 0; z-index: 100;
+  background: #1a1a2e; color: #fff; padding: 8px 12px;
+  display: flex; align-items: center; gap: 12px;
+  border-radius: 6px; margin-bottom: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.2);
+}
+#export-bar button {
+  padding: 6px 14px; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 600;
+}
+#btn-export { background: #4ade80; color: #000; }
+#btn-copy { background: #60a5fa; color: #000; }
+#btn-clear { background: #f87171; color: #fff; }
+#export-bar .stats { font-size: 12px; color: #aaa; }
+#toast {
+  position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+  background: #333; color: #fff; padding: 8px 20px; border-radius: 6px;
+  font-size: 13px; opacity: 0; transition: opacity .3s; z-index: 999; pointer-events: none;
+}
+#toast.show { opacity: 1; }
+#export-modal {
+  display: none; position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,.5);
+  justify-content: center; align-items: center;
+}
+#export-modal.show { display: flex; }
+#export-modal .modal-content {
+  background: #fff; border-radius: 8px; padding: 16px; max-width: 90vw; max-height: 80vh;
+  display: flex; flex-direction: column; gap: 10px;
+}
+#export-modal textarea {
+  width: 600px; max-width: 80vw; height: 400px; font-family: monospace; font-size: 12px;
+  border: 1px solid #ddd; border-radius: 4px; padding: 8px; resize: vertical;
+}
+#export-modal .modal-buttons { display: flex; gap: 8px; justify-content: flex-end; }
+#export-modal button {
+  padding: 6px 14px; border: none; border-radius: 4px; cursor: pointer; font-size: 13px;
+}
+</style>
+</head>
+<body>
+
+<div id="export-bar">
+  <button id="btn-export">📋 导出配置</button>
+  <button id="btn-copy">📎 复制JSON</button>
+  <button id="btn-clear">🗑 清空</button>
+  <span class="stats" id="stats">已选: 0 轴对称 / 0 中心对称</span>
+</div>
+
+<div id="toast"></div>
+
+<div id="export-modal">
+  <div class="modal-content">
+    <h3>导出配置 JSON</h3>
+    <textarea id="export-text" readonly></textarea>
+    <div class="modal-buttons">
+      <button id="btn-modal-copy" style="background:#60a5fa">复制</button>
+      <button id="btn-modal-close" style="background:#e5e7eb">关闭</button>
+    </div>
+  </div>
+</div>
+
+<div class="header">
+  <span class="emoji-name">素材</span>
+  <span>原始</span>
+  <span>旋转90°</span>
+  <span>旋转180°</span>
+  <span>旋转270°</span>
+  <span>水平镜像</span>
+  <span>垂直镜像</span>
+  <span>缩小</span>
+  <span>放大</span>
+  <span style="width:120px;text-align:center">标记</span>
+</div>
+<div id="root"></div>
+
+<script>
+const EMOJI_GROUPS = {
+  animals: ['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐮','🐷','🐸','🐵'],
+  birds: ['🐔','🐧','🦆','🦅','🦉','🦇','🐦','🦜','🕊️','🦩','🦚','🦤','🐓','🦃','🦢'],
+  ocean: ['🐳','🐋','🐬','🦈','🐙','🦑','🦀','🦞','🐡','🐠','🐟','🦐','🐚','🪸','🦭'],
+  transport: ['🚗','🚕','🚌','🚑','🚒','🚐','🏎️','🚂','✈️','🚁','🛵','🚲','⛵','🚀','🛸'],
+  insects: ['🐝','🐛','🦋','🐌','🐞','🐜','🦂','🪲','🪳','🦗','🪰','🦟','🕷️','🦠','🪱'],
+  space: ['🚀','🛸','🌍','🪐','☄️','🌙','🛰️','🌑','🔭','👨‍🚀','🌠','🌌','🌕','🌗','💫'],
+  tools: ['🔨','🪛','🔧','⚙️','🪚','🔩','🪝','🧲','🪜','🧰','🪤','🔗','⛏️','🗜️','🪓'],
+  electronics: ['💻','🖥️','⌨️','🖨️','📺','🎮','🕹️','📡','📻','🔋','💾','📀','🖱️','📟','📠'],
+  bodyparts: ['👀','👃','👄','👂','🦷','💀','🧠','👁️','🫀','🫁','🦴','💪','🦶','🦵','👅'],
+  dinosaurs: ['🦕','🦖','🐉','🐲','🦎','🐍','🦏','🦛','🐊','🦣','🐢','🦙','🦘','🦔','🐫'],
+  vehicles2: ['🚢','⛵','🚤','🛥️','🛶','🚠','🚡','🚟','🚃','🚋','🚞','🚈','🚂','🚊','🛩️'],
+  flags: ['🇨🇳','🇺🇸','🇯🇵','🇬🇧','🇫🇷','🇩🇪','🇰🇷','🇧🇷','🇮🇹','🇪🇸','🇷🇺','🇨🇦','🇦🇺','🇮🇳','🇲🇽'],
+  arrows: ['⬆️','↗️','➡️','↘️','⬇️','↙️','⬅️','↖️','↕️','↔️','↩️','↪️','🔄','🔃','🔂'],
+  letters: ['b','d','p','q','A','B','R','P','M','W','N','Z','S','E','C'],
+  shapes: ['▲','△','◆','◇','►','▷','◄','◁','▼','★','☆','●','○','■','□'],
+  numbers: ['1','2','3','4','5','6','7','8','9','0','①','②','③','④','⑤'],
+  hanzi: ['戍','戊','戌','戎','己','已','巳','末','未','刺','剌','壤','攘','甲','由'],
+  hanzi2: ['折','拆','侯','候','拔','拨','辩','辨','瓣','辫','炙','灸','毫','豪','鉴'],
+  hanzi3: ['棘','枣','壁','璧','睛','晴','情','清','请','精','蜻','靖','菁','倩','婧'],
+  fruits: ['🍎','🍐','🍊','🍋','🍌','🍉','🍇','🍓','🫐','🍈','🍒','🍑','🥭','🍍','🥝'],
+  vegetables: ['🥕','🌽','🥦','🧄','🧅','🥔','🍆','🥒','🌶️','🫑','🥬','🥜','🫘','🍄','🥑'],
+  food: ['🍔','🌭','🍕','🥪','🌮','🌯','🍜','🍲','🍛','🍣','🍱','🥟','🍤','🍙','🥘'],
+  sports: ['⚽','🏀','🏐','🎱','🏈','⚾','🥎','🎾','🏓','🥏','🏒','🥌','🏸','🪀','🏑'],
+  flowers: ['🌸','🌹','🌺','🌻','🌼','🌷','💐','🪻','🌾','🪷','🌵','🎋','🎍','☘️','🍀'],
+  hearts: ['❤️','💜','💙','💚','💛','🧡','🤍','🖤','🤎','💗','💝','💘','💖','❤️‍🔥','💕'],
+  sweets: ['🍦','🧁','🍰','🍫','🍬','🍭','🍪','🧇','🥞','🍡','🍮','🧃','🍧','🍨','🥮'],
+  christmas: ['🎄','🎅','🤶','🎁','⛄','❄️','🦌','🔔','🕯️','🧦','🪅','🎊','🎉','✨','🌟'],
+  gems: ['💎','🔮','💍','👑','🏅','🎖️','🥇','🥈','🥉','🏆','🪩','🔶','🔷','🔸','🔹'],
+  balls: ['⚽','🏀','🏐','🎱','🎳','🏈','⚾','🥎','🎾','🏓','🪀','🥏','🏒','🥌','🏸'],
+  buildings: ['🏠','🏢','🏥','🏫','🏰','🗼','⛪','🏛️','🏟️','🕌','🕍','⛩️','🏗️','🏭','🏬'],
+  clothing: ['👕','👖','👗','🧥','👠','🎩','🧢','👟','👔','👘','🥿','👢','🧤','🧣','👒'],
+  furniture: ['🛋️','🪑','🛏️','🚿','🧹','🪣','🧺','💡','🪟','🚪','🪞','🧸','🖼️','🛁','🪴'],
+  drinks: ['☕','🍵','🥤','🧋','🍺','🍷','🥂','🍾','🧃','🥛','🍹','🍸','🫖','🍶','🥃'],
+  clocks: ['🕐','🕑','🕒','🕓','🕔','🕕','🕖','🕗','🕘','🕙','🕚','🕛','⏰','⏳','⌛'],
+  zodiac: ['♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓','⛎','🔯','☯️'],
+  faces: ['😀','😂','🥹','😎','🤔','😴','🤢','😡','🥶','🤯','😱','🤗','🫡','😏','🥺'],
+  hands: ['👍','👎','✌️','🤞','🤟','🤙','👊','✊','🤝','👏','🙌','🤲','👐','💪','🫶'],
+  music: ['🎵','🎶','🎸','🎹','🥁','🎺','🎻','🪗','🎷','🎤','🎧','📯','🪈','🔔','🎼'],
+  objects: ['🔑','🗝️','🔒','🔓','💡','🔦','🕯️','📎','✂️','🖊️','📌','📏','📐','🔍','⏰'],
+  weather: ['☀️','🌤️','⛅','🌧️','⛈️','🌩️','❄️','💨','🌊','🌈','🌪️','🌫️','☔','⚡','🌡️'],
+};
+
+// 状态：{ group: { emoji: { axial: bool, central: bool } } }
+const state = {};
+
+// 从 localStorage 恢复
+try {
+  const saved = localStorage.getItem('emoji-transform-checks');
+  if (saved) Object.assign(state, JSON.parse(saved));
+} catch(e) {}
+
+function saveState() {
+  localStorage.setItem('emoji-transform-checks', JSON.stringify(state));
+  updateStats();
+}
+
+function getCheck(group, emoji, type) {
+  return state[group]?.[emoji]?.[type] || false;
+}
+
+function setCheck(group, emoji, type, val) {
+  if (!state[group]) state[group] = {};
+  if (!state[group][emoji]) state[group][emoji] = {};
+  state[group][emoji][type] = val;
+  // 清理空项
+  if (!state[group][emoji].axial && !state[group][emoji].central) {
+    delete state[group][emoji];
+    if (Object.keys(state[group]).length === 0) delete state[group];
+  }
+  saveState();
+}
+
+function updateStats() {
+  let axialCount = 0, centralCount = 0;
+  for (const g of Object.values(state)) {
+    for (const e of Object.values(g)) {
+      if (e.axial) axialCount++;
+      if (e.central) centralCount++;
+    }
+  }
+  document.getElementById('stats').textContent =
+    `已选: ${axialCount} 轴对称 / ${centralCount} 中心对称`;
+}
+
+function buildExportJSON() {
+  // 输出格式：按组分类，每组列出 axial 和 central 数组
+  const result = {};
+  for (const [groupName, emojis] of Object.entries(EMOJI_GROUPS)) {
+    const axial = [];
+    const central = [];
+    for (const emoji of emojis) {
+      if (getCheck(groupName, emoji, 'axial')) axial.push(emoji);
+      if (getCheck(groupName, emoji, 'central')) central.push(emoji);
+    }
+    if (axial.length || central.length) {
+      result[groupName] = {};
+      if (axial.length) result[groupName].axial = axial;
+      if (central.length) result[groupName].central = central;
+    }
+  }
+  return result;
+}
+
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 1500);
+}
+
+// 渲染
+const root = document.getElementById('root');
+const transforms = [
+  { name: 'none', css: '' },
+  { name: 'rotate-90', css: 'transform:rotate(90deg)' },
+  { name: 'rotate-180', css: 'transform:rotate(180deg)' },
+  { name: 'rotate-270', css: 'transform:rotate(270deg)' },
+  { name: 'mirror-h', css: 'transform:scaleX(-1)' },
+  { name: 'mirror-v', css: 'transform:scaleY(-1)' },
+  { name: 'scale-down', css: 'font-size:24px' },
+  { name: 'scale-up', css: 'font-size:60px' },
+];
+
+for (const [groupName, emojis] of Object.entries(EMOJI_GROUPS)) {
+  const h2 = document.createElement('h2');
+
+  const titleSpan = document.createElement('span');
+  titleSpan.textContent = groupName + ' (' + emojis.length + ')';
+
+  // 组级全选
+  const groupChecks = document.createElement('div');
+  groupChecks.className = 'group-checks';
+
+  for (const type of ['axial', 'central']) {
+    const label = document.createElement('label');
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.addEventListener('change', () => {
+      // 全选/取消该组所有 emoji 的该类型
+      for (const emoji of emojis) {
+        setCheck(groupName, emoji, type, cb.checked);
+      }
+      // 更新行内 checkbox
+      const rows = root.querySelectorAll(`[data-group="${groupName}"] input[data-type="${type}"]`);
+      rows.forEach(r => r.checked = cb.checked);
+    });
+    label.appendChild(cb);
+    label.appendChild(document.createTextNode(type === 'axial' ? '全选轴' : '全选中心'));
+    groupChecks.appendChild(label);
+  }
+
+  h2.appendChild(titleSpan);
+  h2.appendChild(groupChecks);
+  root.appendChild(h2);
+
+  for (const emoji of emojis) {
+    const row = document.createElement('div');
+    row.className = 'row';
+    row.setAttribute('data-group', groupName);
+
+    const nameEl = document.createElement('div');
+    nameEl.className = 'emoji-name';
+    nameEl.textContent = emoji;
+    row.appendChild(nameEl);
+
+    for (const t of transforms) {
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      cell.textContent = emoji;
+      if (t.css) cell.style.cssText = t.css;
+      row.appendChild(cell);
+    }
+
+    // 勾选区
+    const checks = document.createElement('div');
+    checks.className = 'checks';
+
+    for (const type of ['axial', 'central']) {
+      const label = document.createElement('label');
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.setAttribute('data-type', type);
+      cb.checked = getCheck(groupName, emoji, type);
+      cb.addEventListener('change', () => {
+        setCheck(groupName, emoji, type, cb.checked);
+      });
+      label.appendChild(cb);
+      label.appendChild(document.createTextNode(type === 'axial' ? '轴' : '中心'));
+      checks.appendChild(label);
+    }
+
+    row.appendChild(checks);
+    root.appendChild(row);
+  }
+}
+
+updateStats();
+
+// 导出按钮
+document.getElementById('btn-export').addEventListener('click', () => {
+  const json = JSON.stringify(buildExportJSON(), null, 2);
+  document.getElementById('export-text').value = json;
+  document.getElementById('export-modal').classList.add('show');
+});
+
+document.getElementById('btn-copy').addEventListener('click', () => {
+  const json = JSON.stringify(buildExportJSON(), null, 2);
+  navigator.clipboard.writeText(json).then(() => toast('已复制到剪贴板'));
+});
+
+document.getElementById('btn-clear').addEventListener('click', () => {
+  if (!confirm('确定清空所有勾选？')) return;
+  for (const key of Object.keys(state)) delete state[key];
+  saveState();
+  root.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+  toast('已清空');
+});
+
+document.getElementById('btn-modal-copy').addEventListener('click', () => {
+  const ta = document.getElementById('export-text');
+  navigator.clipboard.writeText(ta.value).then(() => toast('已复制到剪贴板'));
+});
+
+document.getElementById('btn-modal-close').addEventListener('click', () => {
+  document.getElementById('export-modal').classList.remove('show');
+});
+</script>
+</body>
+</html>
