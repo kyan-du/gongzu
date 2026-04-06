@@ -57,7 +57,15 @@ function BrokenImageIcon({ className = '' }: { className?: string }) {
 }
 
 // 渲染单个 Cell（带变换）— 各类图形独立尺寸
-function CellRenderer({ content, size = 'normal' }: { content: CellContent; size?: 'normal' | 'small' }) {
+function CellRenderer({ content, size = 'normal' }: { content: CellContent | null; size?: 'normal' | 'small' }) {
+  // null guard：未填答案显示为空格
+  if (!content) {
+    return (
+      <div className="w-full h-full flex items-center justify-center text-gray-300">
+        <span style={{ fontSize: '1.5rem' }}>?</span>
+      </div>
+    );
+  }
   if (content.type === 'blank') {
     return <div className="w-full h-full" />;
   }
