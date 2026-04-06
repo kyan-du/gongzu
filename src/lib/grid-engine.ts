@@ -94,7 +94,8 @@ const MIRROR_EXCLUDE: Record<string, string[]> = {
   electronics: ['🖨️','📺','🖱️'],
   bodyparts:   ['👃','👄','🦷','💀','👅'],
   vehicles2:   ['🚊'],
-  arrows:      ['⬆️','↕️','↔️'],
+  arrows_direction: ['⬆️','↕️','↔️'],
+  arrows_ui:    [],
   letters:     ['A','M','W'],
   shapes:      ['▲','△','◆','◇','►','▷','◄','◁','▼','★','☆','●','○','■','□'],
   numbers:     ['0'],
@@ -175,7 +176,8 @@ const EMOJI_GROUPS = {
   dinosaurs: ['🦕', '🦖', '🐉', '🐲', '🦎', '🐍', '🦏', '🦛', '🐊', '🦣', '🐢', '🦙', '🦘', '🦔', '🐫'],
   vehicles2: ['🚢', '⛵', '🚤', '🛥️', '🛶', '🚠', '🚡', '🚟', '🚃', '🚋', '🚞', '🚈', '🚂', '🚊', '🛩️'],
   flags: ['🇨🇳', '🇺🇸', '🇯🇵', '🇬🇧', '🇫🇷', '🇩🇪', '🇰🇷', '🇧🇷', '🇮🇹', '🇪🇸', '🇷🇺', '🇨🇦', '🇦🇺', '🇮🇳', '🇲🇽'],
-  arrows: ['⬆️', '↗️', '➡️', '↘️', '⬇️', '↙️', '⬅️', '↖️', '↕️', '↔️', '↩️', '↪️', '🔄', '🔃', '🔂'],
+  arrows_direction: ['⬆️', '↗️', '➡️', '↘️', '⬇️', '↙️', '⬅️', '↖️', '↕️', '↔️', '⤴️', '⤵️', '↖', '↗', '↙'],
+  arrows_ui: ['↩️', '↪️', '🔄', '🔃', '🔂', '⏪', '⏩', '⏫', '⏬', '🔼', '🔽', '▶️', '◀️', '⏸️', '⏯️'],
   hearts: ['❤️', '💜', '💙', '💚', '💛', '🧡', '🤍', '🖤', '🤎', '💗', '💝', '💘', '💖', '❤️‍🔥', '💕'],
   sweets: ['🍦', '🧁', '🍰', '🍫', '🍬', '🍭', '🍪', '🧇', '🥞', '🍡', '🍮', '🧃', '🍧', '🍨', '🥮'],
   christmas: ['🎄', '🎅', '🤶', '🎁', '⛄', '❄️', '🦌', '🔔', '🕯️', '🧦', '🪅', '🎊', '🎉', '✨', '🌟'],
@@ -732,11 +734,11 @@ function generateChoices(matrix: Matrix, hiddenCells: { row: number; col: number
     }
   }
 
-  const result = [...correct, ...shuffle(distractors)].slice(0, 17);
-  // 🔍永远在末尾，不被 shuffle 也不被截断
+  const result = shuffle([...correct, ...shuffle(distractors)].slice(0, 17));
+  // 🔍永远在末尾
   result.push(passOption);
 
-  return shuffle(result);
+  return result;
 }
 
 // ── 口诀生成 ──

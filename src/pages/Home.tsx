@@ -1,6 +1,6 @@
 import { getSlug } from '../lib/tags';
 import { normalizeQuiz } from '../lib/types';
-import { CheckCircle, Clock, BookX, ChevronLeft, ChevronRight, BookOpen, Languages, PenLine, Boxes } from 'lucide-react';
+import { CheckCircle, Clock, BookX, ChevronLeft, ChevronRight, BookOpen, Languages, PenLine, Boxes, Grid3X3 } from 'lucide-react';
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Layout from '../components/Layout';
@@ -545,7 +545,7 @@ export default function Home() {
                     className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition active:scale-[0.98] mt-3">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30">
-                        <span className="text-xl">🔲</span>
+                        <Grid3X3 className="w-6 h-6 text-blue-500" />
                       </div>
                       <div className="text-left">
                         <div className="font-medium text-gray-900 dark:text-gray-100">宫格记忆</div>
@@ -684,7 +684,7 @@ export default function Home() {
                       className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition active:scale-[0.98] mt-3">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30">
-                          <span className="text-xl">🔲</span>
+                          <Grid3X3 className="w-6 h-6 text-blue-500" />
                         </div>
                         <div className="text-left">
                           <div className="font-medium text-gray-900 dark:text-gray-100">宫格记忆</div>

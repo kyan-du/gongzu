@@ -469,13 +469,13 @@ export default function MemoryGrid() {
       ...(hidePhase1 ? [puzzle.phase1Hidden] : []),
       ...(hidePhase2 ? puzzle.phase2Hidden : []),
     ];
-    let hiddenCounter = 0;
     return (
       <div className="grid grid-cols-3 gap-2 max-w-lg mx-auto select-none">
         {mat.map((row, rowIdx) =>
           row.map((miniGrid, colIdx) => {
-            const isHidden = hiddenCells.some((h) => h.row === rowIdx && h.col === colIdx);
-            if (isHidden) hiddenCounter++;
+            // 找到当前格子在 hiddenCells 中的索引（如果是隐藏格的话）
+            const hiddenIndex = hiddenCells.findIndex((h) => h.row === rowIdx && h.col === colIdx);
+            const isHidden = hiddenIndex >= 0;
 
             return (
               <div
@@ -491,10 +491,10 @@ export default function MemoryGrid() {
                 {isHidden ? (
                   <div className="grid grid-cols-2 w-full h-full relative z-10">
                     {[0, 1, 2, 3].map((n) => {
-                      const baseNum = (hiddenCounter - 1) * 4;
+                      const baseIndex = hiddenIndex * 4;
                       return (
                       <div key={n} className="flex items-center justify-center overflow-hidden">
-                        <CellRenderer content={null} index={baseNum + n} />
+                        <CellRenderer content={null} index={baseIndex + n} />
                       </div>
                       );
                     })}
@@ -713,7 +713,7 @@ export default function MemoryGrid() {
         : 'bg-red-100 dark:bg-red-900/30';
     const ResultIcon = accuracy === 100 ? Trophy : accuracy >= 50 ? Target : Frown;
 
-    // 渲染单个格子（复用做题页样式）
+    // 渲染单个格子（层叠架构：底层 ?N + 中层答案 + 上层 badge）
     const renderCell = (
       miniGrid: CellContent[],
       opts?: {
@@ -721,12 +721,11 @@ export default function MemoryGrid() {
         borderClass?: string;
         /** 只显示答错位置的正确答案，答对位置留空 */
         onlyWrong?: { userCells: CellContent[] };
-        /** 全局起始编号（0-based），用于未作答显示 ?N */
+        /** 全局起始编号（0-based），用于底层渲染 ?N */
         baseIndex?: number;
       },
     ) => {
       const { userCells, borderClass, onlyWrong, baseIndex } = opts || {};
-      const displayCells = userCells || miniGrid;
       const defaultBorder = 'border-[3px] border-gray-800 dark:border-gray-300';
 
       // onlyWrong 模式：如果全部答对，不渲染这个格子
@@ -748,12 +747,12 @@ export default function MemoryGrid() {
             <div className="absolute left-1/2 top-0 bottom-0 border-l-2 border-dashed border-gray-400 dark:border-gray-600" />
           </div>
           <div className="grid grid-cols-2 grid-rows-2 w-full h-full relative" style={{ gridTemplateRows: '1fr 1fr' }}>
-            {displayCells.map((cell, i) => {
-              const correctCell = miniGrid[i];
+            {miniGrid.map((correctCell, i) => {
+              const userCell = userCells ? userCells[i] : null;
               const showMark = !!userCells;
-              const isCorrect = showMark && JSON.stringify(cell) === JSON.stringify(correctCell);
-              const isPass = showMark && cell && (cell as any).type === 'pass';
-              const isUnanswered = showMark && cell == null;
+              const isCorrect = showMark && userCell && JSON.stringify(userCell) === JSON.stringify(correctCell);
+              const isPass = showMark && userCell && (userCell as any).type === 'pass';
+              const isUnanswered = showMark && userCell == null;
 
               // onlyWrong 模式：答对的位置不显示内容
               const isOnlyWrong = !!onlyWrong;
@@ -773,18 +772,35 @@ export default function MemoryGrid() {
                   className={`flex items-center justify-center relative overflow-hidden ${cellBg}`}
                 >
                   {isOnlyWrong ? (
-                    wrongCorrect ? <CellRenderer content={cell} size="small" /> : null
+                    // onlyWrong 模式：只显示答错位置的正确答案
+                    wrongCorrect ? <CellRenderer content={correctCell} size="small" /> : null
                   ) : (
                     <>
-                      <CellRenderer content={cell} size="small" index={showMark && isUnanswered && baseIndex !== undefined ? baseIndex + i : undefined} />
+                      {/* 底层：?N（仅在有 baseIndex 且用户未填答案时渲染，z-0） */}
+                      {baseIndex !== undefined && !userCell && (
+                        <div className="absolute inset-0 z-0 flex items-center justify-center">
+                          <CellRenderer content={null} size="small" index={baseIndex + i} />
+                        </div>
+                      )}
+                      {/* 中层：用户答案或正确答案（z-10） */}
+                      {userCells ? (
+                        // 有用户答案：未作答时不渲染，让底层 ?N 露出
+                        userCell && (
+                          <div className="absolute inset-0 z-10 flex items-center justify-center">
+                            <CellRenderer content={userCell} size="small" />
+                          </div>
+                        )
+                      ) : (
+                        // 无用户答案：直接显示正确答案
+                        <div className="absolute inset-0 z-10 flex items-center justify-center">
+                          <CellRenderer content={correctCell} size="small" />
+                        </div>
+                      )}
+                      {/* 上层：badge（✅ 正确，❌ 错误/放弃/未答，z-20） */}
                       {showMark && (
                         <div className="absolute top-0 right-0 z-20">
                           {isCorrect ? (
                             <CheckCircle className="w-4 h-4 text-green-600 drop-shadow-sm" strokeWidth={3} />
-                          ) : isPass ? (
-                            <span className="text-xs font-bold text-yellow-600">🔍</span>
-                          ) : isUnanswered ? (
-                            <span className="text-[10px] font-bold text-orange-500">?</span>
                           ) : (
                             <XCircle className="w-4 h-4 text-red-600 drop-shadow-sm" strokeWidth={3} />
                           )}
@@ -805,15 +821,18 @@ export default function MemoryGrid() {
       matrixToRender: Matrix,
       userAnswersMap: Map<string, CellContent[]>,
       highlightCells: { row: number; col: number }[],
-    ) => (
+    ) => {
+      // 按矩阵遍历顺序（先行后列）排序，确保问号编号从上到下、从左到右递增
+      const sortedHighlightCells = [...highlightCells].sort((a, b) => a.row !== b.row ? a.row - b.row : a.col - b.col);
+      return (
       <div className="grid grid-cols-4 gap-2 mx-auto select-none" style={{ maxWidth: '686px' }}>
         {matrixToRender.map((row, rowIdx) =>
           <Fragment key={rowIdx}>
             {row.map((miniGrid, colIdx) => {
               const key = `${rowIdx}-${colIdx}`;
               const userCells = userAnswersMap.get(key);
-              const isHighlighted = highlightCells.some((h) => h.row === rowIdx && h.col === colIdx);
-              const hiddenIdx = highlightCells.findIndex((h) => h.row === rowIdx && h.col === colIdx);
+              const isHighlighted = sortedHighlightCells.some((h) => h.row === rowIdx && h.col === colIdx);
+              const hiddenIdx = sortedHighlightCells.findIndex((h) => h.row === rowIdx && h.col === colIdx);
               const borderClass = isHighlighted
                 ? 'border-[3px] border-blue-400 dark:border-blue-500'
                 : 'border-[3px] border-gray-800 dark:border-gray-300';
@@ -846,8 +865,7 @@ export default function MemoryGrid() {
         )}
       </div>
     );
-
-    // 构建阶段一用户答案 map
+    }
     const phase1UserMap = new Map<string, CellContent[]>();
     phase1UserMap.set(
       `${puzzle.phase1Hidden.row}-${puzzle.phase1Hidden.col}`,
