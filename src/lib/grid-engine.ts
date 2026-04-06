@@ -943,24 +943,28 @@ export function checkAnswer(
 ): { correct: number; total: number; details: ('correct' | 'wrong' | 'pass' | 'unanswered')[] } {
   const correctGrid = matrix[hidden.row][hidden.col];
   let correct = 0;
+  let total = 0;
   const details: ('correct' | 'wrong' | 'pass' | 'unanswered')[] = [];
 
   for (let i = 0; i < 4; i++) {
     const answer = answers[i];
     if (answer === null || answer === undefined) {
-      // 未填：0分，标记为 unanswered
+      // 未填：不计分，不计入 total
       details.push('unanswered');
     } else if ((answer as any).type === 'pass') {
       // 🔍 诚实分：0.25 分
       details.push('pass');
       correct += 0.25;
+      total++;
     } else if (JSON.stringify(correctGrid[i]) === JSON.stringify(answer)) {
       details.push('correct');
       correct += 1;
+      total++;
     } else {
       details.push('wrong');
+      total++;
     }
   }
 
-  return { correct, total: 4, details };
+  return { correct, total, details };
 }
