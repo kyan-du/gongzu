@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useMemo, Fragment } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { CheckCircle, XCircle, Trophy, Target, Frown, Clock } from 'lucide-react';
 import Layout from '../components/Layout';
-import { generatePuzzle, checkAnswer, type GamePuzzle, type CellContent, type MiniGrid, type Matrix, type PuzzleRules } from '../lib/grid-engine';
+import { generatePuzzle, checkAnswer, describeAnalysis, generateMnemonic, type GamePuzzle, type CellContent, type MiniGrid, type Matrix, type PuzzleRules } from '../lib/grid-engine';
 
 type GamePhase = 'watch1' | 'answer1' | 'watch2' | 'answer2' | 'result';
 
@@ -185,9 +185,21 @@ function buildFixturePuzzle(): GamePuzzle {
     phase1Hidden,
     phase2Hidden,
     choices,
-    rules: { topRow: { same: 'swap-lr', diff: 'broken' }, bottomRow: { same: 'shrink', diff: 'first' } } as PuzzleRules,
-    phase1Rules: ['上行：相同→保留但左右互换，不同→变裂图'],
-    phase2NewRules: ['下行：相同→缩小，不同→留第一列'],
+    rules: {
+      cellRules: [
+        { same: 'keep', diff: 'broken' },
+        { same: 'shrink', diff: 'first' },
+        { same: 'blank', diff: 'second' },
+        { same: 'keep', diff: 'blank' },
+      ],
+      cellTransforms: ['rotate-cw-90', 'none', 'mirror-h', 'none'],
+      positionTransform: 'none',
+      sizeTransform: 'none',
+      elementTransform: 'none',
+      mergeStrategy: {}
+    } as PuzzleRules,
+    phase1Rules: ['①左上：相同→保留，不同→变裂；②右上：相同→缩小，不同→留第一列；③左下：相同→变空，不同→留第二列；④右下：相同→保留，不同→变空'],
+    phase2NewRules: ['继续观察相同规律'],
     phase2Matrix: matrix, // fixture 暂用同一个矩阵
     phase2Choices: choices,
   };
@@ -219,127 +231,6 @@ function buildFixtureAnswers(puzzle: GamePuzzle) {
   ];
 
   return { phase1Answers, phase2Answers };
-}
-
-// ── 规律解析 + 口诀 ──
-// 位置编号：1=左上, 2=右上, 3=左下, 4=右下
-
-function describeAnalysis(rules: { elementTransform: string; sizeTransform: string; positionTransform: string; mergeStrategy: any }): string {
-  const parts: string[] = [];
-
-  // ① 元素变换
-  const elemDesc: Record<string, string> = {
-    'rotate-90': '元素内部顺时针自转',
-    'rotate-180': '元素内部旋转180°',
-    'rotate-270': '元素内部逆时针自转',
-    'mirror-h': '元素内部水平翻转',
-    'mirror-v': '元素内部上下翻转',
-  };
-  if (elemDesc[rules.elementTransform]) parts.push(elemDesc[rules.elementTransform]);
-
-  // ② 位置变换
-  const posDesc: Record<string, string> = {
-    'rotate-cw-90': '位置1→2→4→3顺时针轮转',
-    'rotate-180': '位置1和4互换，2和3互换',
-    'rotate-ccw-90': '位置1→3→4→2逆时针轮转',
-    'mirror-lr': '位置1和2互换，3和4互换',
-    'mirror-tb': '位置1和3互换，2和4互换',
-    'diag-main': '位置2和3互换',
-    'diag-anti': '位置1和4互换',
-  };
-  if (posDesc[rules.positionTransform]) parts.push(posDesc[rules.positionTransform]);
-
-  // ③ 大小变换
-  if (rules.sizeTransform === 'scale-down') parts.push('第二列全部缩小');
-
-  // ④ 合并
-  const ms = rules.mergeStrategy;
-  if (ms) {
-    const mergeParts: string[] = [];
-    if (ms.sameBoth === 'keep') mergeParts.push('相同保留');
-    else if (ms.sameBoth === 'blank') mergeParts.push('相同消失');
-    else if (ms.sameBoth === 'broken') mergeParts.push('相同裂开');
-
-    if (ms.diffBoth === 'first') mergeParts.push('不同取第一列');
-    else if (ms.diffBoth === 'second') mergeParts.push('不同取第二列');
-    else if (ms.diffBoth === 'blank') mergeParts.push('不同消失');
-    else if (ms.diffBoth === 'broken') mergeParts.push('不同裂开');
-
-    if (mergeParts.length > 0) {
-      parts.push('第三列合并：' + mergeParts.join('，'));
-    }
-  }
-
-  return parts.length > 0 ? parts.join('，') : '各列图案完全相同';
-}
-
-// @ts-ignore - 预留给未来使用
-function describePartialRules(rules: { elementTransform: string; sizeTransform: string; positionTransform: string; mergeStrategy: any }, dimensions: string[]): string {
-  const parts: string[] = [];
-
-  const elemDesc: Record<string, string> = {
-    'rotate-90': '元素内部顺时针自转',
-    'rotate-180': '元素内部旋转180°',
-    'rotate-270': '元素内部逆时针自转',
-    'mirror-h': '元素内部水平翻转',
-    'mirror-v': '元素内部上下翻转',
-  };
-  const posDesc: Record<string, string> = {
-    'rotate-cw-90': '位置1→2→4→3顺时针轮转',
-    'rotate-180': '位置1和4互换，2和3互换',
-    'rotate-ccw-90': '位置1→3→4→2逆时针轮转',
-    'mirror-lr': '位置1和2互换，3和4互换',
-    'mirror-tb': '位置1和3互换，2和4互换',
-    'diag-main': '位置2和3互换',
-    'diag-anti': '位置1和4互换',
-  };
-
-  if (dimensions.includes('elementTransform') && elemDesc[rules.elementTransform]) {
-    parts.push(elemDesc[rules.elementTransform]);
-  }
-  if (dimensions.includes('positionTransform') && posDesc[rules.positionTransform]) {
-    parts.push(posDesc[rules.positionTransform]);
-  }
-  if (dimensions.includes('sizeTransform') && rules.sizeTransform === 'scale-down') {
-    parts.push('第二列全部缩小');
-  }
-
-  return parts.length > 0 ? parts.join('，') : '无额外变换';
-}
-
-function generateMnemonic(rules: { elementTransform: string; sizeTransform: string; positionTransform: string; mergeStrategy: any }): string {
-  const parts: string[] = [];
-
-  const elemShort: Record<string, string> = {
-    'rotate-90': '右转',
-    'rotate-180': '倒转',
-    'rotate-270': '左转',
-    'mirror-h': '左右翻',
-    'mirror-v': '上下翻',
-  };
-  if (elemShort[rules.elementTransform]) parts.push(elemShort[rules.elementTransform]);
-
-  const posShort: Record<string, string> = {
-    'rotate-cw-90': '顺转位',
-    'rotate-180': '对角换',
-    'rotate-ccw-90': '逆转位',
-    'mirror-lr': '左右换',
-    'mirror-tb': '上下换',
-    'diag-main': '↘换',
-    'diag-anti': '↗换',
-  };
-  if (posShort[rules.positionTransform]) parts.push(posShort[rules.positionTransform]);
-
-  if (rules.sizeTransform === 'scale-down') parts.push('缩');
-
-  const ms = rules.mergeStrategy;
-  if (ms) {
-    const s = ms.sameBoth === 'keep' ? '留' : ms.sameBoth === 'blank' ? '消' : '裂';
-    const d = ms.diffBoth === 'first' ? '左' : ms.diffBoth === 'second' ? '右' : ms.diffBoth === 'blank' ? '消' : '裂';
-    parts.push('同' + s + '异' + d);
-  }
-
-  return parts.join(' · ');
 }
 
 type EmojiContent = Extract<CellContent, { type: 'emoji' }>;
@@ -482,13 +373,14 @@ export default function MemoryGrid() {
     const accuracy = Math.round((totalCorrect / totalQuestions) * 100);
     const durationSec = Math.round((Date.now() - startTime) / 1000);
 
+    const cellTransformsCount = puzzle.rules.cellTransforms.filter(t => t !== 'none').length;
     const detail = {
       phase1: { correct: phase1Result.correct, total: 4 },
       phase2: {
         correct: phase2Result1.correct + phase2Result2.correct,
         total: 8,
       },
-      rule: `${puzzle.rules.elementTransform}+${puzzle.rules.sizeTransform}+${puzzle.rules.positionTransform}`,
+      rule: `cellTransforms:${cellTransformsCount}+${puzzle.rules.positionTransform}+${puzzle.rules.sizeTransform}`,
     };
 
     fetch('/api/memory-game', {
