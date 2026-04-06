@@ -939,18 +939,22 @@ export function generatePuzzle(): GamePuzzle {
 export function checkAnswer(
   matrix: Matrix,
   hidden: { row: number; col: number },
-  answers: MiniGrid
-): { correct: number; total: number; details: ('correct' | 'wrong' | 'pass')[] } {
+  answers: (CellContent | null)[]
+): { correct: number; total: number; details: ('correct' | 'wrong' | 'pass' | 'unanswered')[] } {
   const correctGrid = matrix[hidden.row][hidden.col];
   let correct = 0;
-  const details: ('correct' | 'wrong' | 'pass')[] = [];
+  const details: ('correct' | 'wrong' | 'pass' | 'unanswered')[] = [];
 
   for (let i = 0; i < 4; i++) {
-    if (answers[i] && (answers[i] as any).type === 'pass') {
-      // 🔍 诚实分：0.25 分（知道自己不知道）
+    const answer = answers[i];
+    if (answer === null || answer === undefined) {
+      // 未填：0分，标记为 unanswered
+      details.push('unanswered');
+    } else if ((answer as any).type === 'pass') {
+      // 🔍 诚实分：0.25 分
       details.push('pass');
       correct += 0.25;
-    } else if (JSON.stringify(correctGrid[i]) === JSON.stringify(answers[i])) {
+    } else if (JSON.stringify(correctGrid[i]) === JSON.stringify(answer)) {
       details.push('correct');
       correct += 1;
     } else {
