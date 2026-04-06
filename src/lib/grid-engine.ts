@@ -10,17 +10,19 @@ type EmojiContent = {
   rotation?: 0 | 90 | 180 | 270;
   mirror?: 'none' | 'horizontal' | 'vertical';
   scaled?: boolean;
+  grown?: boolean;
 };
 
 type BlankContent = { type: 'blank' };
 type BrokenContent = { type: 'broken' };
-type PassContent = { 
+type PassContent = {
   type: 'pass';
   // 兼容字段，让旧的 CellRenderer 可以处理
   emoji?: string;
   rotation?: 0 | 90 | 180 | 270;
   mirror?: 'none' | 'horizontal' | 'vertical';
   scaled?: boolean;
+  grown?: boolean;
 };
 
 export type CellContent = EmojiContent | BlankContent | BrokenContent | PassContent;
@@ -66,9 +68,9 @@ export interface GamePuzzle {
 // ── Emoji 素材 ──
 
 // 主题分类：用于变换约束
-const DIRECTIONAL_THEMES = ['animals', 'birds', 'transport', 'insects'];
+const DIRECTIONAL_THEMES = ['animals', 'birds', 'ocean', 'transport', 'insects', 'letters', 'hanzi', 'shapes'];
 const SYMMETRIC_THEMES = ['fruits', 'vegetables', 'food', 'sports', 'flowers'];
-const MIXED_THEMES = ['weather', 'faces', 'hands', 'music', 'objects'];
+const MIXED_THEMES = ['weather', 'faces', 'hands', 'music', 'objects', 'numbers'];
 
 const EMOJI_GROUPS = {
   animals: ['🐶', '🐱', '🐭', '🐹', '🐰', '🐸', '🐵', '🐷', '🐻', '🐼', '🦊', '🐨', '🦁', '🐯', '🐮'],
@@ -86,6 +88,10 @@ const EMOJI_GROUPS = {
   faces: ['😀', '😎', '🥳', '🤩', '😱', '🥶', '😴', '🤖', '👻', '💀', '👽', '🎃', '🤡', '😈', '🥸'],
   hands: ['👍', '👎', '✌️', '🤞', '🤟', '🤘', '🤙', '👋', '✋', '🖖', '👌', '🤌', '🤏', '🫰', '🫵'],
   insects: ['🐝', '🐛', '🦋', '🐌', '🐞', '🐜', '🦂', '🪲', '🪳', '🦗', '🪰', '🦟', '🕷️', '🦠', '🪱'],
+  numbers: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '①', '②', '③', '④', '⑤'],
+  letters: ['b', 'd', 'p', 'q', 'A', 'B', 'R', 'P', 'M', 'W', 'N', 'Z', 'S', 'E', 'C'],
+  hanzi: ['大', '小', '上', '下', '左', '右', '东', '西', '南', '北', '中', '人', '入', '天', '夫'],
+  shapes: ['▲', '◆', '►', '◄', '▼', '★', '●', '■', '▶', '◀', '⬆', '⬇', '⬅', '➡', '◉'],
 };
 
 // ── 工具函数 ──
@@ -166,6 +172,9 @@ export function applySizeTransform(cell: CellContent, transform: string): CellCo
       break;
     case 'scale-down':
       result.scaled = true;
+      break;
+    case 'scale-up':
+      result.grown = true;
       break;
   }
 
@@ -327,7 +336,7 @@ function generateValidRules(): PuzzleRules {
     'mirror-v',
   ];
 
-  const allSizeTransforms = ['none', 'scale-down'];
+  const allSizeTransforms = ['none', 'scale-down', 'scale-up'];
 
   const allPositionTransforms = [
     'none',
@@ -527,6 +536,7 @@ export function generateMnemonic(rules: PuzzleRules): string {
     'mirror-h': '左右镜像',
     'mirror-v': '上下镜像',
     'scale-down': '缩小',
+    'scale-up': '放大',
     'pos-rotate-cw': '位置顺转',
     'pos-rotate-180': '位置180°',
     'pos-rotate-ccw': '位置逆转',
@@ -583,6 +593,7 @@ export function describeAnalysis(rules: PuzzleRules): string {
     'mirror-h': '水平镜像',
     'mirror-v': '垂直镜像',
     'scale-down': '图案缩小',
+    'scale-up': '图案放大',
     'pos-rotate-cw': '位置顺时针旋转',
     'pos-rotate-180': '位置旋转180°',
     'pos-rotate-ccw': '位置逆时针旋转',

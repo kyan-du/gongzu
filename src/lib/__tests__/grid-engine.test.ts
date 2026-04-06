@@ -27,6 +27,7 @@ const emoji = (e: string, opts?: Partial<Extract<CellContent, { type: 'emoji' }>
   rotation: 0,
   mirror: 'none',
   scaled: false,
+  grown: false,
   ...opts,
 });
 
@@ -502,7 +503,103 @@ describe('合并正确性（手工构造）', () => {
 });
 
 // ══════════════════════════════════════════
-// 9. generatePuzzle 结构完整性
+// 9. 主题分类覆盖度
+// ══════════════════════════════════════════
+
+describe('主题分类覆盖度 & 变换覆盖度', () => {
+  it('EMOJI_GROUPS 的每个 key 都出现在三个分类数组之一中', () => {
+    // 为了测试这个，我们需要导出这些常量或通过间接方式验证
+    // 由于常量没有导出，我们通过多次生成来验证主题能出现
+    const seenThemes = new Set<string>();
+
+    // 定义主题的代表性 emoji，用于识别主题
+    const themeSignatures: Record<string, string[]> = {
+      ocean: ['🐙', '🦑', '🦐', '🦀', '🐡', '🐠', '🐟', '🐬', '🐳', '🦈', '🐊', '🦭', '🐚', '🪸', '🦞'],
+      numbers: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '①', '②', '③', '④', '⑤'],
+      letters: ['b', 'd', 'p', 'q', 'A', 'B', 'R', 'P', 'M', 'W', 'N', 'Z', 'S', 'E', 'C'],
+      hanzi: ['大', '小', '上', '下', '左', '右', '东', '西', '南', '北', '中', '人', '入', '天', '夫'],
+      shapes: ['▲', '◆', '►', '◄', '▼', '★', '●', '■', '▶', '◀', '⬆', '⬇', '⬅', '➡', '◉'],
+    };
+
+    // Run more trials for themes in MIXED_THEMES since they appear less frequently
+    for (let i = 0; i < 500; i++) {
+      const puzzle = generatePuzzle();
+      // 通过查看矩阵中的 emoji 反推主题
+      for (const row of puzzle.matrix) {
+        for (const miniGrid of row) {
+          for (const cell of miniGrid) {
+            if (cell.type === 'emoji') {
+              const emoji = cell.emoji;
+              // 检查属于哪个主题
+              for (const [theme, signatures] of Object.entries(themeSignatures)) {
+                if (signatures.includes(emoji)) {
+                  seenThemes.add(theme);
+                }
+              }
+            }
+          }
+        }
+      }
+
+      // Early exit if we've found all themes
+      if (seenThemes.size >= 5) break;
+    }
+
+    // 验证所有新主题都能出现（说明它们在分类数组中）
+    const requiredThemes = ['ocean', 'numbers', 'letters', 'hanzi', 'shapes'];
+    for (const theme of requiredThemes) {
+      expect(
+        seenThemes.has(theme),
+        `${theme} theme never appeared in 500 trials - it may not be in classification arrays`
+      ).toBe(true);
+    }
+  });
+
+  it('scale-up 变换能够出现在生成的游戏中', () => {
+    let scaleUpSeen = false;
+    let grownCellFound = false;
+
+    for (let i = 0; i < 200 && !grownCellFound; i++) {
+      const puzzle = generatePuzzle();
+
+      // 检查规则中是否有 scale-up
+      if (puzzle.rules.sizeTransform === 'scale-up') {
+        scaleUpSeen = true;
+      }
+
+      // 检查矩阵中是否有 grown: true 的 cell
+      for (const row of puzzle.matrix) {
+        for (const miniGrid of row) {
+          for (const cell of miniGrid) {
+            if (cell.type === 'emoji' && cell.grown === true) {
+              grownCellFound = true;
+              break;
+            }
+          }
+          if (grownCellFound) break;
+        }
+        if (grownCellFound) break;
+      }
+    }
+
+    expect(scaleUpSeen, 'scale-up never appeared as sizeTransform in 200 trials').toBe(true);
+    expect(grownCellFound, 'no cell with grown:true found in 200 trials').toBe(true);
+  });
+
+  it('scale-up 的口诀和解析不含 undefined', () => {
+    const rules = makeRules({ sizeTransform: 'scale-up' });
+    const mnemonic = generateMnemonic(rules);
+    const analysis = describeAnalysis(rules);
+
+    expect(mnemonic).not.toContain('undefined');
+    expect(analysis).not.toContain('undefined');
+    expect(mnemonic.length).toBeGreaterThan(0);
+    expect(analysis.length).toBeGreaterThan(0);
+  });
+});
+
+// ══════════════════════════════════════════
+// 10. generatePuzzle 结构完整性
 // ══════════════════════════════════════════
 
 describe('generatePuzzle 结构完整性', () => {
@@ -590,7 +687,7 @@ describe('generatePuzzle 结构完整性', () => {
 });
 
 // ══════════════════════════════════════════
-// 10. 暴露策略（col1 vs col2 配对控制）
+// 11. 暴露策略（col1 vs col2 配对控制）
 // ══════════════════════════════════════════
 
 describe('暴露策略', () => {
@@ -608,7 +705,7 @@ describe('暴露策略', () => {
 });
 
 // ══════════════════════════════════════════
-// 11. 变换函数单元测试
+// 12. 变换函数单元测试
 // ══════════════════════════════════════════
 
 describe('变换函数', () => {
@@ -671,6 +768,17 @@ describe('变换函数', () => {
       const cell = emoji('🐶');
       const result = applySizeTransform(cell, 'scale-down');
       expect(result).toEqual(emoji('🐶', { scaled: true }));
+    });
+
+    it('scale-up: emoji 放大', () => {
+      const cell = emoji('🐶');
+      const result = applySizeTransform(cell, 'scale-up');
+      expect(result).toEqual(emoji('🐶', { grown: true }));
+    });
+
+    it('scale-up: blank 不变换', () => {
+      const result = applySizeTransform(blank, 'scale-up');
+      expect(result).toEqual(blank);
     });
 
     it('blank 不变换', () => {
@@ -828,7 +936,7 @@ describe('变换函数', () => {
 });
 
 // ══════════════════════════════════════════
-// 12. 变换集成测试
+// 13. 变换集成测试
 // ══════════════════════════════════════════
 
 describe('变换集成测试', () => {
@@ -869,7 +977,7 @@ describe('变换集成测试', () => {
       'mirror-h',
       'mirror-v',
     ];
-    const allSizeTransforms = ['none', 'scale-down'];
+    const allSizeTransforms = ['none', 'scale-down', 'scale-up'];
     const allPositionTransforms = [
       'none',
       'pos-rotate-cw',

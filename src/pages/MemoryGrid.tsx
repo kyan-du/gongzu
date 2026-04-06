@@ -11,6 +11,7 @@ const CELL_SIZES = {
   emoji: {
     normal: '3.2rem',
     scaled: '1.8rem',
+    grown: '4.2rem',
     normalOffset: { x: 0, y: 0 },
     scaledOffset: { x: 0, y: 0 },
     rotationOffset: { x: 0, y: 0 },
@@ -34,6 +35,7 @@ const CELL_SIZES = {
     emoji: {
       normal: '2.0rem',
       scaled: '1.2rem',
+      grown: '2.5rem',
     },
     broken: {
       size: '28px',
@@ -74,15 +76,16 @@ function CellRenderer({ content, size = 'normal' }: { content: CellContent; size
   const rotation = content.rotation || 0;
   const mirror = content.mirror || 'none';
   const scaled = content.scaled || false;
+  const grown = content.grown || false;
 
   let transform = '';
   if (rotation !== 0) transform += `rotate(${rotation}deg) `;
   if (mirror === 'horizontal') transform += 'scaleX(-1) ';
   if (mirror === 'vertical') transform += 'scaleY(-1) ';
 
-  // emoji 大小：正常 vs 缩小，各有独立定义
+  // emoji 大小：正常 vs 缩小 vs 放大，各有独立定义
   const sizeConfig = size === 'small' ? CELL_SIZES.small.emoji : CELL_SIZES.emoji;
-  const fontSize = scaled ? sizeConfig.scaled : sizeConfig.normal;
+  const fontSize = grown ? sizeConfig.grown : scaled ? sizeConfig.scaled : sizeConfig.normal;
 
   return (
     <div
@@ -131,19 +134,19 @@ function buildFixturePuzzle(): GamePuzzle {
 
   // 3×3 矩阵，每格是 2×2 MiniGrid
   const matrix: Matrix = [
-    // row 0
+    // row 0 - 包含旋转和镜像变换
     [
       [e('🐶'), e('🐱'), e('🐰'), e('🐻')],
-      [e('🐶', { rotation: 90 }), e('🐱', { rotation: 90 }), e('🐰', { rotation: 90 }), e('🐻', { rotation: 90 })],
+      [e('🐶', { rotation: 90 }), e('🐱', { mirror: 'horizontal' }), e('🐰', { rotation: 90 }), e('🐻', { mirror: 'vertical' })],
       [e('🐶', { rotation: 180 }), e('🐱', { rotation: 180 }), e('🐰', { rotation: 180 }), e('🐻', { rotation: 180 })],
     ],
-    // row 1
+    // row 1 - 包含旋转、镜像、放大
     [
       [e('🦊'), e('🐼'), e('🐸'), e('🐷')],
-      [e('🦊', { rotation: 90 }), e('🐼', { rotation: 90 }), e('🐸', { rotation: 90 }), e('🐷', { rotation: 90 })],
+      [e('🦊', { rotation: 90 }), e('🐼', { grown: true }), e('🐸', { mirror: 'horizontal' }), e('🐷', { rotation: 90 })],
       [e('🦊', { rotation: 180 }), e('🐼', { rotation: 180 }), e('🐸', { rotation: 180 }), e('🐷', { rotation: 180 })],
     ],
-    // row 2
+    // row 2 - 包含缩小、旋转、blank、broken
     [
       [e('🐶', { scaled: true }), e('🐱', { scaled: true }), blank, e('🐻', { scaled: true })],
       [e('🐶', { rotation: 90, scaled: true }), e('🐱', { rotation: 90, scaled: true }), broken, e('🐻', { rotation: 90, scaled: true })],
