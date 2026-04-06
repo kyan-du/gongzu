@@ -11,7 +11,9 @@
     "preview:cf": "npm run build && npx wrangler pages dev dist --d1 DB=3276c058-d699-439b-b586-494dd0e8ef6a",
     "prepare": "husky",
     "deploy": "bash scripts/deploy.sh",
-    "check": "tsc --noEmit -p tsconfig.app.json"
+    "check": "tsc --noEmit -p tsconfig.app.json",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "lucide-react": "^1.7.0",
@@ -39,7 +41,8 @@
     "tailwindcss": "^4.2.2",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.57.0",
-    "vite": "^8.0.1"
+    "vite": "^8.0.1",
+    "vitest": "^4.1.2"
   },
   "lint-staged": {
     "*.{ts,tsx}": [

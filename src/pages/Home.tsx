@@ -437,7 +437,7 @@ export default function Home() {
 
             {/* 记忆游戏 — 按模块配置 */}
             {modEnabled('memory_game') && (
-            <button onClick={() => navigate(`/${userId}/memory/matryoshka`)}
+            <button onClick={() => navigate(`/${userId}/memory`)}
               className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-3 hover:shadow-md transition active:scale-[0.98] mt-3">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-amber-50 dark:bg-amber-900/30">
@@ -445,7 +445,7 @@ export default function Home() {
                 </div>
                 <div className="text-left flex-1">
                   <div className="text-sm font-medium text-gray-900 dark:text-gray-100">记忆游戏</div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">记住位置和颜色</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">套娃 / 宫格</div>
                 </div>
                 <ChevronRight className="w-4 h-4 text-gray-400 dark:text-gray-500" />
               </div>
@@ -503,14 +503,14 @@ export default function Home() {
               {/* 记忆游戏任务卡 — 仅 isTask 的用户 */}
               {modIsTask('memory_game') && selectedDate === todayStr && (
                 <button
-                  onClick={() => navigate(`/${userId}/memory/matryoshka`)}
+                  onClick={() => navigate(`/${userId}/memory`)}
                   className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition active:scale-[0.98] mt-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-amber-50 dark:bg-amber-900/30">
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br from-amber-50 to-blue-50 dark:from-amber-900/30 dark:to-blue-900/30">
                       <Boxes className="w-5 h-5 text-amber-500 dark:text-amber-400" />
                     </div>
                     <div className="text-left">
-                      <div className="font-medium text-gray-900 dark:text-gray-100">套娃记忆</div>
+                      <div className="font-medium text-gray-900 dark:text-gray-100">记忆游戏</div>
                       <div className="text-sm text-gray-500 dark:text-gray-400">
                         {memoryGameCompleted >= modTarget('memory_game') ? '今日已完成' : `${memoryGameCompleted}/${modTarget('memory_game')} 完成`}
                       </div>
@@ -611,14 +611,14 @@ export default function Home() {
                 {/* 记忆游戏任务卡 — 按模块配置 */}
                 {modEnabled('memory_game') && selectedDate === todayStr && (
                   <button
-                    onClick={() => navigate(`/${userId}/memory/matryoshka`)}
+                    onClick={() => navigate(`/${userId}/memory`)}
                     className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition active:scale-[0.98] mt-3">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-amber-50 dark:bg-amber-900/30">
+                      <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br from-amber-50 to-blue-50 dark:from-amber-900/30 dark:to-blue-900/30">
                         <Boxes className="w-5 h-5 text-amber-500 dark:text-amber-400" />
                       </div>
                       <div className="text-left">
-                        <div className="font-medium text-gray-900 dark:text-gray-100">套娃记忆</div>
+                        <div className="font-medium text-gray-900 dark:text-gray-100">记忆游戏</div>
                         <div className="text-sm text-gray-500 dark:text-gray-400">
                           {memoryGameCompleted >= modTarget('memory_game') ? '今日已完成' : `${memoryGameCompleted}/${modTarget('memory_game')} 完成`}
                         </div>

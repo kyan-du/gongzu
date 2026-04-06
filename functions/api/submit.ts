@@ -82,7 +82,15 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
           correctAnswer = qAnswer.answer || '';
         }
       } else if (question.type === 'blank') {
-        const userAns = (ans.answer || '').trim().toLowerCase();
+        // Normalize: lowercase, strip punctuation/separators, collapse whitespace
+        const normBlank = (s: string) =>
+          s.trim().toLowerCase()
+           .replace(/[;；,，]/g, ' ')   // treat ; , as spaces
+           .replace(/[.!?。！？]+$/, '') // strip trailing punctuation
+           .replace(/\s+/g, ' ')         // collapse whitespace
+           .trim();
+
+        const userAns = normBlank(ans.answer || '');
         // qAnswer can be: string "peaceful", object {answers:["peaceful"]}, or "tall as" for multi-blank
         let expectedAnswers: string[] = [];
         if (typeof qAnswer === 'string') {
@@ -92,12 +100,34 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
         } else if (qAnswer.answers) {
           expectedAnswers = Array.isArray(qAnswer.answers) ? qAnswer.answers : [qAnswer.answers];
         }
-        // blanks[].accepts for alternative answers
+        // Single-blank: check accepts[0] or expectedAnswers
         const accepts = qContent.blanks?.[0]?.accepts;
-        const allAccepted = accepts
-          ? accepts.map((a: string) => a.toLowerCase())
-          : expectedAnswers.map((a: string) => a.toLowerCase());
-        correct = allAccepted.some((a: string) => a === userAns);
+        const flatAccepted = accepts
+          ? accepts.map((a: string) => normBlank(a))
+          : expectedAnswers.map((a: string) => normBlank(a));
+        // Multi-blank: also match per-blank individually
+        const blanksDef = qContent.blanks || [];
+        if (blanksDef.length > 1) {
+          // Split user answer into parts (front-end joins with space)
+          const userParts = userAns.split(/\s+/);
+          // Try per-blank matching: each part matches its blank's accepts
+          let allBlanksCorrect = userParts.length === blanksDef.length;
+          if (allBlanksCorrect) {
+            for (let bi = 0; bi < blanksDef.length; bi++) {
+              const blankAccepts = (blanksDef[bi].accepts || []).map((a: string) => normBlank(a));
+              if (blankAccepts.length > 0) {
+                allBlanksCorrect = blankAccepts.includes(userParts[bi]);
+              } else {
+                // No accepts for this blank, fall through to full-string match
+                allBlanksCorrect = false;
+                break;
+              }
+            }
+          }
+          correct = allBlanksCorrect || flatAccepted.some((a: string) => a === userAns);
+        } else {
+          correct = flatAccepted.some((a: string) => a === userAns);
+        }
         correctAnswer = expectedAnswers[0] || '';
       } else if (question.type === 'reading') {
         // answer is array like ["B", "A", "C"], user submits comma-separated "B,A,C"

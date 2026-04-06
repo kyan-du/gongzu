@@ -1,0 +1,440 @@
+// ── grid-engine.ts ── 九宫格记忆游戏出题引擎 v2 ──
+// 核心规律: col1 OP col2 = col3
+// OP 按 MiniGrid 内上行/下行可以不同
+
+// ── 工具函数 ──
+function shuffle<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function randomChoice<T>(arr: readonly T[]): T {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+// ── 基础类型 ──
+export type EmojiContent = {
+  type: 'emoji';
+  emoji: string;
+  rotation: 0 | 90 | 180 | 270;
+  mirror: 'none' | 'horizontal' | 'vertical';
+  scaled: boolean;
+};
+export type CellContent =
+  | EmojiContent
+  | { type: 'blank' }
+  | { type: 'broken' };
+
+export type MiniGrid = [CellContent, CellContent, CellContent, CellContent]; // 2×2
+export type Matrix = MiniGrid[][]; // [row][col]
+
+export type GamePhase = 'watch1' | 'answer1' | 'watch2' | 'answer2' | 'result';
+
+// ── 行级合并规则 ──
+export type SameAction = 'keep' | 'swap-lr' | 'shrink' | 'blank' | 'broken';
+export type DiffAction = 'first' | 'second' | 'blank' | 'broken';
+
+export type RowMergeRule = {
+  same: SameAction;
+  diff: DiffAction;
+};
+
+export type PuzzleRules = {
+  topRow: RowMergeRule;
+  bottomRow: RowMergeRule;
+};
+
+// ── 旧类型别名（向后兼容） ──
+export type ElementTransform = string;
+export type SizeTransform = string;
+export type PositionTransform = string;
+export type MergeStrategy = {
+  sameBoth: string;
+  diffBoth: string;
+  blankAndNormal: string;
+  brokenAndNormal: string;
+  bothBlank: string;
+  bothBroken: string;
+  blankAndBroken: string;
+};
+
+// ── GamePuzzle ──
+export interface GamePuzzle {
+  matrix: Matrix;           // 阶段一矩阵 3×3
+  phase1Hidden: { row: number; col: number };
+  phase2Hidden: { row: number; col: number }[];
+  choices: CellContent[];   // 阶段一备选池
+  rules: PuzzleRules;       // 完整规律
+  phase1Rules: string[];    // 阶段一可推出的规律描述
+  phase2NewRules: string[]; // 阶段二新发现的规律描述
+  phase2Matrix: Matrix;     // 阶段二矩阵 3×3
+  phase2Choices: CellContent[];
+}
+
+// ── Emoji 素材 ──
+const EMOJI_GROUPS: Record<string, string[]> = {
+  animals: ['🐶', '🐱', '🐰', '🐸', '🐵', '🐷', '🐻', '🐼', '🦊', '🐨', '🦁', '🐯', '🐮', '🐔'],
+  fruits: ['🍎', '🍊', '🍋', '🍇', '🍓', '🍑', '🍌', '🥝', '🍒', '🫐', '🍈', '🥭', '🍍', '🥥'],
+  transport: ['🚗', '🚕', '🚙', '🚌', '🚎', '🚓', '🚑', '🚒', '🛵', '🚲', '✈️', '🚀', '🚁', '🛸'],
+  sports: ['⚽', '🏀', '🏈', '⚾', '🎾', '🏐', '🏉', '🎱', '🏓', '🏸', '🥊', '🎯', '🏹', '⛳'],
+  food: ['🍕', '🍔', '🌭', '🌮', '🍣', '🍜', '🍩', '🎂', '🍪', '🍫', '🧁', '🥐', '🍝', '🥗'],
+  nature: ['🌸', '🌻', '🌹', '🌺', '🌷', '🍀', '🌿', '🌵', '🌲', '🍁', '🌊', '⭐', '🌙', '❄️'],
+  objects: ['📚', '✏️', '🎒', '⌚', '📱', '💡', '🔑', '🎵', '🎨', '🧩', '🎭', '🎪', '🎁', '🏆'],
+};
+
+// ── 生成随机 MiniGrid ──
+function generateRandomMiniGrid(emojiPool: string[]): MiniGrid {
+  const picked = shuffle([...emojiPool]).slice(0, 4);
+  return picked.map((emoji) => ({
+    type: 'emoji' as const,
+    emoji,
+    rotation: 0 as const,
+    mirror: 'none' as const,
+    scaled: false,
+  })) as MiniGrid;
+}
+
+// ── 合并一对 cell ──
+function mergeCellPair(
+  a: CellContent,
+  b: CellContent,
+  rule: RowMergeRule,
+): [CellContent, CellContent] {
+  // 判断上行/下行的两个 cell 是否"相同"
+  // cell[0] 来自 col1 的左, cell[1] 来自 col2 的左
+  // 但实际上我们按位置对比: col1 的 (left, right) vs col2 的 (left, right)
+  // 简化：按左/右分别对比
+  const isSame = cellEqual(a, b);
+
+  if (isSame) {
+    switch (rule.same) {
+      case 'keep':
+        return [a, b]; // 保留原样
+      case 'swap-lr':
+        return [b, a]; // 左右互换
+      case 'shrink':
+        return [shrinkCell(a), shrinkCell(b)];
+      case 'blank':
+        return [{ type: 'blank' }, { type: 'blank' }];
+      case 'broken':
+        return [{ type: 'broken' }, { type: 'broken' }];
+    }
+  } else {
+    switch (rule.diff) {
+      case 'first':
+        return [a, b]; // 保留（跟 col1 和 col2 一样）
+      case 'second':
+        return [b, a];
+      case 'blank':
+        return [{ type: 'blank' }, { type: 'blank' }];
+      case 'broken':
+        return [{ type: 'broken' }, { type: 'broken' }];
+    }
+  }
+}
+
+function cellEqual(a: CellContent, b: CellContent): boolean {
+  if (a.type !== b.type) return false;
+  if (a.type === 'emoji' && b.type === 'emoji') {
+    return a.emoji === b.emoji;
+  }
+  return true; // both blank or both broken
+}
+
+function shrinkCell(c: CellContent): CellContent {
+  if (c.type === 'emoji') {
+    return { ...c, scaled: true };
+  }
+  return c;
+}
+
+// ── 合并两个 MiniGrid → 得到 col3 的 MiniGrid ──
+// col1[row] 和 col2[row] 合并得到 col3[row]
+// 上行: cell[0](col1.left) vs cell[0](col2.left), cell[1](col1.right) vs cell[1](col2.right)
+// 下行: cell[2](col1.left) vs cell[2](col2.left), cell[3](col1.right) vs cell[3](col2.right)
+function mergeMiniGrid(
+  g1: MiniGrid,
+  g2: MiniGrid,
+  rules: PuzzleRules,
+): MiniGrid {
+  // 上行: 左位对左位, 右位对右位
+  const topLeft = mergeSingleCell(g1[0], g2[0], rules.topRow);
+  const topRight = mergeSingleCell(g1[1], g2[1], rules.topRow);
+  // 下行
+  const botLeft = mergeSingleCell(g2[2], g2[2], rules.bottomRow); // 这里需要重新考虑
+
+  // 实际上合并是逐位的：
+  // col3[pos] = merge(col1[pos], col2[pos], ruleForRow)
+  const result: CellContent[] = [];
+  for (let pos = 0; pos < 4; pos++) {
+    const row = pos < 2 ? 'topRow' : 'bottomRow';
+    result.push(mergeSingleCell(g1[pos], g2[pos], rules[row]));
+  }
+  return result as MiniGrid;
+}
+
+// 合并单个 cell
+function mergeSingleCell(
+  a: CellContent,
+  b: CellContent,
+  rule: RowMergeRule,
+): CellContent {
+  const same = cellEqual(a, b);
+
+  if (same) {
+    switch (rule.same) {
+      case 'keep':
+        return a;
+      case 'swap-lr':
+        return a; // 单个 cell 级别没有左右互换，swap-lr 在 pair 级别处理
+      case 'shrink':
+        return shrinkCell(a);
+      case 'blank':
+        return { type: 'blank' };
+      case 'broken':
+        return { type: 'broken' };
+    }
+  } else {
+    switch (rule.diff) {
+      case 'first':
+        return a;
+      case 'second':
+        return b;
+      case 'blank':
+        return { type: 'blank' };
+      case 'broken':
+        return { type: 'broken' };
+    }
+  }
+}
+
+// ── 生成规律 ──
+function generateRules(): PuzzleRules {
+  const sameActions: SameAction[] = ['keep', 'swap-lr', 'shrink', 'blank', 'broken'];
+  const diffActions: DiffAction[] = ['first', 'second', 'blank', 'broken'];
+
+  // 上行和下行规律不同
+  let topRow: RowMergeRule;
+  let bottomRow: RowMergeRule;
+  let tries = 0;
+  do {
+    topRow = {
+      same: randomChoice(sameActions),
+      diff: randomChoice(diffActions),
+    };
+    bottomRow = {
+      same: randomChoice(sameActions),
+      diff: randomChoice(diffActions),
+    };
+    tries++;
+  } while (
+    tries < 50 &&
+    (topRow.same === bottomRow.same && topRow.diff === bottomRow.diff)
+  );
+
+  return { topRow, bottomRow };
+}
+
+// ── 构建矩阵（3×3） ──
+function buildMatrix(rules: PuzzleRules): { matrix: Matrix; emojiPool: string[] } {
+  const groupKey = randomChoice(Object.keys(EMOJI_GROUPS));
+  const emojiPool = shuffle([...EMOJI_GROUPS[groupKey as keyof typeof EMOJI_GROUPS]]);
+
+  const matrix: Matrix = [];
+
+  for (let row = 0; row < 3; row++) {
+    const col1 = generateRandomMiniGrid(emojiPool);
+    const col2 = generateRandomMiniGrid(emojiPool);
+
+    // 为了让上行有足够"相同"和"不同"的情况，
+    // 故意让部分位置相同：50% 概率让 col2 的某个 cell 复制 col1 的
+    const col2Tweaked = [...col2] as MiniGrid;
+    for (let pos = 0; pos < 4; pos++) {
+      if (Math.random() < 0.5) {
+        col2Tweaked[pos] = { ...col1[pos] }; // 复制使其相同
+      }
+    }
+
+    const col3 = mergeMiniGrid(col1, col2Tweaked, rules);
+    matrix.push([col1, col2Tweaked as MiniGrid, col3]);
+  }
+
+  return { matrix, emojiPool };
+}
+
+// ── 阶段二矩阵（第一行 = 阶段一答案行）──
+function buildPhase2Matrix(
+  phase1Matrix: Matrix,
+  rules: PuzzleRules,
+  emojiPool: string[],
+): Matrix {
+  const matrix: Matrix = [];
+
+  // row0 = 阶段一的 row2（含答案）
+  matrix.push(phase1Matrix[2]);
+
+  // row1, row2 新生成
+  for (let row = 0; row < 2; row++) {
+    const col1 = generateRandomMiniGrid(emojiPool);
+    const col2 = generateRandomMiniGrid(emojiPool);
+
+    const col2Tweaked = [...col2] as MiniGrid;
+    for (let pos = 0; pos < 4; pos++) {
+      if (Math.random() < 0.5) {
+        col2Tweaked[pos] = { ...col1[pos] };
+      }
+    }
+
+    const col3 = mergeMiniGrid(col1, col2Tweaked as MiniGrid, rules);
+    matrix.push([col1, col2Tweaked as MiniGrid, col3]);
+  }
+
+  return matrix;
+}
+
+// ── 标准化 cell（用于去重） ──
+function normalizeCell(c: CellContent): string {
+  if (c.type === 'emoji') {
+    return JSON.stringify({
+      type: 'emoji',
+      emoji: c.emoji,
+      rotation: c.rotation || 0,
+      mirror: c.mirror || 'none',
+      scaled: c.scaled || false,
+    });
+  }
+  return JSON.stringify({ type: c.type });
+}
+
+// ── 生成备选池 ──
+function generateChoices(
+  matrix: Matrix,
+  hiddenCells: { row: number; col: number }[],
+): CellContent[] {
+  // 正确答案
+  const correctAnswers: CellContent[] = [];
+  for (const { row, col } of hiddenCells) {
+    correctAnswers.push(...matrix[row][col]);
+  }
+
+  // 唯一选项 map
+  const uniqueMap = new Map<string, CellContent>();
+
+  // 正确答案先加
+  for (const c of correctAnswers) {
+    const key = normalizeCell(c);
+    if (!uniqueMap.has(key)) uniqueMap.set(key, c);
+  }
+
+  // 矩阵中所有 emoji 作为迷惑源
+  const allEmojis = new Set<string>();
+  for (const row of matrix) {
+    for (const miniGrid of row) {
+      for (const cell of miniGrid) {
+        if (cell.type === 'emoji') allEmojis.add(cell.emoji);
+      }
+    }
+  }
+
+  // 添加可见格子中的 cell 作为迷惑项
+  for (const row of matrix) {
+    for (const miniGrid of row) {
+      for (const cell of miniGrid) {
+        const key = normalizeCell(cell);
+        if (!uniqueMap.has(key)) uniqueMap.set(key, cell);
+      }
+    }
+  }
+
+  // 如果有 scaled 的正确答案，加非 scaled 版本作为迷惑项，反之亦然
+  for (const c of correctAnswers) {
+    if (c.type === 'emoji') {
+      const alt: EmojiContent = { ...c, scaled: !c.scaled };
+      const key = normalizeCell(alt);
+      if (!uniqueMap.has(key)) uniqueMap.set(key, alt);
+    }
+  }
+
+  // 加 blank 和 broken 作为干扰
+  if (!uniqueMap.has(normalizeCell({ type: 'blank' }))) {
+    uniqueMap.set(normalizeCell({ type: 'blank' }), { type: 'blank' });
+  }
+  if (!uniqueMap.has(normalizeCell({ type: 'broken' }))) {
+    uniqueMap.set(normalizeCell({ type: 'broken' }), { type: 'broken' });
+  }
+
+  const result = shuffle([...uniqueMap.values()]);
+  return result.slice(0, 18);
+}
+
+// ── 描述规律 ──
+function describeRowRule(rule: RowMergeRule, rowName: string): string {
+  const sameDesc: Record<SameAction, string> = {
+    'keep': '保留',
+    'swap-lr': '保留但左右互换',
+    'shrink': '缩小',
+    'blank': '变空',
+    'broken': '变裂图',
+  };
+  const diffDesc: Record<DiffAction, string> = {
+    'first': '留第一列',
+    'second': '留第二列',
+    'blank': '变空',
+    'broken': '变裂图',
+  };
+  return `${rowName}：相同→${sameDesc[rule.same]}，不同→${diffDesc[rule.diff]}`;
+}
+
+// ── 主出题函数 ──
+export function generatePuzzle(): GamePuzzle {
+  const rules = generateRules();
+
+  // 阶段一矩阵
+  const { matrix, emojiPool } = buildMatrix(rules);
+  const phase1Hidden = { row: 2, col: 2 };
+  const choices = generateChoices(matrix, [phase1Hidden]);
+
+  // 阶段二矩阵（第一行 = 阶段一答案行）
+  const phase2Matrix = buildPhase2Matrix(matrix, rules, emojiPool);
+  const phase2Hidden = [{ row: 1, col: 2 }, { row: 2, col: 2 }];
+  const phase2Choices = generateChoices(phase2Matrix, phase2Hidden);
+
+  // 描述规律
+  const phase1RulesDesc = [describeRowRule(rules.topRow, '上行')];
+  const phase2NewRulesDesc = [describeRowRule(rules.bottomRow, '下行')];
+
+  return {
+    matrix,
+    phase1Hidden,
+    phase2Hidden,
+    choices,
+    rules,
+    phase1Rules: phase1RulesDesc,
+    phase2NewRules: phase2NewRulesDesc,
+    phase2Matrix,
+    phase2Choices,
+  };
+}
+
+// ── 检查答案 ──
+export function checkAnswer(
+  matrix: Matrix,
+  hidden: { row: number; col: number },
+  answers: MiniGrid,
+): { correct: number; total: number; details: boolean[] } {
+  const correctGrid = matrix[hidden.row][hidden.col];
+  const details: boolean[] = [];
+  let correct = 0;
+  for (let i = 0; i < 4; i++) {
+    const isCorrect = normalizeCell(answers[i]) === normalizeCell(correctGrid[i]);
+    details.push(isCorrect);
+    if (isCorrect) correct++;
+  }
+  return { correct, total: 4, details };
+}
+
+// ── 导出工具 ──
+export { normalizeCell, shuffle, randomChoice };

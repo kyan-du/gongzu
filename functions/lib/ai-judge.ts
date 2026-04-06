@@ -24,7 +24,8 @@ const SYSTEM_PROMPT = `你是英语老师，判断学生的句子改写是否正
 1. 语法正确
 2. 意思符合题目要求
 3. 不要求与标准答案完全一致，合理的替代表达也算对
-4. 如果学生答案有小错误（如拼写），仍视为错误
+4. 格式问题（逗号后有无空格、大小写、标点符号）不扣分
+5. 如果学生答案有实质性拼写错误（不是格式问题），视为错误
 
 返回严格的 JSON（不要 markdown 代码块）：
 {
@@ -116,9 +117,15 @@ export async function judgeRewrite(
     }
   }
 
-  // Fallback: simple string matching (degraded mode)
-  const studentNorm = input.studentAnswer.trim().toLowerCase().replace(/[.!?]+$/, '').replace(/\s+/g, ' ');
-  const correctNorm = input.correctAnswer.trim().toLowerCase().replace(/[.!?]+$/, '').replace(/\s+/g, ' ');
+  // Fallback: normalize and compare (lenient on formatting)
+  const normJudge = (s: string) =>
+    s.trim().toLowerCase()
+     .replace(/[;；,，]/g, ' ')
+     .replace(/[.!?。！？]+$/, '')
+     .replace(/\s+/g, ' ')
+     .trim();
+  const studentNorm = normJudge(input.studentAnswer);
+  const correctNorm = normJudge(input.correctAnswer);
   const isMatch = studentNorm === correctNorm;
 
   return {
