@@ -226,27 +226,27 @@ function buildFixturePuzzle(): GamePuzzle {
 
 function buildFixtureAnswers(puzzle: GamePuzzle) {
   const correct1 = puzzle.matrix[puzzle.phase1Hidden.row][puzzle.phase1Hidden.col];
-  // phase1: 3 correct + 1 wrong
-  const phase1Answers: CellContent[] = [
-    correct1[0], // ✅
-    correct1[1], // ✅
+  // phase1: 4格 — correct + wrong + pass + unanswered(null)
+  const phase1Answers: (CellContent | null)[] = [
+    correct1[0], // ✅ correct
     { type: 'emoji', emoji: '🐰', rotation: 0, mirror: 'none', scaled: false }, // ❌ wrong
-    correct1[3], // ✅
+    { type: 'pass', emoji: '🔍', rotation: 0, mirror: 'none', scaled: false }, // 🔍 pass
+    null, // ❓ unanswered
   ];
 
   // phase2: 8 cells（前4=phase2Hidden[0]，后4=phase2Hidden[1]）
   const correct2_0 = puzzle.matrix[puzzle.phase2Hidden[0].row][puzzle.phase2Hidden[0].col];
   const correct2_1 = puzzle.matrix[puzzle.phase2Hidden[1].row][puzzle.phase2Hidden[1].col];
 
-  const phase2Answers: CellContent[] = [
-    correct2_0[0], // ✅
-    { type: 'emoji', emoji: '🐱', rotation: 90, mirror: 'none', scaled: true }, // ❌
-    correct2_0[2], // ✅
-    correct2_0[3], // ✅
-    correct2_1[0], // ✅
-    correct2_1[1], // ✅
-    correct2_1[2], // ✅
-    { type: 'emoji', emoji: '🐷', rotation: 90, mirror: 'none', scaled: false }, // ❌
+  const phase2Answers: (CellContent | null)[] = [
+    correct2_0[0], // ✅ correct
+    { type: 'emoji', emoji: '🐱', rotation: 90, mirror: 'none', scaled: true }, // ❌ wrong
+    { type: 'pass', emoji: '🔍', rotation: 0, mirror: 'none', scaled: false }, // 🔍 pass
+    null, // ❓ unanswered
+    correct2_1[0], // ✅ correct
+    correct2_1[1], // ✅ correct
+    { type: 'emoji', emoji: '🐷', rotation: 90, mirror: 'none', scaled: false }, // ❌ wrong
+    null, // ❓ unanswered
   ];
 
   return { phase1Answers, phase2Answers };
@@ -274,8 +274,8 @@ export default function MemoryGrid() {
   const [puzzle, setPuzzle] = useState<GamePuzzle | null>(isFixture ? fixtureData!.puzzle : null);
   const [timeLeft, setTimeLeft] = useState(90);
   const [currentAnswerIndex, setCurrentAnswerIndex] = useState(0);
-  const [phase1Answers, setPhase1Answers] = useState<CellContent[]>(isFixture ? fixtureData!.phase1Answers : []);
-  const [phase2Answers, setPhase2Answers] = useState<CellContent[]>(isFixture ? fixtureData!.phase2Answers : []);
+  const [phase1Answers, setPhase1Answers] = useState<(CellContent | null)[]>(isFixture ? fixtureData!.phase1Answers : []);
+  const [phase2Answers, setPhase2Answers] = useState<(CellContent | null)[]>(isFixture ? fixtureData!.phase2Answers : []);
   const [startTime] = useState(Date.now());
 
   // 每日进度（从 API 获取）
@@ -751,29 +751,39 @@ export default function MemoryGrid() {
               const correctCell = miniGrid[i];
               const showMark = !!userCells;
               const isCorrect = showMark && JSON.stringify(cell) === JSON.stringify(correctCell);
+              const isPass = showMark && cell && (cell as any).type === 'pass';
+              const isUnanswered = showMark && cell == null;
 
               // onlyWrong 模式：答对的位置不显示内容
               const isOnlyWrong = !!onlyWrong;
               const wrongCorrect = isOnlyWrong && JSON.stringify(onlyWrong.userCells[i]) !== JSON.stringify(correctCell);
 
+              // 背景色：✅绿 / 🔍黄 / ❓橙 / ❌红
+              const cellBg = showMark
+                ? isCorrect ? 'bg-green-50 dark:bg-green-900/20'
+                : isPass ? 'bg-yellow-50 dark:bg-yellow-900/20'
+                : isUnanswered ? 'bg-orange-50 dark:bg-orange-900/20'
+                : 'bg-red-50 dark:bg-red-900/20'
+                : isOnlyWrong && wrongCorrect ? 'bg-emerald-50 dark:bg-emerald-900/20' : '';
+
               return (
                 <div
                   key={i}
-                  className={`flex items-center justify-center relative overflow-hidden ${
-                    showMark
-                      ? isCorrect ? 'bg-green-50 dark:bg-green-900/20' : 'bg-red-50 dark:bg-red-900/20'
-                      : isOnlyWrong && wrongCorrect ? 'bg-emerald-50 dark:bg-emerald-900/20' : ''
-                  }`}
+                  className={`flex items-center justify-center relative overflow-hidden ${cellBg}`}
                 >
                   {isOnlyWrong ? (
                     wrongCorrect ? <CellRenderer content={cell} size="small" /> : null
                   ) : (
                     <>
-                      <CellRenderer content={cell} size="small" />
+                      <CellRenderer content={cell} size="small" index={showMark && isUnanswered ? i : undefined} />
                       {showMark && (
                         <div className="absolute top-0 right-0 z-20">
                           {isCorrect ? (
                             <CheckCircle className="w-4 h-4 text-green-600 drop-shadow-sm" strokeWidth={3} />
+                          ) : isPass ? (
+                            <span className="text-xs font-bold text-yellow-600">🔍</span>
+                          ) : isUnanswered ? (
+                            <span className="text-xs font-bold text-orange-500">❓</span>
                           ) : (
                             <XCircle className="w-4 h-4 text-red-600 drop-shadow-sm" strokeWidth={3} />
                           )}
