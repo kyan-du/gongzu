@@ -643,6 +643,28 @@ describe('generatePuzzle 结构完整性', () => {
     }
   });
 
+  it('col3 不会全是 blank 或全是 broken', () => {
+    for (let i = 0; i < 200; i++) {
+      const puzzle = generatePuzzle();
+
+      for (const row of puzzle.matrix) {
+        const col3 = row[2];
+        const allBlank = col3.every(c => c.type === 'blank');
+        const allBroken = col3.every(c => c.type === 'broken');
+        expect(allBlank, `col3 全是 blank`).toBe(false);
+        expect(allBroken, `col3 全是 broken`).toBe(false);
+      }
+
+      for (const row of puzzle.phase2Matrix) {
+        const col3 = row[2];
+        const allBlank = col3.every(c => c.type === 'blank');
+        const allBroken = col3.every(c => c.type === 'broken');
+        expect(allBlank, `phase2 col3 全是 blank`).toBe(false);
+        expect(allBroken, `phase2 col3 全是 broken`).toBe(false);
+      }
+    }
+  });
+
   it('emoji cell 的 rotation 是合法值', () => {
     const validRotations = new Set([0, 90, 180, 270, undefined]);
 

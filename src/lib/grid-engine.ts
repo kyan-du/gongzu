@@ -375,6 +375,28 @@ function generateValidRules(): PuzzleRules {
   const sizeTransform = randomChoice(allSizeTransforms);
   const positionTransform = randomChoice(allPositionTransforms);
 
+  // 当有元素/尺寸变换但没有位置变换时，col1 和 col2 的 emoji 字符相同，
+  // cellEqual 全返回 true，只走 same 分支。
+  // 如果 same = blank/broken，整个 col3 就全是 blank/broken，规律太简单。
+  // 此时限制 same action 不能是 blank 或 broken。
+  const onlySameBranch =
+    (elementTransform !== 'none' || sizeTransform !== 'none') && positionTransform === 'none';
+
+  if (onlySameBranch) {
+    const safeSameActions: SameAction[] = ['keep', 'swap-lr', 'shrink'];
+
+    do {
+      topRow = {
+        same: randomChoice(safeSameActions),
+        diff: randomChoice(allDiffActions),
+      };
+      bottomRow = {
+        same: randomChoice(safeSameActions),
+        diff: randomChoice(allDiffActions),
+      };
+    } while (topRow.same === bottomRow.same && topRow.diff === bottomRow.diff);
+  }
+
   return {
     topRow,
     bottomRow,
@@ -420,6 +442,18 @@ function buildMatrix(rules: PuzzleRules): Matrix {
     const col3 = mergeMiniGrids(col1 as MiniGrid, col2, rules);
 
     matrix.push([col1 as MiniGrid, col2, col3]);
+  }
+
+  // 验证：col3 不能全是 blank 或全是 broken（太简单）
+  for (const row of matrix) {
+    const col3 = row[2];
+    const allBlank = col3.every(c => c.type === 'blank');
+    const allBroken = col3.every(c => c.type === 'broken');
+    const allSame = col3.every(c => c.type === col3[0].type && c.type !== 'emoji');
+    if (allBlank || allBroken || allSame) {
+      // 递归重建（会重新选规则）
+      return buildMatrix(rules);
+    }
   }
 
   return matrix;
