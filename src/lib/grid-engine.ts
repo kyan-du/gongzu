@@ -68,8 +68,8 @@ export interface GamePuzzle {
 // ── Emoji 素材 ──
 
 // 主题分类：用于变换约束
-const DIRECTIONAL_THEMES = ['animals', 'birds', 'ocean', 'transport', 'insects', 'letters', 'hanzi', 'shapes', 'space', 'tools', 'electronics', 'bodyparts', 'dinosaurs', 'vehicles2', 'flags', 'arrows'];
-const SYMMETRIC_THEMES = ['fruits', 'vegetables', 'food', 'sports', 'flowers', 'hearts', 'sweets', 'christmas', 'gems', 'balls'];
+const DIRECTIONAL_THEMES = ['animals', 'birds', 'ocean', 'transport', 'insects', 'letters', 'shapes', 'space', 'tools', 'electronics', 'bodyparts', 'dinosaurs', 'vehicles2', 'flags', 'arrows'];
+const SYMMETRIC_THEMES = ['fruits', 'vegetables', 'food', 'sports', 'flowers', 'hearts', 'sweets', 'christmas', 'gems', 'balls', 'hanzi', 'hanzi2', 'hanzi3'];
 const MIXED_THEMES = ['weather', 'faces', 'hands', 'music', 'objects', 'numbers', 'buildings', 'clothing', 'furniture', 'drinks', 'clocks', 'zodiac'];
 
 const EMOJI_GROUPS = {
@@ -90,7 +90,7 @@ const EMOJI_GROUPS = {
   insects: ['🐝', '🐛', '🦋', '🐌', '🐞', '🐜', '🦂', '🪲', '🪳', '🦗', '🪰', '🦟', '🕷️', '🦠', '🪱'],
   numbers: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '①', '②', '③', '④', '⑤'],
   letters: ['b', 'd', 'p', 'q', 'A', 'B', 'R', 'P', 'M', 'W', 'N', 'Z', 'S', 'E', 'C'],
-  hanzi: ['大', '小', '上', '下', '左', '右', '东', '西', '南', '北', '中', '人', '入', '天', '夫'],
+  hanzi: ['戍', '戊', '戌', '戎', '己', '已', '巳', '末', '未', '刺', '剌', '壤', '攘', '甲', '由'],
   shapes: ['▲', '◆', '►', '◄', '▼', '★', '●', '■', '▶', '◀', '⬆', '⬇', '⬅', '➡', '◉'],
   // 新增主题
   space: ['🚀', '🛸', '🌍', '🪐', '☄️', '🌙', '🛰️', '🌑', '🔭', '👨‍🚀', '🌠', '🌌', '🌕', '🌗', '💫'],
@@ -112,6 +112,8 @@ const EMOJI_GROUPS = {
   drinks: ['☕', '🍵', '🥤', '🧋', '🍺', '🍷', '🥂', '🍾', '🧃', '🥛', '🍹', '🍸', '🫖', '🍶', '🥃'],
   clocks: ['🕐', '🕑', '🕒', '🕓', '🕔', '🕕', '🕖', '🕗', '🕘', '🕙', '🕚', '🕛', '⏰', '⏳', '⌛'],
   zodiac: ['♈', '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐', '♑', '♒', '♓', '⛎', '🔯', '☯️'],
+  hanzi2: ['折', '拆', '侯', '候', '拔', '拨', '辩', '辨', '瓣', '辫', '炙', '灸', '毫', '豪', '鉴'],
+  hanzi3: ['棘', '枣', '壁', '璧', '睛', '晴', '情', '清', '请', '精', '蜻', '靖', '菁', '倩', '婧'],
 };
 
 // ── 工具函数 ──
