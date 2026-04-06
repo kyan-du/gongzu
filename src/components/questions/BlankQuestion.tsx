@@ -61,7 +61,7 @@ export default function BlankQuestion({ question, onAnswer, submitted, result, i
 
   // Build token stream
   const tokens: Token[] = [];
-  if (hasBlanksBeforeAfter) {
+  if (hasBlanksBeforeAfter && !hasBlanksInStem) {
     // before/after format: each blank has surrounding text
     blanksData.forEach((b: any, i: number) => {
       if (b.before) tokens.push({ kind: 'text', text: b.before + ' ' });
