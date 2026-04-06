@@ -73,6 +73,15 @@ function CellRenderer({ content, size = 'normal' }: { content: CellContent; size
     );
   }
 
+  if (content.type === 'pass') {
+    const passSize = size === 'small' ? CELL_SIZES.small.emoji.normal : CELL_SIZES.emoji.normal;
+    return (
+      <div className="w-full h-full flex items-center justify-center leading-none" style={{ fontSize: passSize }}>
+        🔍
+      </div>
+    );
+  }
+
   const rotation = content.rotation || 0;
   const mirror = content.mirror || 'none';
   const scaled = content.scaled || false;
@@ -307,6 +316,20 @@ export default function MemoryGrid() {
     };
   }, [phase]);
 
+  // 找下一个未填的位置
+  const findNextEmpty = (answers: (CellContent | null)[], fromIndex: number, max: number): number => {
+    // 从 fromIndex+1 开始往后找
+    for (let i = fromIndex + 1; i < max; i++) {
+      if (!answers[i]) return i;
+    }
+    // 往前找（环绕）
+    for (let i = 0; i < fromIndex; i++) {
+      if (!answers[i]) return i;
+    }
+    // 全满了，留在原地
+    return fromIndex;
+  };
+
   // 选择备选项
   const selectChoice = (content: CellContent) => {
     if (phase === 'answer1') {
@@ -314,13 +337,15 @@ export default function MemoryGrid() {
       const newAnswers = [...phase1Answers];
       newAnswers[currentAnswerIndex] = content;
       setPhase1Answers(newAnswers);
-      if (currentAnswerIndex < 3) setCurrentAnswerIndex(currentAnswerIndex + 1);
+      const next = findNextEmpty(newAnswers, currentAnswerIndex, 4);
+      setCurrentAnswerIndex(next);
     } else if (phase === 'answer2') {
       if (currentAnswerIndex >= 8) return;
       const newAnswers = [...phase2Answers];
       newAnswers[currentAnswerIndex] = content;
       setPhase2Answers(newAnswers);
-      if (currentAnswerIndex < 7) setCurrentAnswerIndex(currentAnswerIndex + 1);
+      const next = findNextEmpty(newAnswers, currentAnswerIndex, 8);
+      setCurrentAnswerIndex(next);
     }
   };
 
