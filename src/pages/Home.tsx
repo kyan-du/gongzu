@@ -1,4 +1,4 @@
-import { getSlug } from '../lib/tags';
+import { getSlug, isMemoryGameTag, memoryGameType } from '../lib/tags';
 import { normalizeQuiz } from '../lib/types';
 import { CheckCircle, Clock, BookX, ChevronLeft, ChevronRight, BookOpen, Languages, PenLine, Boxes } from 'lucide-react';
 import { useState, useEffect, useMemo, useCallback } from 'react';
@@ -573,18 +573,26 @@ export default function Home() {
               <>
                 {/* Quiz cards */}
                 <div className="space-y-3">
-                  {sortedQuizzes.map((quiz) => (
+                  {sortedQuizzes.map((quiz) => {
+                    const isMemGame = isMemoryGameTag(quiz.tag);
+                    const gameType = memoryGameType(quiz.tag);
+                    return (
                     <button key={quiz.id}
-                      onClick={() => navigate(`/${userId}/${quiz.date}/${getSlug(quiz.tag)}`)}
+                      onClick={() => isMemGame && gameType
+                        ? navigate(`/${userId}/memory/${gameType}?mode=exam&quizId=${quiz.id}`)
+                        : navigate(`/${userId}/${quiz.date}/${getSlug(quiz.tag)}`)
+                      }
                       className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition active:scale-[0.98]">
                       <div className="flex items-center gap-3">
                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                          isMemGame ? 'bg-amber-50 dark:bg-amber-900/30' :
                           quiz.tag.includes('英语') ? 'bg-blue-50 dark:bg-blue-900/30' :
                           quiz.tag.includes('阅读') ? 'bg-emerald-50 dark:bg-emerald-900/30' :
                           quiz.tag.includes('西游') ? 'bg-amber-50 dark:bg-amber-900/30' :
                           'bg-gray-50 dark:bg-gray-700'
                         }`}>
-                          {quiz.tag.includes('英语') ? <Languages className="w-5 h-5 text-blue-500 dark:text-blue-400" /> :
+                          {isMemGame ? <span className="text-xl">{gameType === 'matryoshka' ? '🎭' : '🔢'}</span> :
+                           quiz.tag.includes('英语') ? <Languages className="w-5 h-5 text-blue-500 dark:text-blue-400" /> :
                            quiz.tag.includes('阅读') ? <BookOpen className="w-5 h-5 text-emerald-500 dark:text-emerald-400" /> :
                            quiz.tag.includes('西游') ? <BookOpen className="w-5 h-5 text-amber-500 dark:text-amber-400" /> :
                            <PenLine className="w-5 h-5 text-gray-500 dark:text-gray-400" />}
@@ -592,6 +600,7 @@ export default function Home() {
                         <div className="text-left">
                           <div className="font-medium text-gray-900 dark:text-gray-100">{quiz.tag}</div>
                           <div className="text-sm text-gray-500 dark:text-gray-400">
+                            {isMemGame ? (gameType === 'matryoshka' ? '套娃记忆' : '宫格记忆') : (<>
                             {quiz.questions?.length || 0} 题
                             {(() => {
                               const reviewCount = (quiz.questions || []).filter((q: any) => q.tags?.includes('review')).length;
@@ -599,6 +608,7 @@ export default function Home() {
                                 <span className="ml-1.5 text-blue-500 dark:text-blue-400">· {reviewCount} 题复习</span>
                               ) : null;
                             })()}
+                            </>)}
                           </div>
                         </div>
                       </div>
@@ -614,7 +624,8 @@ export default function Home() {
                         </div>
                       )}
                     </button>
-                  ))}
+                    );
+                  })}
                 </div>
 
                 {/* Vocabulary card entry — 按模块配置 */}

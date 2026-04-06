@@ -261,6 +261,8 @@ export default function MemoryGrid() {
 
   const isFixture = searchParams.get('debug') === 'fixture';
   const initialPhase = (searchParams.get('phase') as GamePhase) || 'watch1';
+  const examMode = searchParams.get('mode') === 'exam';
+  const quizId = searchParams.get('quizId');
 
   // Fixture data (stable across renders)
   const fixtureData = useMemo(() => {
@@ -429,23 +431,28 @@ export default function MemoryGrid() {
       rule: `cellTransforms:${cellTransformsCount}+${puzzle.rules.positionTransform}+${puzzle.rules.sizeTransform}`,
     };
 
-    fetch('/api/memory-game', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        userId,
-        date: new Date().toISOString().slice(0, 10),
-        gameType: 'grid',
-        total: totalQuestions,
-        correct: totalCorrect,
-        accuracy,
-        durationSec,
-        detail: JSON.stringify(detail),
-      }),
-    })
-      .then((r) => r.json())
-      .then((data: any) => setDailyCompleted(data.completed || dailyCompleted + 1))
-      .catch(() => {});
+    // Exam mode: submit to exam endpoint
+    if (examMode && quizId) {
+      fetch('/api/memory-game/exam', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId,
+          quizId,
+          total: totalQuestions,
+          correct: totalCorrect,
+          accuracy,
+          durationSec,
+          detail: JSON.stringify(detail),
+        }),
+      })
+        .then((r) => r.json())
+        .then((data: any) => setDailyCompleted(data.alreadySubmitted ? dailyCompleted : dailyCompleted + 1))
+        .catch(() => {});
+      return;
+    }
+
+    // Training mode: no recording
   };
 
   if (!puzzle) {

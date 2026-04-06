@@ -1,4 +1,4 @@
-import { getSlug } from '../lib/tags';
+import { getSlug, isMemoryGameTag, memoryGameType } from '../lib/tags';
 import { normalizeQuiz } from '../lib/types';
 import { CheckCircle, ChevronLeft, ChevronRight, BookOpen, Languages, PenLine, Clock, BookX, RotateCcw } from 'lucide-react';
 import { useState, useEffect } from 'react';
@@ -175,19 +175,25 @@ export default function DailyView() {
           </div>
         ) : (
           <div className="space-y-3">
-            {quizzes.map((quiz) => (
+            {quizzes.map((quiz) => {
+              const isMemGame = isMemoryGameTag(quiz.tag);
+              const gameType = memoryGameType(quiz.tag);
+              return (
               <button
                 key={quiz.id}
-                onClick={() => navigate(`/${userId}/${quiz.date}/${getSlug(quiz.tag)}`)}
+                onClick={() => isMemGame && gameType
+                  ? navigate(`/${userId}/memory/${gameType}?mode=exam&quizId=${quiz.id}`)
+                  : navigate(`/${userId}/${quiz.date}/${getSlug(quiz.tag)}`)
+                }
                 className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition active:scale-[0.98]"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center">
-                    {quiz.tag.includes('英语') ? <Languages className="w-5 h-5 text-blue-500 dark:text-blue-400" /> : quiz.tag.includes('阅读') ? <BookOpen className="w-5 h-5 text-emerald-500 dark:text-emerald-400" /> : quiz.tag.includes('西游') ? <BookOpen className="w-5 h-5 text-amber-500 dark:text-amber-400" /> : <PenLine className="w-5 h-5 text-gray-500 dark:text-gray-400" />}
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isMemGame ? 'bg-amber-50 dark:bg-amber-900/30' : 'bg-blue-50 dark:bg-blue-900/30'}`}>
+                    {isMemGame ? <span className="text-xl">{gameType === 'matryoshka' ? '🎭' : '🔢'}</span> : quiz.tag.includes('英语') ? <Languages className="w-5 h-5 text-blue-500 dark:text-blue-400" /> : quiz.tag.includes('阅读') ? <BookOpen className="w-5 h-5 text-emerald-500 dark:text-emerald-400" /> : quiz.tag.includes('西游') ? <BookOpen className="w-5 h-5 text-amber-500 dark:text-amber-400" /> : <PenLine className="w-5 h-5 text-gray-500 dark:text-gray-400" />}
                   </div>
                   <div className="text-left">
                     <div className="font-medium text-gray-900 dark:text-gray-100">{quiz.tag}</div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400">{quiz.questions?.length || 0} 题</div>
+                    <div className="text-sm text-gray-500 dark:text-gray-400">{isMemGame ? (gameType === 'matryoshka' ? '套娃记忆' : '宫格记忆') : `${quiz.questions?.length || 0} 题`}</div>
                   </div>
                 </div>
                 {quizStatus[quiz.id]?.completed ? (
@@ -198,11 +204,12 @@ export default function DailyView() {
                 ) : (
                   <div className="flex items-center gap-1 text-sm text-amber-500 dark:text-amber-400 font-medium">
                     <Clock className="w-3.5 h-3.5" />
-                    {quizStatus[quiz.id]?.answered > 0 ? `${quizStatus[quiz.id].answered}/${quizStatus[quiz.id].total}` : '未完成'}
+                    {isMemGame ? '未完成' : quizStatus[quiz.id]?.answered > 0 ? `${quizStatus[quiz.id].answered}/${quizStatus[quiz.id].total}` : '未完成'}
                   </div>
                 )}
               </button>
-            ))}
+              );
+            })}
 
             {/* 错题本入口 */}
             {mistakesCount > 0 && (

@@ -10,7 +10,21 @@ const tagToSlug: Record<string, string> = {
   '阅读理解': 'reading',
   '错题重做': 'mistakes-redo',
   '名人故事': 'celebrity-stories',
+  '记忆·套娃': 'memory-matryoshka',
+  '记忆·宫格': 'memory-grid',
 };
+
+/** Check if a tag represents a memory game quiz */
+export function isMemoryGameTag(tag: string): boolean {
+  return tag === '记忆·套娃' || tag === '记忆·宫格';
+}
+
+/** Get the game type from a memory game tag */
+export function memoryGameType(tag: string): 'matryoshka' | 'grid' | null {
+  if (tag === '记忆·套娃') return 'matryoshka';
+  if (tag === '记忆·宫格') return 'grid';
+  return null;
+}
 
 const slugToTag: Record<string, string> = Object.fromEntries(
   Object.entries(tagToSlug).map(([k, v]) => [v, k])

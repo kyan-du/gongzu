@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { CheckCircle, XCircle, Trophy, Target, Frown } from 'lucide-react';
 import Layout from '../components/Layout';
 
@@ -150,6 +150,9 @@ function generateCards(): { cards: Card[]; decoys: Card[]; chainMode: ChainMode 
 export default function MemoryMatryoshka() {
   const { userId } = useParams<{ userId: string }>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const examMode = searchParams.get('mode') === 'exam';
+  const quizId = searchParams.get('quizId');
 
   const [phase, setPhase] = useState<GamePhase>('prepare');
   const [cards, setCards] = useState<Card[]>([]);
@@ -324,17 +327,24 @@ export default function MemoryMatryoshka() {
   // 进入结果页时自动提交成绩
   useEffect(() => {
     if (phase !== 'result' || submitted || !userId) return;
-    const today = new Date().toLocaleDateString('sv-SE');
+
+    // Training mode: no recording
+    if (!examMode) {
+      setSubmitted(true);
+      return;
+    }
+
+    // Exam mode: submit to exam endpoint
+    if (!quizId) { setSubmitted(true); return; }
     const durationSec = startTime > 0 ? Math.round((Date.now() - startTime) / 1000) : null;
     const accuracy = cards.length > 0 ? Math.round((correctCount / cards.length) * 100) : 0;
 
-    fetch('/api/memory-game', {
+    fetch('/api/memory-game/exam', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         userId,
-        date: today,
-        gameType: 'matryoshka',
+        quizId,
         total: cards.length,
         correct: correctCount,
         accuracy,
@@ -343,7 +353,7 @@ export default function MemoryMatryoshka() {
     })
       .then(r => r.json())
       .then((data: any) => {
-        setDailyCompleted(data.completed || dailyCompleted + 1);
+        setDailyCompleted(data.alreadySubmitted ? dailyCompleted : dailyCompleted + 1);
         setSubmitted(true);
       })
       .catch(() => setSubmitted(true));
