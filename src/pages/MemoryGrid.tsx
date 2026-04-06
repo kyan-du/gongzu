@@ -58,12 +58,18 @@ function BrokenImageIcon({ className = '' }: { className?: string }) {
 
 // 渲染单个 Cell（带变换）— 各类图形独立尺寸
 function CellRenderer({ content, size = 'normal', index }: { content: CellContent | null; size?: 'normal' | 'small'; index?: number }) {
-  // null = 未作答，显示 ?N
+  // null = 未作答，显示 ?N（和答题阶段同款样式）
   if (!content) {
+    const qSize = size === 'small' ? CELL_SIZES.small.question : CELL_SIZES.question;
+    const offset = 'offset' in qSize ? qSize.offset : { x: 0, y: 0 };
     return (
-      <div className="w-full h-full flex items-center justify-center">
-        <span className="text-gray-600 font-bold" style={{ fontSize: '1.4rem' }}>
-          ?{index !== undefined ? <sub style={{ fontSize: '0.75rem' }}>{index + 1}</sub> : ''}
+      <div className="w-full h-full flex items-center justify-center overflow-hidden">
+        <span className="font-black text-gray-800 dark:text-gray-200" style={{
+          fontSize: qSize.fontSize,
+          lineHeight: '1',
+          transform: `translate(${offset.x}px, ${offset.y}px)`,
+        }}>
+          ?{index !== undefined ? <sub style={{ fontSize: qSize.subSize }}>{index + 1}</sub> : ''}
         </span>
       </div>
     );
@@ -484,18 +490,11 @@ export default function MemoryGrid() {
                 </div>
                 {isHidden ? (
                   <div className="grid grid-cols-2 w-full h-full relative z-10">
-                    {[1, 2, 3, 4].map((n) => {
-                      // 按矩阵从上到下、从左到右的顺序编号：第一个隐藏格 1-4，第二个 5-8
+                    {[0, 1, 2, 3].map((n) => {
                       const baseNum = (hiddenCounter - 1) * 4;
                       return (
                       <div key={n} className="flex items-center justify-center overflow-hidden">
-                        <span className="font-black text-gray-800 dark:text-gray-200" style={{
-                          fontSize: CELL_SIZES.question.fontSize,
-                          lineHeight: '1',
-                          transform: `translate(${CELL_SIZES.question.offset.x}px, ${CELL_SIZES.question.offset.y}px)`,
-                        }}>
-                          ?<sub style={{ fontSize: CELL_SIZES.question.subSize }}>{baseNum + n}</sub>
-                        </span>
+                        <CellRenderer content={null} index={baseNum + n} />
                       </div>
                       );
                     })}
