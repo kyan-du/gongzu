@@ -12,6 +12,9 @@ const tagToSlug: Record<string, string> = {
   '名人故事': 'celebrity-stories',
   '记忆·套娃': 'memory-matryoshka',
   '记忆·宫格': 'memory-grid',
+  'GESP-6': 'gesp-6',
+  '骆驼祥子': 'camel-xiangzi',
+  '单词记忆': 'vocab-memory',
 };
 
 /** Check if a tag represents a memory game quiz */

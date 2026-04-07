@@ -152,6 +152,8 @@ export default function Quiz() {
           let label = '';
           if (q.type === 'choice') {
             label = '单项选择';
+          } else if (q.type === 'judgment') {
+            label = '判断题';
           } else if (q.type === 'blank') {
             const stem = q.content?.stem || '';
             const blanks = q.content?.blanks || [];

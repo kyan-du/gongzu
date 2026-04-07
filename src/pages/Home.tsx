@@ -245,6 +245,7 @@ export default function Home() {
   const completedQuizzes = quizzes.filter(q => quizStatus[q.id]?.completed).length;
   const allCompleted = totalQuizzes > 0 && completedQuizzes === totalQuizzes;
   const hasAnyAnswer = quizzes.some(q => (quizStatus[q.id]?.answered || 0) > 0);
+  const hasMemoryQuizInList = quizzes.some(q => isMemoryGameTag(q.tag));
 
   const sortedQuizzes = [...quizzes].sort((a, b) => {
     const ac = quizStatus[a.id]?.completed || false, bc = quizStatus[b.id]?.completed || false;
@@ -509,7 +510,7 @@ export default function Home() {
                 </div>
               )}
               {/* 记忆游戏任务卡 — 仅 isTask 的用户 */}
-              {modIsTask('memory_game') && selectedDate === todayStr && (
+              {modIsTask('memory_game') && selectedDate === todayStr && !hasMemoryQuizInList && (
                 <>
                   {/* 套娃记忆 */}
                   <button
@@ -659,7 +660,7 @@ export default function Home() {
                 )}
 
                 {/* 记忆游戏任务卡 — 按模块配置 */}
-                {modEnabled('memory_game') && selectedDate === todayStr && (
+                {modIsTask('memory_game') && selectedDate === todayStr && !hasMemoryQuizInList && (
                   <>
                     {/* 套娃记忆 */}
                     <button

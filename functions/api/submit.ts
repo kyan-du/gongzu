@@ -152,6 +152,11 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
         correctAnswer = judgeResult.correctedAnswer || expectedAnswer;
         aiFeedback = judgeResult.feedback;
         aiScore = judgeResult.score;
+      } else if (question.type === 'judgment') {
+        const expectedCorrect = qAnswer.correct;
+        const userBool = ans.answer === 'true';
+        correct = userBool === expectedCorrect;
+        correctAnswer = expectedCorrect ? 'true' : 'false';
       }
 
       if (correct) correctCount++;

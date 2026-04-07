@@ -13,7 +13,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   }
 
   const db = context.env.DB;
-  const today = new Date().toISOString().slice(0, 10);
+  const today = new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Shanghai' });
 
   // Check existing review record for this user+vocabulary
   const existing = await db.prepare(
@@ -32,10 +32,10 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     intervalDays = 1;
   }
 
-  // Calculate next review date
-  const nextDate = new Date();
-  nextDate.setDate(nextDate.getDate() + intervalDays);
-  const nextReviewAt = nextDate.toISOString().slice(0, 10);
+  // Calculate next review date (based on Asia/Shanghai today)
+  const todayDate = new Date(today + 'T12:00:00+08:00');
+  todayDate.setDate(todayDate.getDate() + intervalDays);
+  const nextReviewAt = todayDate.toLocaleDateString('sv-SE', { timeZone: 'Asia/Shanghai' });
 
   const id = crypto.randomUUID();
   await db.prepare(

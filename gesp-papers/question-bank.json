@@ -1,0 +1,4414 @@
+[
+  {
+    "number": 1,
+    "type": "choice",
+    "stem": "关于C++类和对象的说法，错误的是(   )。",
+    "options": [
+      "A. 在C++中，一切皆对象，即便是字面量如整数5等也是对象",
+      "B. 在C++中，可以自定义新的类，并实例化为新的对象",
+      "C. 在C++中，内置函数和自定义函数，都是类或者对象",
+      "D. 在C++中，可以在自定义函数中嵌套定义新的函数"
+    ],
+    "answer": "D",
+    "tags": [
+      "面向对象",
+      "类与对象",
+      "函数"
+    ],
+    "id": "GESP6-202312-C01",
+    "source": "2023-12"
+  },
+  {
+    "number": 2,
+    "type": "choice",
+    "stem": "有关下面C++代码的说法，错误的是(   )。",
+    "options": [
+      "A. C++中类内部可以嵌套定义类",
+      "B. 在类中定义的类被称为内部类，定义类的类被称为外部类",
+      "C. 内部类可以随便访问，不需要通过外部类来访问",
+      "D. 代码中Point 被称为内部类，可以通过外部类Rectangle 来访问，Rectangle::Point"
+    ],
+    "answer": "C",
+    "tags": [
+      "面向对象",
+      "内部类",
+      "嵌套类"
+    ],
+    "id": "GESP6-202312-C02",
+    "source": "2023-12"
+  },
+  {
+    "number": 3,
+    "type": "choice",
+    "stem": "有关下面C++代码的说法，正确的是(   )。",
+    "options": [
+      "A. 第14行代码错误，第15行正确",
+      "B. 第15行代码错误，第14行代码正确",
+      "C. 第14、15两行代码都正确",
+      "D. 第6行代码可修改为objCounter += 1"
+    ],
+    "answer": "C",
+    "tags": [
+      "面向对象",
+      "静态成员",
+      "类成员访问"
+    ],
+    "id": "GESP6-202312-C03",
+    "source": "2023-12"
+  },
+  {
+    "number": 4,
+    "type": "choice",
+    "stem": "有关下面C++代码的说法，错误的是(   )。",
+    "options": [
+      "A. 上列C++代码适用于构造各种二叉树",
+      "B. 代码struct BiNode 用于构造二叉树的节点",
+      "C. 代码BiTree(){root=Creat();} 用于构造二叉树",
+      "D. 析构函数不可以省略"
+    ],
+    "answer": "D",
+    "tags": [
+      "二叉树",
+      "构造函数",
+      "析构函数"
+    ],
+    "id": "GESP6-202312-C04",
+    "source": "2023-12"
+  },
+  {
+    "number": 5,
+    "type": "choice",
+    "stem": "基于第4题的定义，有关下面C++代码的说法正确的是（    ）。",
+    "options": [
+      "A. 代码中Order( ) 函数是中序遍历二叉树的方法",
+      "B. 代码中Order( ) 先访问根节点，然后对左子树进行前序遍历，再对右子树前序遍历",
+      "C. 代码中Order( ) 先访问中序遍历左子树，然后访问根节点，最后则是中序遍历右子树",
+      "D. 代码中Order( ) 先后序遍历左子树，然后后序遍历右子树，最后访问根节点"
+    ],
+    "answer": "B",
+    "tags": [
+      "二叉树",
+      "树的遍历",
+      "前序遍历"
+    ],
+    "id": "GESP6-202312-C05",
+    "source": "2023-12"
+  },
+  {
+    "number": 6,
+    "type": "choice",
+    "stem": "有关下面C++代码的说法正确的是（    ）。",
+    "options": [
+      "A. 上述代码构成单向链表",
+      "B. 上述代码构成双向链表",
+      "C. 上述代码构成循环链表",
+      "D. 上述代码构成指针链表"
+    ],
+    "answer": "B",
+    "tags": [
+      "链表",
+      "双向链表",
+      "数据结构"
+    ],
+    "id": "GESP6-202312-C06",
+    "source": "2023-12"
+  },
+  {
+    "number": 7,
+    "type": "choice",
+    "stem": "对 hello world  使用霍夫曼编码（Huffman Coding），最少bit（比特）为（     ）。",
+    "options": [
+      "A. 4",
+      "B. 32",
+      "C. 64",
+      "D. 88"
+    ],
+    "answer": "B",
+    "tags": [
+      "哈夫曼编码",
+      "数据压缩",
+      "编码理论"
+    ],
+    "id": "GESP6-202312-C07",
+    "source": "2023-12"
+  },
+  {
+    "number": 8,
+    "type": "choice",
+    "stem": "下面的 `fiboA()`  和 `fiboB()`  两个函数分别实现斐波那契数列，该数列第1、第2项值为1，其余各项分别为前两项之和。下面有关说法错误的是（   ）。",
+    "options": [
+      "A. fiboA()  采用递归方式实现斐波那契数列",
+      "B. fiboB()  采用动态规划算法实现斐波那契数列",
+      "C. 当N值较大时，fiboA()  存在大量重复计算",
+      "D. 由于 fiboA()  代码较短，其执行效率较高"
+    ],
+    "answer": "D",
+    "tags": [
+      "递归",
+      "动态规划",
+      "斐波那契数列",
+      "算法效率"
+    ],
+    "id": "GESP6-202312-C08",
+    "source": "2023-12"
+  },
+  {
+    "number": 9,
+    "type": "choice",
+    "stem": "有关下面C++代码不正确的说法是（    ）。",
+    "options": [
+      "A. 该代码可用于求解二叉树的深度",
+      "B. 代码中函数 Depth( )  的参数 T  表示根节点，非根节点不可以作为参数",
+      "C. 代码中函数 Depth( )  采用了递归方法",
+      "D. 代码中函数 Depth( )  可用于求解各种形式的二叉树深度，要求该二叉树节点至少有 left  和 right  属性"
+    ],
+    "answer": "B",
+    "tags": [
+      "二叉树",
+      "树的深度",
+      "递归"
+    ],
+    "id": "GESP6-202312-C09",
+    "source": "2023-12"
+  },
+  {
+    "number": 10,
+    "type": "choice",
+    "stem": "下面有关树的存储，错误的是（    ）.",
+    "options": [
+      "A. 完全二叉树可以用 list  存储",
+      "B. 一般二叉树都可以用 list  存储，空子树位置可以用 None  表示",
+      "C. 满二叉树可以用 list  存储",
+      "D. 树数据结构，都可以用 list  存储"
+    ],
+    "answer": "D",
+    "tags": [
+      "树",
+      "数据结构",
+      "存储方式"
+    ],
+    "id": "GESP6-202312-C10",
+    "source": "2023-12"
+  },
+  {
+    "number": 11,
+    "type": "choice",
+    "stem": "构造二叉树 [1,2,3,null,4] （  ）。",
+    "options": [
+      "A. 1(2()(4))(3)",
+      "B. 1(2(3)())(4)",
+      "C. (1,2(3),(4))",
+      "D. (1,(2)(3),(4))"
+    ],
+    "answer": "A",
+    "tags": [
+      "二叉树",
+      "树的表示"
+    ],
+    "id": "GESP6-202312-C11",
+    "source": "2023-12"
+  },
+  {
+    "number": 12,
+    "type": "choice",
+    "stem": "下面有关布尔类型的函数的说法，正确的是（  ）。",
+    "options": [
+      "A. bool  类型函数只能返回0或者1两种值",
+      "B. bool  类型函数可以返回任何整数值",
+      "C. bool  类型函数必须有参数传递",
+      "D. bool  类型函数没有返回值"
+    ],
+    "answer": "A",
+    "tags": [
+      "数据类型",
+      "布尔类型",
+      "函数"
+    ],
+    "id": "GESP6-202312-C12",
+    "source": "2023-12"
+  },
+  {
+    "number": 13,
+    "type": "choice",
+    "stem": "通讯卫星在通信网络系统中主要起到（ ）的作用。",
+    "options": [
+      "A. 信息过滤",
+      "B. 信号中继",
+      "C. 避免攻击",
+      "D. 数据加密"
+    ],
+    "answer": "B",
+    "tags": [
+      "计算机网络",
+      "通信原理"
+    ],
+    "id": "GESP6-202312-C13",
+    "source": "2023-12"
+  },
+  {
+    "number": 14,
+    "type": "choice",
+    "stem": "小杨想编写一个判断任意输入的整数N是否为素数的程序，下面哪个方法不合适？（  ）",
+    "options": [
+      "A. 埃氏筛法",
+      "B. 线性筛法",
+      "C. 二分答案",
+      "D. 枚举法"
+    ],
+    "answer": "C",
+    "tags": [
+      "素数判断",
+      "算法选择"
+    ],
+    "id": "GESP6-202312-C14",
+    "source": "2023-12"
+  },
+  {
+    "number": 15,
+    "type": "choice",
+    "stem": "内排序有不同的类别，下面哪种排序算法和冒泡排序是同一类？（  ）",
+    "options": [
+      "A. 希尔排序",
+      "B. 快速排序",
+      "C. 堆排序",
+      "D. 插入排序"
+    ],
+    "answer": "B",
+    "tags": [
+      "排序算法",
+      "算法分类"
+    ],
+    "id": "GESP6-202312-C15",
+    "source": "2023-12"
+  },
+  {
+    "number": 16,
+    "type": "judgment",
+    "stem": "在面向对象中，方法在C++的class中表现为class内定义的函数。",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "面向对象",
+      "类与对象",
+      "方法"
+    ],
+    "id": "GESP6-202312-J01",
+    "source": "2023-12"
+  },
+  {
+    "number": 17,
+    "type": "judgment",
+    "stem": "C++类的定义中，可以没有构造函数，会给出默认的构造函数",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "面向对象",
+      "构造函数"
+    ],
+    "id": "GESP6-202312-J02",
+    "source": "2023-12"
+  },
+  {
+    "number": 18,
+    "type": "judgment",
+    "stem": "如果某个C++对象（object）支持下标运算符（方括号运算符），则该对象在所对应class中以成员函数的形式进行了重载。",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "面向对象",
+      "运算符重载"
+    ],
+    "id": "GESP6-202312-J03",
+    "source": "2023-12"
+  },
+  {
+    "number": 19,
+    "type": "judgment",
+    "stem": "深度优先搜索（DFS，Depth First Search的简写）属于图算法，其过程是对每一个可能的分支路径深入到不能再深入为止，而且每个节点只能访问一次。",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "搜索算法",
+      "深度优先搜索",
+      "图算法"
+    ],
+    "id": "GESP6-202312-J04",
+    "source": "2023-12"
+  },
+  {
+    "number": 20,
+    "type": "judgment",
+    "stem": "哈夫曼编码（Huffman Coding）具有唯一性，因此有确定的压缩率。",
+    "options": [],
+    "answer": "false",
+    "tags": [
+      "哈夫曼编码",
+      "数据压缩"
+    ],
+    "id": "GESP6-202312-J05",
+    "source": "2023-12"
+  },
+  {
+    "number": 21,
+    "type": "judgment",
+    "stem": "在下面C++代码中，由于删除了变量 ptr ，因此 ptr  所对应的数据也随之删除，故第8行代码被执行时，将报错。",
+    "options": [],
+    "answer": "false",
+    "tags": [
+      "指针",
+      "内存管理"
+    ],
+    "id": "GESP6-202312-J06",
+    "source": "2023-12"
+  },
+  {
+    "number": 22,
+    "type": "judgment",
+    "stem": "二叉搜索树查找的平均时间复杂度为`O(log n)`。",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "二叉搜索树",
+      "时间复杂度"
+    ],
+    "id": "GESP6-202312-J07",
+    "source": "2023-12"
+  },
+  {
+    "number": 23,
+    "type": "judgment",
+    "stem": "二叉搜索树可以是空树（没有任何节点）或者单节点树（只有一个节点），或者多节点。如果是多节点，则左节点的值小于父节点的值，右节点的值大于父节点的值，由此推理，右节点树的值都大于根节点的值，左节点树的值都小于根节点的值。",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "二叉搜索树",
+      "树的性质"
+    ],
+    "id": "GESP6-202312-J08",
+    "source": "2023-12"
+  },
+  {
+    "number": 24,
+    "type": "judgment",
+    "stem": "小杨想写一个程序来算出正整数N有多少个因数，经过思考他写出了一个重复没有超过N/2次的循环就能够算出来了。",
+    "options": [],
+    "answer": "false",
+    "tags": [
+      "算法优化",
+      "因数分解"
+    ],
+    "id": "GESP6-202312-J09",
+    "source": "2023-12"
+  },
+  {
+    "number": 25,
+    "type": "judgment",
+    "stem": "同样的整数序列分别保存在单链表和双向链中，这两种链表上的简单冒泡排序的复杂度相同。",
+    "options": [],
+    "answer": "false",
+    "tags": [
+      "链表",
+      "排序算法",
+      "时间复杂度"
+    ],
+    "id": "GESP6-202312-J10",
+    "source": "2023-12"
+  },
+  {
+    "number": 1,
+    "type": "choice",
+    "stem": "在构建哈夫曼树时，每次应该选择（ ）合并。",
+    "options": [
+      "A. 最小权值的节点",
+      "B. 最大权值的节点",
+      "C. 随机节点",
+      "D. 深度最深的节点"
+    ],
+    "answer": "A",
+    "tags": [
+      "哈夫曼树",
+      "贪心算法",
+      "数据结构"
+    ],
+    "id": "GESP6-202403-C01",
+    "source": "2024-03"
+  },
+  {
+    "number": 2,
+    "type": "choice",
+    "stem": "面向对象的编程思想主要包括以下哪些原则（ ）？",
+    "options": [
+      "A. 贪心、动态规划、回溯",
+      "B. 并发、并行、异步",
+      "C. 递归、循环、分治",
+      "D. 封装、继承、多态"
+    ],
+    "answer": "D",
+    "tags": [
+      "面向对象",
+      "编程思想"
+    ],
+    "id": "GESP6-202403-C02",
+    "source": "2024-03"
+  },
+  {
+    "number": 3,
+    "type": "choice",
+    "stem": "在队列中，元素的添加和删除是按照（ ）原则进行的。",
+    "options": [
+      "A. 先进先出",
+      "B. 先进后出",
+      "C. 最小值先出",
+      "D. 随机进出"
+    ],
+    "answer": "A",
+    "tags": [
+      "队列",
+      "数据结构"
+    ],
+    "id": "GESP6-202403-C03",
+    "source": "2024-03"
+  },
+  {
+    "number": 4,
+    "type": "choice",
+    "stem": "给定一个简单的类定义如下，（ ）语句在类的外部正确地创建了一个 Circle 对象并调用了 getArea 函数？\n\n```cpp\nclass Circle {\nprivate:\n    double radius;\npublic:\n    Circle(double r) : radius(r) {}\n    double getArea() {\n        return 3.14 * radius * radius;\n    }\n};\n```",
+    "options": [
+      "A. Circle c = Circle(5.0); c.getArea(c);",
+      "B. Circle c(5.0); getArea(c);",
+      "C. Circle c = new Circle(5.0); c.getArea();",
+      "D. Circle c(5.0); c.getArea();"
+    ],
+    "answer": "D",
+    "tags": [
+      "面向对象",
+      "类与对象",
+      "构造函数"
+    ],
+    "id": "GESP6-202403-C04",
+    "source": "2024-03"
+  },
+  {
+    "number": 5,
+    "type": "choice",
+    "stem": "以下代码希望能在一棵二叉排序树中搜索特定的值，请在横线处填入（ ），使其能正确实现相应功能。\n\n```cpp\nTreeNode* search(TreeNode* root, int target) {\n    if (root == NULL || root->val == target) {\n        return root;\n    }\n    if (_______________) {\n        return search(root->left, target);\n    } else {\n        return search(root->right, target);\n    }\n}\n```",
+    "options": [
+      "A. target < root->left",
+      "B. target < root->val",
+      "C. target > root->val",
+      "D. target > root->left"
+    ],
+    "answer": "B",
+    "tags": [
+      "二叉排序树",
+      "二叉搜索树",
+      "递归"
+    ],
+    "id": "GESP6-202403-C05",
+    "source": "2024-03"
+  },
+  {
+    "number": 6,
+    "type": "choice",
+    "stem": "3 位格雷编码的正确顺序是（ ）。",
+    "options": [
+      "A. 000, 001, 010, 011, 100, 101, 110, 111",
+      "B. 000, 001, 011, 010, 110, 111, 101, 100",
+      "C. 000, 010, 001, 011, 100, 110, 101, 111",
+      "D. 000, 010, 110, 100, 111, 101, 011, 001"
+    ],
+    "answer": "B",
+    "tags": [
+      "格雷码",
+      "编码"
+    ],
+    "id": "GESP6-202403-C06",
+    "source": "2024-03"
+  },
+  {
+    "number": 7,
+    "type": "choice",
+    "stem": "以下动态规划算法的含义与目的是（ ）。\n\n```cpp\nint function(vector<int>& nums) {\n    int n = nums.size();\n    if (n == 0)\n        return 0;\n    if (n == 1)\n        return nums[0];\n    vector<int> dp(n, 0);\n    dp[0] = nums[0];\n    dp[1] = max(nums[0], nums[1]);\n    for (int i = 2; i < n; ++i) {\n        dp[i] = max(dp[i - 1], nums[i] + dp[i - 2]);\n    }\n    return dp[n - 1];\n}\n```",
+    "options": [
+      "A. 计算数组 nums 中的所有元素的和",
+      "B. 计算数组 nums 中相邻元素的最大和",
+      "C. 计算数组 nums 中不相邻元素的最大和",
+      "D. 计算数组 nums 中的最小元素"
+    ],
+    "answer": "C",
+    "tags": [
+      "动态规划",
+      "打家劫舍问题"
+    ],
+    "id": "GESP6-202403-C07",
+    "source": "2024-03"
+  },
+  {
+    "number": 8,
+    "type": "choice",
+    "stem": "阅读以下广度优先搜索的代码：\n\n```cpp\nvoid bfs(TreeNode* root) {\n    if (root == NULL) {\n        return;\n    }\n    queue<TreeNode*> q;\n    q.push(root);\n    while (!q.empty()) {\n        TreeNode* current = q.front();\n        q.pop();\n        cout << current->val << \" \";\n        if (current->left) {\n            q.push(current->left);\n        }\n        if (current->right) {\n            q.push(current->right);\n        }\n    }\n}\n\n```\n使用以上算法遍历以下这棵树，可能的输出是（ ）。\n[图片：二叉树\n    1\n   / \\\n  2   3\n / \\   \\\n8   9   6\n   / \\   \\\n  4   5   7\n         / \\\n        10 11\n]",
+    "options": [
+      "A. 1 2 8 9 4 5 3 6 7 10 11",
+      "B. 1 2 3 4 5 6 7 8 9 10 11",
+      "C. 1 2 3 8 9 6 4 5 7 10 11",
+      "D. 1 2 3 8 9 4 5 6 7 10 11"
+    ],
+    "answer": "C",
+    "tags": [
+      "广度优先搜索",
+      "BFS",
+      "二叉树遍历",
+      "队列"
+    ],
+    "id": "GESP6-202403-C08",
+    "source": "2024-03"
+  },
+  {
+    "number": 9,
+    "type": "choice",
+    "stem": "给定一个空栈，执行以下操作序列：\n操作序列：`push(1)`, `push(2)`, `push(3)`, `pop()`, `pop()`, `push(4)`, `push(5)`, `pop()`\n最终栈中的元素是（ ）。",
+    "options": [
+      "A. 1, 2",
+      "B. 1, 4, 5",
+      "C. 1, 2, 5",
+      "D. 1, 4"
+    ],
+    "answer": "D",
+    "tags": [
+      "栈",
+      "数据结构"
+    ],
+    "id": "GESP6-202403-C09",
+    "source": "2024-03"
+  },
+  {
+    "number": 10,
+    "type": "choice",
+    "stem": "一个有 124 个叶子节点的完全二叉树，最多有（ ）个结点。",
+    "options": [
+      "A. 247",
+      "B. 248",
+      "C. 249",
+      "D. 250"
+    ],
+    "answer": "B",
+    "tags": [
+      "完全二叉树",
+      "二叉树性质"
+    ],
+    "id": "GESP6-202403-C10",
+    "source": "2024-03"
+  },
+  {
+    "number": 11,
+    "type": "choice",
+    "stem": "在求解最优化问题时，动态规划常常涉及到两个重要性质，即最优子结构和（ ）。",
+    "options": [
+      "A. 重叠子问题",
+      "B. 分治法",
+      "C. 贪心策略",
+      "D. 回溯算法"
+    ],
+    "answer": "A",
+    "tags": [
+      "动态规划",
+      "算法设计"
+    ],
+    "id": "GESP6-202403-C11",
+    "source": "2024-03"
+  },
+  {
+    "number": 12,
+    "type": "choice",
+    "stem": "若一棵二叉树的先序遍历为：A, B, D, E, C, F、中序遍历为：D, B, E, A, F, C，它的后序遍历为（ ）。",
+    "options": [
+      "A. D, E, B, F, C, A",
+      "B. E, D, B, F, C, A",
+      "C. D, E, B, C, F, A",
+      "D. E, D, B, C, F, A"
+    ],
+    "answer": "A",
+    "tags": [
+      "二叉树遍历",
+      "先序遍历",
+      "中序遍历",
+      "后序遍历"
+    ],
+    "id": "GESP6-202403-C12",
+    "source": "2024-03"
+  },
+  {
+    "number": 13,
+    "type": "choice",
+    "stem": "线性筛法与埃氏筛法相比的优势是（ ）。",
+    "options": [
+      "A. 更容易实现",
+      "B. 更节省内存",
+      "C. 更快速",
+      "D. 更准确"
+    ],
+    "answer": "C",
+    "tags": [
+      "筛法",
+      "素数筛",
+      "算法优化"
+    ],
+    "id": "GESP6-202403-C13",
+    "source": "2024-03"
+  },
+  {
+    "number": 14,
+    "type": "choice",
+    "stem": "以下代码使用了辗转相除法求解最大公因数，请在横线处填入（ ），使其能正确实现相应功能。\n\n```cpp\nint gcd(int a, int b) {\n    while (b != 0) {\n        ______________________\n    }\n    return a;\n}\n```",
+    "options": [
+      "A. int temp = b; b = a / b; a = temp;",
+      "B. int temp = a; a = b / a; b = temp;",
+      "C. int temp = b; b = a % b; a = temp;",
+      "D. b = a % b; a = b;"
+    ],
+    "answer": "C",
+    "tags": [
+      "辗转相除法",
+      "最大公因数",
+      "欧几里得算法"
+    ],
+    "id": "GESP6-202403-C14",
+    "source": "2024-03"
+  },
+  {
+    "number": 15,
+    "type": "choice",
+    "stem": "下面的代码片段用于反转单链表，请进行（ ）修改，使其能正确实现相应功能。\n\n```cpp\nListNode* reverseLinkedList(ListNode* head) {\n    ListNode* prev = nullptr;\n    ListNode* current = head;\n    while (current != nullptr) {\n        ListNode* next = current->next;\n        current->next = next;\n        prev = current;\n        current = next;\n    }\n    return prev;\n}\n```",
+    "options": [
+      "A. current->next = next; 应该改为 current->next = prev;",
+      "B. ListNode* next = current->next; 应该改为 ListNode* next = prev->next;",
+      "C. current != nullptr 应该改为 current->next != nullptr",
+      "D. ListNode* prev = nullptr; 应该改为 ListNode* prev = head;"
+    ],
+    "answer": "A",
+    "tags": [
+      "链表",
+      "链表反转",
+      "指针操作"
+    ],
+    "id": "GESP6-202403-C15",
+    "source": "2024-03"
+  },
+  {
+    "number": 1,
+    "type": "judgment",
+    "stem": "哈夫曼树是一种二叉树。",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "哈夫曼树",
+      "二叉树"
+    ],
+    "id": "GESP6-202403-J01",
+    "source": "2024-03"
+  },
+  {
+    "number": 2,
+    "type": "judgment",
+    "stem": "在动态规划中，状态转移方程的作用是定义状态之间的关系。",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "动态规划",
+      "状态转移方程"
+    ],
+    "id": "GESP6-202403-J02",
+    "source": "2024-03"
+  },
+  {
+    "number": 3,
+    "type": "judgment",
+    "stem": "继承是将已有类的属性和方法引入新类的过程。",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "面向对象",
+      "继承"
+    ],
+    "id": "GESP6-202403-J03",
+    "source": "2024-03"
+  },
+  {
+    "number": 4,
+    "type": "judgment",
+    "stem": "完全二叉树的任意一层都可以不满。",
+    "options": [],
+    "answer": "false",
+    "tags": [
+      "完全二叉树",
+      "二叉树性质"
+    ],
+    "id": "GESP6-202403-J04",
+    "source": "2024-03"
+  },
+  {
+    "number": 5,
+    "type": "judgment",
+    "stem": "删除单向链表中的节点，只需知道待删除节点的地址即可，无需访问前一个节点。",
+    "options": [],
+    "answer": "false",
+    "tags": [
+      "链表",
+      "链表删除"
+    ],
+    "id": "GESP6-202403-J05",
+    "source": "2024-03"
+  },
+  {
+    "number": 6,
+    "type": "judgment",
+    "stem": "在宽度优先搜索中，通常使用队列来辅助实现。",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "广度优先搜索",
+      "BFS",
+      "队列"
+    ],
+    "id": "GESP6-202403-J06",
+    "source": "2024-03"
+  },
+  {
+    "number": 7,
+    "type": "judgment",
+    "stem": "哈夫曼编码的主要应用领域是有损数据压缩。",
+    "options": [],
+    "answer": "false",
+    "tags": [
+      "哈夫曼编码",
+      "数据压缩"
+    ],
+    "id": "GESP6-202403-J07",
+    "source": "2024-03"
+  },
+  {
+    "number": 8,
+    "type": "judgment",
+    "stem": "二叉搜索树的查找操作的时间复杂度是 `O(log n)`。",
+    "options": [],
+    "answer": "false",
+    "tags": [
+      "二叉搜索树",
+      "时间复杂度"
+    ],
+    "id": "GESP6-202403-J08",
+    "source": "2024-03"
+  },
+  {
+    "number": 9,
+    "type": "judgment",
+    "stem": "栈的基本操作包括入栈（push）和出栈（pop）。",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "栈",
+      "数据结构"
+    ],
+    "id": "GESP6-202403-J09",
+    "source": "2024-03"
+  },
+  {
+    "number": 10,
+    "type": "judgment",
+    "stem": "使用哈夫曼编码对一些字符进行编码，如果两个字符的频率差异最大，则它们的编码可能出现相同的前缀。",
+    "options": [],
+    "answer": "false",
+    "tags": [
+      "哈夫曼编码",
+      "前缀编码"
+    ],
+    "id": "GESP6-202403-J10",
+    "source": "2024-03"
+  },
+  {
+    "number": 1,
+    "type": "choice",
+    "stem": "以下（  ）没有涉及 C++ 语言的面向对象特性支持。\nA. C++ 中构造一个 class 或 struct\nB. C++ 中调用 printf 函数\nC. C++ 中调用用户定义的类成员函数\nD. C++ 中构造来源于同一基类的多个派生类",
+    "options": [
+      "A. C++ 中构造一个 class 或 struct",
+      "B. C++ 中调用 printf 函数",
+      "C. C++ 中调用用户定义的类成员函数",
+      "D. C++ 中构造来源于同一基类的多个派生类"
+    ],
+    "answer": "B",
+    "tags": [
+      "面向对象",
+      "C++基础"
+    ],
+    "id": "GESP6-202409-C01",
+    "source": "2024-09"
+  },
+  {
+    "number": 2,
+    "type": "choice",
+    "stem": "关于以下C++代码，（  ）行代码会引起编译错误。\n```cpp\n#include <iostream>\nusing namespace std;\nclass Base {\nprivate:\n    int a;\nprotected:\n    int b;\npublic:\n    int c;\n    Base() : a(1), b(2), c(3) {}\n};\nclass Derived : public Base {\npublic:\n    void show() {\n        cout << a << endl;   // Line 1\n        cout << b << endl;   // Line 2\n        cout << c << endl;   // Line 3\n    }\n};\n```",
+    "options": [
+      "A. Line 1",
+      "B. Line 2",
+      "C. Line 3",
+      "D. 没有编译错误"
+    ],
+    "answer": "A",
+    "tags": [
+      "面向对象",
+      "继承",
+      "访问控制"
+    ],
+    "id": "GESP6-202409-C02",
+    "source": "2024-09"
+  },
+  {
+    "number": 3,
+    "type": "choice",
+    "stem": "有6个元素，按照 6,5,4,3,2,1 的顺序进入栈S，下列（  ）的出栈序列是不能出现的（ ）。",
+    "options": [
+      "A. 5,4,3,6,1,2",
+      "B. 4,5,3,1,2,6",
+      "C. 3,4,6,5,2,1",
+      "D. 2,3,4,1,5,6"
+    ],
+    "answer": "C",
+    "tags": [
+      "栈",
+      "数据结构"
+    ],
+    "id": "GESP6-202409-C03",
+    "source": "2024-09"
+  },
+  {
+    "number": 4,
+    "type": "choice",
+    "stem": "采用如下代码实现检查输入的字符串括号是否匹配，横线上应填入的代码为（ ）。\n```cpp\n#include <iostream>\n#include <stack>\n#include <string>\nusing namespace std;\nbool is_valid(string s) {\n    stack<char> st;\n    char top;\n    for (char& ch : s) {\n        if (ch == '(' || ch == '{' || ch == '[') {\n            st.push(ch);    // 左括号入栈\n        }\n        else\n        {\n            if (st.empty())\n                return false;\n            ———————————————————————— // 在此处填入代码\n            if ((ch == ')' && top != '(') ||\n                (ch == '}' && top != '{') ||\n                (ch == ']' && top != '[')) {\n                return false;\n            }\n        }\n    }\n    return st.empty();      // 栈为空则说明所有括号匹配成功\n}\n```",
+    "options": [
+      "A. top = st.top(); st.pop();",
+      "B. st.pop(); top = st.top();",
+      "C. st.pop(); top = st.front();",
+      "D. top = st.front(); st.pop();"
+    ],
+    "answer": "A",
+    "tags": [
+      "栈",
+      "括号匹配"
+    ],
+    "id": "GESP6-202409-C04",
+    "source": "2024-09"
+  },
+  {
+    "number": 5,
+    "type": "choice",
+    "stem": "下面代码判断队列的第一个元素是否等于a，并删除该元素，横线上应填写（ ）。\n```cpp\n#include <iostream>\n#include <queue>\nusing namespace std;\nbool is_front_equal(std::queue<int>& q, int a) {\n    bool is_equal = false;\n    if (!q.empty()) {\n        ________\n    }\n    return is_equal;\n}\n```",
+    "options": [
+      "A. is_equal = (q.front() == a);",
+      "B. is_equal = (q.front() == a); q.pop();",
+      "C. q.pop(); is_equal = (q.front() == a);",
+      "D. q.pop(); is_equal = (q.top() == a);"
+    ],
+    "answer": "B",
+    "tags": [
+      "队列",
+      "数据结构",
+      "OCR修复"
+    ],
+    "id": "GESP6-202409-C05",
+    "source": "2024-09"
+  },
+  {
+    "number": 6,
+    "type": "choice",
+    "stem": "假设字母表{a,b,c,d,e} 在字符串出现的频率分别为 10%，15%，30%，16%，29%。若使用哈夫曼编码方式对字母进行二进制编码，则字符abcdef 分别对应的一组哈夫曼编码的长度分别为（  ）。",
+    "options": [
+      "A. 4, 4, 1, 3, 2",
+      "B. 3, 3, 2, 2, 2",
+      "C. 3, 3, 1, 2, 1",
+      "D. 4, 4, 1, 2, 2"
+    ],
+    "answer": "B",
+    "tags": [
+      "哈夫曼编码",
+      "贪心算法"
+    ],
+    "id": "GESP6-202409-C06",
+    "source": "2024-09"
+  },
+  {
+    "number": 7,
+    "type": "choice",
+    "stem": "以下C++代码实现n位的格雷码，则横线上应填写（ ）。\n```cpp\n#include <iostream>\n#include <vector>\n#include <string>\nusing namespace std;\nvector<string> generate_graycode(int n) {\n    vector<string> graycode_list;\n    if (n <= 0) return graycode_list;\n    graycode_list.push_back(\"0\");\n    graycode_list.push_back(\"1\");\n    for (int i = 2; i <= n; i++) {\n        int size = graycode_list.size();\n        for (int j = size - 1; j >= 0; j--) {\n            ________\n        }\n        for (int j = 0; j < size; j++) {\n            graycode_list[j] = \"0\" + graycode_list[j];\n        }\n    }\n    return graycode_list;\n}\n```",
+    "options": [
+      "A. graycode_list.push_back(\"0\" + graycode_list[j]);",
+      "B. graycode_list[j] = \"0\" + graycode_list[j];",
+      "C. graycode_list.push_back(\"1\" + graycode_list[j]);",
+      "D. graycode_list[j] = \"1\" + graycode_list[j];"
+    ],
+    "answer": "B",
+    "tags": [
+      "格雷码",
+      "算法",
+      "OCR修复"
+    ],
+    "id": "GESP6-202409-C07",
+    "source": "2024-09"
+  },
+  {
+    "number": 8,
+    "type": "choice",
+    "stem": "给定一棵二叉树，其前序遍历结果为：ABDECFG,中序遍历结果为：DEBACFG，则这棵树的正确后序遍历结果是（ ）。",
+    "options": [
+      "A. EDBGFCA",
+      "B. EDGBFCA",
+      "C. DEBGFCA",
+      "D. DBEGFCA"
+    ],
+    "answer": "A",
+    "tags": [
+      "二叉树",
+      "树的遍历"
+    ],
+    "id": "GESP6-202409-C08",
+    "source": "2024-09"
+  },
+  {
+    "number": 9,
+    "type": "choice",
+    "stem": "一棵有n个结点的完全二叉树用数组进行存储与表示，已知根结点存储在数组的第1个位置。若存储在数组第9个位置的结点存在兄弟结点和两个子结点，则它的兄弟结点和右子结点的位置分别是（ ）。",
+    "options": [
+      "A. 8, 18",
+      "B. 10, 18",
+      "C. 8, 19",
+      "D. 10, 19"
+    ],
+    "answer": "C",
+    "tags": [
+      "二叉树",
+      "完全二叉树",
+      "数组存储",
+      "OCR修复"
+    ],
+    "id": "GESP6-202409-C09",
+    "source": "2024-09"
+  },
+  {
+    "number": 10,
+    "type": "choice",
+    "stem": "二叉树的深度定义为从根结点到叶结点的最长路径上的结点数，则以下基于二叉树的深度优先搜索实现的深度计算函数中横线上应填写（  ）。\n```cpp\n// 定义二叉树的结点结构\nstruct tree_node {\n    int val;\n    tree_node* left;\n    tree_node* right;\n    tree_node(int x) : val(x), left(nullptr), right(nullptr) {}\n};\n// 计算二叉树的深度\nint max_depth(tree_node* root) {\n    if (root == nullptr) {\n        return 0;  // 如果根结点为空，则深度为 0\n    }\n    int left_depth = max_depth(root->left);\n    int right_depth = max_depth(root->right);\n    ———————————————————————— // 在此处填入代码\n}\n```",
+    "options": [
+      "A. return left_depth + right_depth;",
+      "B. return max(left_depth, right_depth);",
+      "C. return max(left_depth, right_depth) + 1;",
+      "D. return left_depth + right_depth + 1;"
+    ],
+    "answer": "C",
+    "tags": [
+      "二叉树",
+      "深度优先搜索",
+      "递归"
+    ],
+    "id": "GESP6-202409-C10",
+    "source": "2024-09"
+  },
+  {
+    "number": 11,
+    "type": "choice",
+    "stem": "上一题的二叉树深度计算还可以采用二叉树的广度优先搜索来实现。以下基于二叉树的广度优先搜索实现的深度计算函数中横线上应填写（  ）。\n```cpp\n#include <queue>\nint max_depth_bfs(tree_node* root) {\n    if (root == nullptr) {\n        return 0; // 如果树为空，深度为 0\n    }\n    queue <tree_node*> q;\n    q.push(root);\n    int depth = 0;\n    // 使用队列进行层序遍历\n    while (!q.empty()) {\n        ———————————————————————— // 在此处填入代码\n        for (int i = 0; i < level_size; ++i) {\n            tree_node* node = q.front();\n            q.pop();\n            if (node->left) {\n                q.push(node->left);\n            }\n            if (node->right) {\n                q.push(node->right);\n            }\n        }\n    }\n    return depth;\n}\n```",
+    "options": [
+      "A. int level_size = q.size(); depth++;",
+      "B. int level_size = 2; depth++;",
+      "C. int level_size = q.size(); depth += level_size;",
+      "D. int level_size = 2; depth += level_size;"
+    ],
+    "answer": "A",
+    "tags": [
+      "二叉树",
+      "广度优先搜索",
+      "层序遍历"
+    ],
+    "id": "GESP6-202409-C11",
+    "source": "2024-09"
+  },
+  {
+    "number": 12,
+    "type": "choice",
+    "stem": "二叉搜索树中的每个结点，其左子树的所有结点值都小于该结点值，右子树的所有结点值都大于该结点值。以下代码对给定的整数数组(假设数组中没有数值相等的元素)，构造一个对应的二叉搜索树，横线上应填写（  ）:\n```cpp\n// 定义二叉树的结点结构\nstruct tree_node {\n    int val;\n    tree_node* left;\n    tree_node* right;\n    tree_node(int x) : val(x), left(nullptr), right(nullptr) {}\n};\n// 插入结点到二叉搜索树中\ntree_node* insert(tree_node* root, int val) {\n    if (root == nullptr) {\n        return new tree_node(val);\n    }\n    ———————————————————————— // 在此处填入代码\n    return root;\n}\n// 根据给定数组构造二叉搜索树\ntree_node* constructBST(const int arr[], int size) {\n    tree_node* root = nullptr;\n    for (int i = 0; i < size; ++i) {\n        root = insert(root, arr[i]);\n    }\n    return root;\n}\n```",
+    "options": [
+      "A. if (val < root->val)\n  root->left = insert(root->left, val);\nelse\n  root->right = insert(root->right, val);",
+      "B. if (val > root->val)\n  root->left = insert(root->left, val);\nelse\n  root->right = insert(root->right, val);",
+      "C. if (val < root->val)\n  root->left = insert(root, val);\nelse\n  root->right = insert(root, val);",
+      "D. if (val > root->val)\n  root->left = insert(root, val);\nelse\n  root->right = insert(root, val);"
+    ],
+    "answer": "A",
+    "tags": [
+      "二叉搜索树",
+      "递归"
+    ],
+    "id": "GESP6-202409-C12",
+    "source": "2024-09"
+  },
+  {
+    "number": 13,
+    "type": "choice",
+    "stem": "对上题中的二叉搜索树，当输入数组为[5,3,7,2,4,6,8]时，构建二叉搜索树，并采用如下代码实现的遍历方式，得到的输出是（ ）。\n```cpp\nvoid traversal(tree_node* root) {\n    if (root == nullptr) return;\n    traversal(root->left);\n    cout << root->val << \" \";\n    traversal(root->right);\n}\n```",
+    "options": [
+      "A. 5 3 7 2 4 6 8",
+      "B. 2 3 4 5 6 7 8",
+      "C. 2 4 3 6 8 7 5",
+      "D. 2 4 3 5 6 7 8"
+    ],
+    "answer": "B",
+    "tags": [
+      "二叉搜索树",
+      "中序遍历",
+      "OCR修复"
+    ],
+    "id": "GESP6-202409-C13",
+    "source": "2024-09"
+  },
+  {
+    "number": 14,
+    "type": "choice",
+    "stem": "动态规划通常用于解决（  ）。",
+    "options": [
+      "A. 无法分解的问题",
+      "B. 可以分解成相互依赖的子问题的问题",
+      "C. 可以通过贪心算法解决的问题",
+      "D. 只能通过递归解决的问题"
+    ],
+    "answer": "B",
+    "tags": [
+      "动态规划",
+      "算法思想"
+    ],
+    "id": "GESP6-202409-C14",
+    "source": "2024-09"
+  },
+  {
+    "number": 15,
+    "type": "choice",
+    "stem": "阅读以下用动态规划解决的0-1背包问题的函数，假设背包的容量W是10kg，假设输入4个物品的重量weights分别为1,3,4,6（单位为kg），每个物品对应的价值values分别为20,30,50,60，则函数的输出为（ ）。\n```cpp\nint knapsack(int W, const vector<int>& weights, const vector<int>& values, int n) {\n    vector<vector<int>> dp(n + 1, vector<int>(W + 1, 0));\n    for (int i = 1; i <= n; ++i) {\n        for (int w = 0; w <= W; ++w) {\n            if (weights[i-1] <= w)\n                dp[i][w] = max(dp[i-1][w], dp[i-1][w-weights[i-1]] + values[i-1]);\n            else\n                dp[i][w] = dp[i-1][w];\n        }\n    }\n    return dp[n][W];\n}\n```",
+    "options": [
+      "A. 90",
+      "B. 100",
+      "C. 110",
+      "D. 140"
+    ],
+    "answer": "C",
+    "tags": [
+      "动态规划",
+      "0-1背包",
+      "OCR修复"
+    ],
+    "id": "GESP6-202409-C15",
+    "source": "2024-09"
+  },
+  {
+    "number": 1,
+    "type": "judgment",
+    "stem": "C++、Python和JAVA等都是面向对象的编程语言。",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "编程语言",
+      "面向对象"
+    ],
+    "id": "GESP6-202409-J01",
+    "source": "2024-09"
+  },
+  {
+    "number": 2,
+    "type": "judgment",
+    "stem": "在C++中，类的静态成员变量只能被该类对象的成员函数访问。",
+    "options": [],
+    "answer": "false",
+    "tags": [
+      "C++",
+      "静态成员"
+    ],
+    "id": "GESP6-202409-J02",
+    "source": "2024-09"
+  },
+  {
+    "number": 3,
+    "type": "judgment",
+    "stem": "栈是一种线性结构，可通过数组或链表来实现。二者相比，数组实现占用的内存较少，链表实现的入队和出队操作的时间复杂度较低。",
+    "options": [],
+    "answer": "false",
+    "tags": [
+      "栈",
+      "数据结构",
+      "时间复杂度"
+    ],
+    "id": "GESP6-202409-J03",
+    "source": "2024-09"
+  },
+  {
+    "number": 4,
+    "type": "judgment",
+    "stem": "运行以下C++代码，屏幕将输出\"derived class\"。\n```cpp\n#include <iostream>\nusing namespace std;\nclass base {\npublic:\n    virtual void show() {\n        cout << \"base class\" << endl;\n    }\n};\nclass derived : public base {\npublic:\n    void show() override {\n        cout << \"derived class\" << endl;\n    }\n};\nint main() {\n    base* b;\n    derived d;\n    b = &d;\n    b->show();\n    return 0;\n}\n```",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "面向对象",
+      "虚函数",
+      "多态"
+    ],
+    "id": "GESP6-202409-J04",
+    "source": "2024-09"
+  },
+  {
+    "number": 5,
+    "type": "judgment",
+    "stem": "如下列代码所示的基类（base）及其派生类（derived），则生成一个派生类的对象时，只调用派生类的构造函数。\n```cpp\n#include <iostream>\nusing namespace std;\nclass base {\npublic:\n    base() {\n        cout << \"base constructor\" << endl;\n    }\n    ~base() {\n        cout << \"base destructor\" << endl;\n    }\n};\nclass derived : public base {\n public:\n    derived() {\n        cout << \"derived constructor\" << endl;\n    }\n    ~derived() {\n        cout << \"derived destructor\" << endl;\n    }\n};\n```",
+    "options": [],
+    "answer": "false",
+    "tags": [
+      "面向对象",
+      "继承",
+      "构造函数"
+    ],
+    "id": "GESP6-202409-J05",
+    "source": "2024-09"
+  },
+  {
+    "number": 6,
+    "type": "judgment",
+    "stem": "哈夫曼编码本质上是一种贪心策略。",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "哈夫曼编码",
+      "贪心算法"
+    ],
+    "id": "GESP6-202409-J06",
+    "source": "2024-09"
+  },
+  {
+    "number": 7,
+    "type": "judgment",
+    "stem": "如果根结点的深度记为1，则一棵恰有2024个叶结点的二叉树的深度最少是12。",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "二叉树",
+      "树的深度",
+      "OCR修复"
+    ],
+    "id": "GESP6-202409-J07",
+    "source": "2024-09"
+  },
+  {
+    "number": 8,
+    "type": "judgment",
+    "stem": "在非递归实现的树的广度优先搜索中，通常使用栈来辅助实现。",
+    "options": [],
+    "answer": "false",
+    "tags": [
+      "广度优先搜索",
+      "队列"
+    ],
+    "id": "GESP6-202409-J08",
+    "source": "2024-09"
+  },
+  {
+    "number": 9,
+    "type": "judgment",
+    "stem": "状态转移方程是动态规划的核心，可以通过递推方式表示问题状态的变化。",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "动态规划",
+      "状态转移方程"
+    ],
+    "id": "GESP6-202409-J09",
+    "source": "2024-09"
+  },
+  {
+    "number": 10,
+    "type": "judgment",
+    "stem": "应用动态规划算法时，识别并存储重叠子问题的解是必须的。",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "动态规划",
+      "重叠子问题"
+    ],
+    "id": "GESP6-202409-J10",
+    "source": "2024-09"
+  },
+  {
+    "number": 1,
+    "type": "choice",
+    "stem": "面向对象编程(OOP)是一种特殊的程序设计方法。下面(   )不是重要的OOP特性。",
+    "options": [
+      "A. 抽象",
+      "B. 封装",
+      "C. 继承",
+      "D. 模块化"
+    ],
+    "answer": "D",
+    "tags": [
+      "面向对象",
+      "OOP特性"
+    ],
+    "id": "GESP6-202412-C01",
+    "source": "2024-12"
+  },
+  {
+    "number": 2,
+    "type": "choice",
+    "stem": "以下关于C++中类的说法，哪一项是正确的？",
+    "options": [
+      "A. 类中定义的所有成员变量和成员函数默认是public 访问权限。",
+      "B. 类的构造函数必须显式声明返回类型为void 。",
+      "C. 在C++中，类的数据一般设置为私有，其公有成员函数提供访问私有数据的唯一途径。",
+      "D. 同一个类的实例有各自的成员数据和成员函数。"
+    ],
+    "answer": "C",
+    "tags": [
+      "面向对象",
+      "类",
+      "访问权限",
+      "封装"
+    ],
+    "id": "GESP6-202412-C02",
+    "source": "2024-12"
+  },
+  {
+    "number": 3,
+    "type": "choice",
+    "stem": "以下C++代码段中存在语法错误或逻辑错误，（  ）是正确的。\n\n```cpp\n#include <iostream>\nusing namespace std;\nclass MyClass {\npublic:\n    MyClass() {\n        cout << \"Constructor called!\" << endl;\n    }\n    void display() {\n        cout << \"Display function called!\" << endl;\n    }\n};\nint main() {\n    MyClass* obj = NULL;\n    obj->display();\n    return 0;\n}\n```",
+    "options": [
+      "A. NULL  在C++中无法用于指针初始化，应使用 nullptr 。",
+      "B. obj  的定义应该是 MyClass obj;  而不是指针类型。",
+      "C. obj->display()  语句存在空指针访问错误，obj  应该初始化为一个有效的对象。",
+      "D. obj->display()  语句会调用 display()  函数，但它没有输出任何内容。"
+    ],
+    "answer": "C",
+    "tags": [
+      "指针",
+      "空指针",
+      "对象初始化"
+    ],
+    "id": "GESP6-202412-C03",
+    "source": "2024-12"
+  },
+  {
+    "number": 4,
+    "type": "choice",
+    "stem": "阅读以下代码，下面哪一项是正确的？\n\n```cpp\nvoid processData() {\n    stack<int> s;\n    queue<int> q;\n    for (int i = 1; i <= 5; ++i) {\n        s.push(i);\n        q.push(i);\n    }\n    while (!s.empty()) {\n        cout << \"Stack pop: \" << s.top() << endl;\n        s.pop();\n    }\n    while (!q.empty()) {\n        cout << \"Queue pop: \" << q.front() << endl;\n        q.pop();\n    }\n}\n```",
+    "options": [
+      "A. 栈s 的输出顺序是 1 2 3 4 5 ，队列q 的输出顺序是 5 4 3 2 1 。",
+      "B. 栈s 的输出顺序是 5 4 3 2 1 ，队列q 的输出顺序是 1 2 3 4 5 。",
+      "C. 栈s 的输出顺序是 1 2 3 4 5 ，队列q 的输出顺序是 1 2 3 4 5 。",
+      "D. 栈s 的输出顺序是 1 2 3 4 5 ，队列q 的输出顺序是 1 2 3 4 5 ，程序不会正常执行。"
+    ],
+    "answer": "B",
+    "tags": [
+      "栈与队列",
+      "数据结构"
+    ],
+    "id": "GESP6-202412-C04",
+    "source": "2024-12"
+  },
+  {
+    "number": 5,
+    "type": "choice",
+    "stem": "n个节点的双向循环链，在其中查找某个节点的平均时间复杂度是( )。",
+    "options": [
+      "A. O(1)",
+      "B. O(n)",
+      "C. O(log n)",
+      "D. O(n²)"
+    ],
+    "answer": "B",
+    "tags": [
+      "链表",
+      "时间复杂度",
+      "双向循环链表"
+    ],
+    "id": "GESP6-202412-C05",
+    "source": "2024-12"
+  },
+  {
+    "number": 6,
+    "type": "choice",
+    "stem": "以下关于树的说法，（  ）是正确的。",
+    "options": [
+      "A. 在⼀棵⼆叉树中，叶⼦结点的度⼀定是2。",
+      "B. 满⼆叉树中每⼀层的结点数等于2^层数。",
+      "C. 在⼀棵树中，所有结点的度之和等于所有叶⼦结点的度之和。",
+      "D. ⼀棵⼆叉树的先序遍历结果和中序遍历结果⼀定相同。"
+    ],
+    "answer": "B",
+    "tags": [
+      "二叉树",
+      "树的性质",
+      "满二叉树"
+    ],
+    "id": "GESP6-202412-C06",
+    "source": "2024-12"
+  },
+  {
+    "number": 7,
+    "type": "choice",
+    "stem": "已知字符集 {A, B, C, D}  的出现频率如下表所示：\n\n字符 | 频率\nA    | 8\nB    | 3\nC    | 1\nD    | 6\n\n根据哈夫曼编码法，下面（   ）是正确的哈夫曼树。",
+    "options": [
+      "A. [图片：ABCD根节点，左子A，右子BCD，BCD左子D，右子BC，BC左子B右子C]",
+      "B. [图片：ABCD根节点，左子A，右子BCD，BCD左子B，右子CD，CD左子C右子D]",
+      "C. [图片：ABCD根节点，左子D，右子ABC，ABC左子A，右子BC，BC左子B右子C]",
+      "D. [图片：ABCD根节点，左子C，右子ABC，ABC左子B，右子AD，AD左子A右子D]"
+    ],
+    "answer": "A",
+    "tags": [
+      "哈夫曼编码",
+      "哈夫曼树",
+      "贪心算法"
+    ],
+    "id": "GESP6-202412-C07",
+    "source": "2024-12"
+  },
+  {
+    "number": 8,
+    "type": "choice",
+    "stem": "上一题中各字符的哈夫曼编码是（  ）。",
+    "options": [
+      "A. A: 0, B: 10, C: 110, D: 111",
+      "B. A: 0, B: 10, C: 11, D: 10",
+      "C. A: 0, B: 101, C: 100, D: 11",
+      "D. A: 11, B: 10, C: 01, D: 00"
+    ],
+    "answer": "C",
+    "tags": [
+      "哈夫曼编码"
+    ],
+    "id": "GESP6-202412-C08",
+    "source": "2024-12"
+  },
+  {
+    "number": 9,
+    "type": "choice",
+    "stem": "(  )是3位格雷编码。",
+    "options": [
+      "A. 000 001 011 010 110 111 101 100",
+      "B. 000 001 010 011 100 101 110 111",
+      "C. 000 001 100 101 011 010 111 110",
+      "D. 000 010 001 011 100 110 101 111"
+    ],
+    "answer": "A",
+    "tags": [
+      "格雷码",
+      "编码"
+    ],
+    "id": "GESP6-202412-C09",
+    "source": "2024-12"
+  },
+  {
+    "number": 10,
+    "type": "choice",
+    "stem": "根据下面二叉树和给定的代码，\n\n[图片：二叉搜索树，根节点5，左子树3(左2右4)，右子树7(左6右8)]\n\n给定以下二叉搜索树，调用函数 `search(root,7)`  时，输出的结果是（  ）。\n\n```cpp\n#include <iostream>\nusing namespace std;\nstruct TreeNode {\n    int val;\n    TreeNode* left;\n    TreeNode* right;\n    TreeNode(int x) : val(x), left(NULL), right(NULL) {}\n};\nTreeNode* search(TreeNode* root, int val) {\n    cout << root->val << \" \";\n    if (root == NULL || root->val == val) return root;\n    if (val < root->val)\n        return search(root->left, val);\n    else\n        return search(root->right, val);\n}\n```",
+    "options": [
+      "A. 5 7",
+      "B. 5 3 7",
+      "C. 5 7 6",
+      "D. 5 3 4 7"
+    ],
+    "answer": "A",
+    "tags": [
+      "二叉搜索树",
+      "递归",
+      "树的搜索"
+    ],
+    "id": "GESP6-202412-C10",
+    "source": "2024-12"
+  },
+  {
+    "number": 11,
+    "type": "choice",
+    "stem": "阅读以下二叉树的深度优先搜索算法，横线上应填写（   ）。\n\n```cpp\nvoid dfs(TreeNode* root) {\n    if (root == nullptr)\n        return;\n    stack<TreeNode*> s;\n    s.push(root);\n    while (!s.empty()) {\n        ———————————————————————— // 在此处填入代码\n        cout << node->value << \" \";\n        if (node->right) s.push(node->right);\n        if (node->left) s.push(node->left);\n    }\n}\n```",
+    "options": [
+      "A. TreeNode* node = s.top();",
+      "B. TreeNode* node = s.top();  s.pop();",
+      "C. TreeNode* node = s.front();",
+      "D. TreeNode* node = s.front();  s.pop();"
+    ],
+    "answer": "B",
+    "tags": [
+      "深度优先搜索",
+      "DFS",
+      "栈",
+      "二叉树遍历"
+    ],
+    "id": "GESP6-202412-C11",
+    "source": "2024-12"
+  },
+  {
+    "number": 12,
+    "type": "choice",
+    "stem": "阅读以下二叉树的广度优先搜索的代码，横线上应填写（   ）。\n\n```cpp\n#include <queue>\nvoid bfs(TreeNode* root) {\n    if (root == NULL) return;\n    queue<TreeNode*> q;\n    q.push(root);\n    while (!q.empty()) {\n        ———————————————————————— // 在此处填入代码\n        cout << node->val << \" \";\n        if (node->left) {\n            q.push(node->left);\n        }\n        if (node->right) {\n            q.push(node->right);\n        }\n    }\n}\n```",
+    "options": [
+      "A. TreeNode* node = q.top();",
+      "B. TreeNode* node = q.top();  q.pop();",
+      "C. TreeNode* node = q.front();",
+      "D. TreeNode* node = q.front();  q.pop();"
+    ],
+    "answer": "D",
+    "tags": [
+      "广度优先搜索",
+      "BFS",
+      "队列",
+      "二叉树遍历"
+    ],
+    "id": "GESP6-202412-C12",
+    "source": "2024-12"
+  },
+  {
+    "number": 13,
+    "type": "choice",
+    "stem": "使用上题中的宽度优先搜索算法遍历以下这棵树，可能的输出是( )。\n\n[图片：二叉树，根节点1，左子树2(左8右9，9有左4右5)，右子树3(右6，6有右7)]",
+    "options": [
+      "A. 1 2 3 8 9 6 4 5 7",
+      "B. 1 3 2 6 9 8 7 5 4",
+      "C. 1 2 3 8 9 6 4 5 7",
+      "D. 1 2 8 9 3 4 5 6 7"
+    ],
+    "answer": "C",
+    "tags": [
+      "广度优先搜索",
+      "BFS",
+      "二叉树遍历"
+    ],
+    "id": "GESP6-202412-C13",
+    "source": "2024-12"
+  },
+  {
+    "number": 14,
+    "type": "choice",
+    "stem": "以下关于动态规划的描述，（  ）是正确的。",
+    "options": [
+      "A. 动态规划适用于没有重叠子问题的优化问题。",
+      "B. 动态规划要求问题具有最优子结构和无后效性。",
+      "C. 动态规划通常通过递归来实现。",
+      "D. 动态规划与贪心算法不同，贪心算法不适用于有重叠子问题的问题。"
+    ],
+    "answer": "B",
+    "tags": [
+      "动态规划",
+      "算法特性"
+    ],
+    "id": "GESP6-202412-C14",
+    "source": "2024-12"
+  },
+  {
+    "number": 15,
+    "type": "choice",
+    "stem": "假设背包的最大容量W=10，共有4个物品可供选择，4个物品的重量分别为{2, 3, 4, 5}，对应的价值分别为{30, 40, 50, 60}，则该0/1背包问题中，背包的最大价值为（  ）。",
+    "options": [
+      "A. 70",
+      "B. 90",
+      "C. 100",
+      "D. 120"
+    ],
+    "answer": "C",
+    "tags": [
+      "动态规划",
+      "背包问题",
+      "0/1背包"
+    ],
+    "id": "GESP6-202412-C15",
+    "source": "2024-12"
+  },
+  {
+    "number": 1,
+    "type": "judgment",
+    "stem": "构造函数是一种特殊的类成员函数，构造函数的名称和类名相同。但通过函数重载，可以创建多个同名的构造函数，条件是每个构造函数的参数列表不同。",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "面向对象",
+      "构造函数",
+      "函数重载"
+    ],
+    "id": "GESP6-202412-J01",
+    "source": "2024-12"
+  },
+  {
+    "number": 2,
+    "type": "judgment",
+    "stem": "类的静态成员函数既能访问类的静态数据成员，也能访问非静态数据成员。",
+    "options": [],
+    "answer": "false",
+    "tags": [
+      "面向对象",
+      "静态成员函数",
+      "类"
+    ],
+    "id": "GESP6-202412-J02",
+    "source": "2024-12"
+  },
+  {
+    "number": 3,
+    "type": "judgment",
+    "stem": "栈中元素的插入和删除操作都在栈的顶端进行，所以方便用单向链表实现。",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "栈",
+      "链表",
+      "数据结构"
+    ],
+    "id": "GESP6-202412-J03",
+    "source": "2024-12"
+  },
+  {
+    "number": 4,
+    "type": "judgment",
+    "stem": "下面代码构建的树一定是完全二叉树：\n\n```cpp\nstruct TreeNode {\n    int value;\n    TreeNode* left;\n    TreeNode* right;\n};\nTreeNode* buildCompleteBinaryTree() {\n    TreeNode* root = new TreeNode{1};\n    root->left = new TreeNode{2};\n    root->right = new TreeNode{3};\n    root->left->left = new TreeNode{4};\n    root->left->right = new TreeNode{5};\n    root->right->left = new TreeNode{6};\n    return root;\n}\n```",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "二叉树",
+      "完全二叉树"
+    ],
+    "id": "GESP6-202412-J04",
+    "source": "2024-12"
+  },
+  {
+    "number": 5,
+    "type": "judgment",
+    "stem": "在二叉排序树中，左子树所有节点的值都大于根节点的值，右子树所有节点的值都小于根节点的值。",
+    "options": [],
+    "answer": "false",
+    "tags": [
+      "二叉排序树",
+      "二叉搜索树",
+      "树的性质"
+    ],
+    "id": "GESP6-202412-J05",
+    "source": "2024-12"
+  },
+  {
+    "number": 6,
+    "type": "judgment",
+    "stem": "在生成一个派生类的对象时，只调用派生类的构造函数。",
+    "options": [],
+    "answer": "false",
+    "tags": [
+      "面向对象",
+      "继承",
+      "构造函数"
+    ],
+    "id": "GESP6-202412-J06",
+    "source": "2024-12"
+  },
+  {
+    "number": 7,
+    "type": "judgment",
+    "stem": "下面的代码实现了二叉树的前序遍历，它通过递归方法访问每个节点并打印节点值。\n\n```cpp\nvoid preorder(TreeNode* root) {\n    if (root == NULL) return;\n    cout << root->val << \" \";\n    preorder(root->left);\n    preorder(root->right);\n}\n```",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "二叉树",
+      "前序遍历",
+      "递归"
+    ],
+    "id": "GESP6-202412-J07",
+    "source": "2024-12"
+  },
+  {
+    "number": 8,
+    "type": "judgment",
+    "stem": "在⼆叉树中，宽度优先搜索算法（BFS）保证从起点到每个节点的访问路径是边数最少的路径（即最短路径）。",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "广度优先搜索",
+      "BFS",
+      "最短路径"
+    ],
+    "id": "GESP6-202412-J08",
+    "source": "2024-12"
+  },
+  {
+    "number": 9,
+    "type": "judgment",
+    "stem": "在解决简单背包问题时，动态规划的状态转移⽅程如下：\n\n`dp[i][w] = max(dp[i-1][w], dp[i-1][w - weights[i-1]] + values[i-1])`;\n\n该方程表示：在考虑第 i  个物品时，当前背包容量为 w ，如果不放物品 i ，则最大价值是 `dp[i-1][w]` ；如果放入物品 i ，则最大价值是 `dp[i-1][w - weights[i-1]`] + `values[i-1]` ，其中数组weights 和values 分别表示所有物品的重量和价值，数组下标从0 开始。",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "动态规划",
+      "背包问题",
+      "状态转移方程"
+    ],
+    "id": "GESP6-202412-J09",
+    "source": "2024-12"
+  },
+  {
+    "number": 10,
+    "type": "judgment",
+    "stem": "栈中元素的插入和删除操作都在栈的顶端进行，所以方便用双向链表比单向链表更合适表实现。",
+    "options": [],
+    "answer": "false",
+    "tags": [
+      "栈",
+      "链表",
+      "数据结构"
+    ],
+    "id": "GESP6-202412-J10",
+    "source": "2024-12"
+  },
+  {
+    "number": 1,
+    "type": "choice",
+    "stem": "下列关于类的说法，错误的是( )。",
+    "options": [
+      "A. 构造函数不能声明为虚函数，但析构函数可以。",
+      "B. 函数参数如声明为类的引用类型，调用时不会调用该类的复制构造函数。",
+      "C. 静态方法属于类而不是某个具体对象，因此推荐用 类名::方法(...)  调用。",
+      "D. 不管基类的析构函数是否是虚函数，都可以通过基类指针/引用正确删除派生类对象。"
+    ],
+    "answer": "D",
+    "tags": [
+      "面向对象",
+      "继承与多态",
+      "虚函数",
+      "析构函数"
+    ],
+    "id": "GESP6-202509-C01",
+    "source": "2025-09"
+  },
+  {
+    "number": 2,
+    "type": "choice",
+    "stem": "假设变量veh 是类Car 的一个实例，我们可以调用`veh.move()` ，是因为面向对象编程有（   ）性质。\n\n```cpp\nclass Vehicle {\nprivate:\n    string brand;   \npublic:\n    Vehicle(string b) : brand(b) {}\n    void setBrand(const string& b) { brand = b; }  \n    string getBrand() const { return brand; }\n    void move() const {                   \n        cout << brand << \" is moving...\" << endl;\n    }\n};\nclass Car : public Vehicle {\nprivate:\n    int seatCount;\npublic:\n    Car(string b, int seats) : Vehicle(b), seatCount(seats) {}\n    void showInfo() const {\n        cout << \"This car is a \" << getBrand()\n             << \" with \" << seatCount << \" seats.\" << endl;\n    }\n};\n```",
+    "options": [
+      "A. 继承 (Inheritance)",
+      "B. 封装 (Encapsulation)",
+      "C. 多态 (Polymorphism)",
+      "D. 链接 (Linking)"
+    ],
+    "answer": "A",
+    "tags": [
+      "面向对象",
+      "继承与多态"
+    ],
+    "id": "GESP6-202509-C02",
+    "source": "2025-09"
+  },
+  {
+    "number": 3,
+    "type": "choice",
+    "stem": "下面代码中v1 和v2 调用了相同接口 `move()` ，但输出结果不同，这体现了面向对象编程的（   ）特性。\n\n```cpp\nclass Vehicle {\nprivate:\n    string brand;   \npublic:\n    Vehicle(string b) : brand(b) {}\n    void setBrand(const string& b) { brand = b; }  \n    string getBrand() const { return brand; }\n    virtual void move() const {                   \n        cout << brand << \" is moving...\" << endl;\n    }\n};\nclass Car : public Vehicle {\nprivate:\n    int seatCount;\npublic:\n    Car(string b, int seats) : Vehicle(b), seatCount(seats) {}\n    void showInfo() const {\n        cout << \"This car is a \" << getBrand()\n             << \" with \" << seatCount << \" seats.\" << endl;\n    }\n    void move() const override {\n        cout << getBrand() << \" car is driving on the road!\" << endl;\n    }\n};\nclass Bike : public Vehicle {\npublic:\n    Bike(string b) : Vehicle(b) {}\n    void move() const override {\n        cout << getBrand() << \" bike is cycling on the path!\" << endl;\n    }\n};\nint main() {\n    Vehicle* v1 = new Car(\"Toyota\", 5);\n    Vehicle* v2 = new Bike(\"Giant\");\n    v1->move();  \n    v2->move();  \n    delete v1;\n    delete v2;\n    return 0;\n}\n```",
+    "options": [
+      "A. 继承 (Inheritance)",
+      "B. 封装 (Encapsulation)",
+      "C. 多态 (Polymorphism)",
+      "D. 链接 (Linking)"
+    ],
+    "answer": "C",
+    "tags": [
+      "面向对象",
+      "继承与多态",
+      "虚函数"
+    ],
+    "id": "GESP6-202509-C03",
+    "source": "2025-09"
+  },
+  {
+    "number": 4,
+    "type": "choice",
+    "stem": "栈的操作特点是（   ）。",
+    "options": [
+      "A. 先进先出",
+      "B. 先进后出",
+      "C. 随机访问",
+      "D. 双端进出"
+    ],
+    "answer": "B",
+    "tags": [
+      "栈与队列",
+      "数据结构"
+    ],
+    "id": "GESP6-202509-C04",
+    "source": "2025-09"
+  },
+  {
+    "number": 5,
+    "type": "choice",
+    "stem": "循环队列常用于实现数据缓冲。假设一个循环队列容量为 5 （即最多存放 4  个元素，留一个位置区分空与满），依次进行操作：入队数据1，2，3，出队1个数据，再入队数据4和5，此时队首到队尾的元素顺序是（   ）。",
+    "options": [
+      "A. [2, 3, 4, 5]",
+      "B. [1, 2, 3, 4]",
+      "C. [3, 4, 5, 2]",
+      "D. [2, 3, 5, 4]"
+    ],
+    "answer": "A",
+    "tags": [
+      "栈与队列",
+      "循环队列"
+    ],
+    "id": "GESP6-202509-C05",
+    "source": "2025-09"
+  },
+  {
+    "number": 6,
+    "type": "choice",
+    "stem": "以下函数`createTree()` 构造的树是什么类型？\n\n```cpp\nstruct TreeNode {\n    int val;\n    TreeNode* left;\n    TreeNode* right;\n    TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}\n};\nTreeNode* createTree() {\n    TreeNode* root = new TreeNode(1);\n    root->left = new TreeNode(2);\n    root->right = new TreeNode(3);\n    root->left->left = new TreeNode(4);\n    root->left->right = new TreeNode(5);\n    return root;\n}\n```",
+    "options": [
+      "A. 满二叉树",
+      "B. 完全二叉树",
+      "C. 二叉排序树",
+      "D. 其他都不对"
+    ],
+    "answer": "B",
+    "tags": [
+      "二叉树",
+      "完全二叉树"
+    ],
+    "id": "GESP6-202509-C06",
+    "source": "2025-09"
+  },
+  {
+    "number": 7,
+    "type": "choice",
+    "stem": "已知二叉树的 中序遍历 是 [D, B, E, A, F, C]，先序遍历 是 [A, B, D, E, C, F]。请问该二叉树的后序遍历结果是（   ）。",
+    "options": [
+      "A. [D, E, B, F, C, A]",
+      "B. [D, B, E, F, C, A]",
+      "C. [D, E, B, C, F, A]",
+      "D. [B, D, E, F, C, A]"
+    ],
+    "answer": "A",
+    "tags": [
+      "二叉树",
+      "树的遍历"
+    ],
+    "id": "GESP6-202509-C07",
+    "source": "2025-09"
+  },
+  {
+    "number": 8,
+    "type": "choice",
+    "stem": "完全二叉树可以用数组连续高效存储，如果节点从1 开始编号，则对有两个孩子节点的节点i ，（  ）。",
+    "options": [
+      "A. 左孩子位于2i ，右孩子位于2i+1",
+      "B. 完全二叉树的叶子节点可以出现在最后一层的任意位置",
+      "C. 所有节点都有两个孩子",
+      "D. 左孩子位于2i+1 ，右孩子位于2i+2"
+    ],
+    "answer": "A",
+    "tags": [
+      "二叉树",
+      "完全二叉树",
+      "数组存储"
+    ],
+    "id": "GESP6-202509-C08",
+    "source": "2025-09"
+  },
+  {
+    "number": 9,
+    "type": "choice",
+    "stem": "设有字符集{a, b, c, d, e, f} ，其出现频率分别为 {5, 9, 12, 13, 16, 45} 。哈夫曼算法构造最优前缀编码，以下哪一组可能是对应的哈夫曼编码？（非叶子节点左边分支记作 0，右边分支记作 1，左右互换不影响正确性）。",
+    "options": [
+      "A. a: 00；b: 01；c: 10；d: 110；e: 111；f: 0",
+      "B. a: 1100；b: 1101；c: 100；d: 101；e: 111；f: 0",
+      "C. a: 000；b: 001；c: 01；d: 10；e: 110；f: 111",
+      "D. a: 10；b: 01；c: 100；d: 101；e: 111；f: 0"
+    ],
+    "answer": "B",
+    "tags": [
+      "哈夫曼编码",
+      "贪心算法"
+    ],
+    "id": "GESP6-202509-C09",
+    "source": "2025-09"
+  },
+  {
+    "number": 10,
+    "type": "choice",
+    "stem": "下面代码生成格雷编码，则横线上应填写（   ）。\n\n```cpp\nvector<string> grayCode(int n) {\n    if (n == 0) return {\"0\"};\n    if (n == 1) return {\"0\", \"1\"};\n    vector<string> prev = grayCode(n-1);\n    vector<string> result;\n    for (string s : prev) {\n        result.push_back(\"0\" + s);\n    }\n    for (_______________) {  // 在此处填写代码\n        result.push_back(\"1\" + prev[i]);\n    }\n    return result;\n}\n```",
+    "options": [
+      "A. int i = 0; i < prev.size(); i++",
+      "B. int i = prev.size()-1; i >= 0; i--",
+      "C. auto s : prev",
+      "D. int i = prev.size()/2; i < prev.size(); i++"
+    ],
+    "answer": "B",
+    "tags": [
+      "格雷码",
+      "递归算法"
+    ],
+    "id": "GESP6-202509-C10",
+    "source": "2025-09"
+  },
+  {
+    "number": 11,
+    "type": "choice",
+    "stem": "请将下列树的深度优先遍历代码补充完整，横线处应填入（   ）。\n\n```cpp\nstruct TreeNode {\n    int val;\n    TreeNode* left;\n    TreeNode* right;\n    TreeNode(int x): val(x), left(nullptr), right(nullptr) {}\n};\nvoid dfs(TreeNode* root) {\n    if (!root) return;\n    ______<TreeNode*> temp;     // 在此处填写代码\n    temp.push(root);\n    while (!temp.empty()) {\n        TreeNode* node = temp.top();\n        temp.pop();\n        cout << node->val << \" \";\n        if (node->right) temp.push(node->right);\n        if (node->left) temp.push(node->left);\n    }\n}\n```",
+    "options": [
+      "A. vector",
+      "B. list",
+      "C. queue",
+      "D. stack"
+    ],
+    "answer": "D",
+    "tags": [
+      "二叉树",
+      "深度优先遍历",
+      "栈与队列"
+    ],
+    "id": "GESP6-202509-C11",
+    "source": "2025-09"
+  },
+  {
+    "number": 12,
+    "type": "choice",
+    "stem": "令 n 是树的节点数目，下列代码实现了树的广度优先遍历，其时间复杂度是（   ）。\n\n```cpp\nvoid bfs(TreeNode* root) {\n    if (!root) return;\n    queue<TreeNode*> q;\n    q.push(root);\n    while (!q.empty()) {\n        TreeNode* node = q.front();\n        q.pop();\n        cout << node->val << \" \";\n        if (node->left) q.push(node->left);\n        if (node->right) q.push(node->right);\n    }\n}\n```",
+    "options": [
+      "A. O(n)",
+      "B. O(n²)",
+      "C. O(log n)",
+      "D. O(n log n)"
+    ],
+    "answer": "A",
+    "tags": [
+      "二叉树",
+      "广度优先遍历",
+      "时间复杂度"
+    ],
+    "id": "GESP6-202509-C12",
+    "source": "2025-09"
+  },
+  {
+    "number": 13,
+    "type": "choice",
+    "stem": "在二叉排序树（Binary Search Tree, BST）中查找元素 50 ，从根节点开始：若根值为 60 ，则下一步应去搜索：",
+    "options": [
+      "A. 左子树",
+      "B. 右子树",
+      "C. 随机",
+      "D. 根节点"
+    ],
+    "answer": "A",
+    "tags": [
+      "二叉排序树",
+      "搜索算法"
+    ],
+    "id": "GESP6-202509-C13",
+    "source": "2025-09"
+  },
+  {
+    "number": 14,
+    "type": "choice",
+    "stem": "删除二叉排序树中的节点时，如果节点有两个孩子，则横线处应填入（   ），其中findMax 和findMin 分别为寻找树的最大值和最小值的函数。\n\n```cpp\nstruct TreeNode {\n    int val;\n    TreeNode* left;\n    TreeNode* right;\n    TreeNode(int x): val(x), left(nullptr), right(nullptr) {}\n};\nTreeNode* deleteNode(TreeNode* root, int key) {\n    if (!root) return nullptr;\n    if (key < root->val) {\n        root->left = deleteNode(root->left, key);\n    }\n    else if (key > root->val) {\n        root->right = deleteNode(root->right, key);\n    }\n    else {\n        if (!root->left) return root->right;\n        if (!root->right) return root->left;\n        TreeNode* temp = ____________;          // 在此处填写代码\n        root->val = temp->val;\n        root->right = deleteNode(root->right, temp->val);\n    }\n    return root;\n}\n```",
+    "options": [
+      "A. root->left",
+      "B. root->right",
+      "C. findMin(root->right)",
+      "D. findMax(root->left)"
+    ],
+    "answer": "C",
+    "tags": [
+      "二叉排序树",
+      "删除操作"
+    ],
+    "id": "GESP6-202509-C14",
+    "source": "2025-09"
+  },
+  {
+    "number": 15,
+    "type": "choice",
+    "stem": "给定n个物品和一个最大承重为W的背包，每个物品有一个重量wt和价值val，每个物品只能选择放或不放。目标是选择若干个物品放入背包，使得总价值最大，且总重量不超过W，则横线上应填写（   ）。\n\n```cpp\nint knapsack(int W, vector<int>& wt, vector<int>& val, int n) {\n    vector<int> dp(W+1, 0);\n    for (int i = 0; i < n; ++i) {\n        for (int w = W; w >= wt[i]; --w) {\n            ________________________        // 在此处填写代码\n        }\n    }\n    return dp[W];\n}\n```",
+    "options": [
+      "A. dp[w] = max(dp[w], dp[w] + val[i]);",
+      "B. dp[w] = dp[w - wt[i]] + val[i];",
+      "C. dp[w] = max(dp[w - 1], dp[w - wt[i]] + val[i]);",
+      "D. dp[w] = max(dp[w], dp[w - wt[i]] + val[i]);"
+    ],
+    "answer": "D",
+    "tags": [
+      "动态规划",
+      "背包问题"
+    ],
+    "id": "GESP6-202509-C15",
+    "source": "2025-09"
+  },
+  {
+    "number": 1,
+    "type": "judgment",
+    "stem": "当基类可能被多态使用，其析构函数应该声明为虚函数。",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "面向对象",
+      "虚函数",
+      "析构函数"
+    ],
+    "id": "GESP6-202509-J01",
+    "source": "2025-09"
+  },
+  {
+    "number": 2,
+    "type": "judgment",
+    "stem": "哈夫曼编码是最优前缀码，且编码结果唯一。",
+    "options": [],
+    "answer": "false",
+    "tags": [
+      "哈夫曼编码"
+    ],
+    "id": "GESP6-202509-J02",
+    "source": "2025-09"
+  },
+  {
+    "number": 3,
+    "type": "judgment",
+    "stem": "一个含有 n 个节点的完全二叉树，高度为 ⌊log₂n⌋。",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "二叉树",
+      "完全二叉树"
+    ],
+    "id": "GESP6-202509-J03",
+    "source": "2025-09"
+  },
+  {
+    "number": 4,
+    "type": "judgment",
+    "stem": "在 C++ STL 中，栈（`std::stack` ）的 pop  操作返回栈顶元素并移除它。",
+    "options": [],
+    "answer": "false",
+    "tags": [
+      "栈与队列",
+      "STL"
+    ],
+    "id": "GESP6-202509-J04",
+    "source": "2025-09"
+  },
+  {
+    "number": 5,
+    "type": "judgment",
+    "stem": "循环队列通过模运算循环使用空间。",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "栈与队列",
+      "循环队列"
+    ],
+    "id": "GESP6-202509-J05",
+    "source": "2025-09"
+  },
+  {
+    "number": 6,
+    "type": "judgment",
+    "stem": "一棵有 n 个节点的二叉树一定有 n-1 条边。",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "二叉树",
+      "图论"
+    ],
+    "id": "GESP6-202509-J06",
+    "source": "2025-09"
+  },
+  {
+    "number": 7,
+    "type": "judgment",
+    "stem": "以下代码实现了二叉树的中序遍历。输入以下二叉树，中序遍历结果是4 2 5 1 3 6 。\n\n[图片：二叉树结构]\n//     1\n//    / \\\n//   2   3\n//  / \\   \\\n// 4   5   6\n\n```cpp\nstruct TreeNode {\n    int val;\n    TreeNode* left;\n    TreeNode* right;\n    TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}\n};\nvoid inorderIterative(TreeNode* root) {\n    stack<TreeNode*> st;\n    TreeNode* curr = root;\n    while (curr || !st.empty()) {\n        while (curr) {\n            st.push(curr);\n            curr = curr->left;\n        }\n        curr = st.top(); st.pop();\n        cout << curr->val << \" \";\n        curr = curr->right;\n    }\n}\n```",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "二叉树",
+      "中序遍历"
+    ],
+    "id": "GESP6-202509-J07",
+    "source": "2025-09"
+  },
+  {
+    "number": 8,
+    "type": "judgment",
+    "stem": "下面代码实现的二叉排序树的查找操作时间复杂度是 `O(h)`，其中 h 为树高。\n\n```cpp\nTreeNode* searchBST(TreeNode* root, int val) {\n    while (root && root->val != val) {\n        root = (val < root->val) ? root->left : root->right;\n    }\n    return root;\n}\n```",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "二叉排序树",
+      "时间复杂度"
+    ],
+    "id": "GESP6-202509-J08",
+    "source": "2025-09"
+  },
+  {
+    "number": 9,
+    "type": "judgment",
+    "stem": "下面代码实现了动态规划版本的斐波那契数列计算，其时间复杂度是 `O(n)`。\n\n```cpp\nint fib_dp(int n) {\n    if (n <= 1) return n;\n    vector<int> dp(n+1);\n    dp[0] = 0;\n    dp[1] = 1;\n    for (int i = 2; i <= n; i++) {\n        dp[i] = dp[i-1] + dp[i-2];\n    }\n    return dp[n];\n}\n```",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "动态规划",
+      "时间复杂度"
+    ],
+    "id": "GESP6-202509-J09",
+    "source": "2025-09"
+  },
+  {
+    "number": 10,
+    "type": "judgment",
+    "stem": "有一排香蕉，每个香蕉有不同的甜度值。小猴子想吃香蕉，但不能吃相邻的香蕉。以下代码能找到小猴子吃到最甜的香蕉组合。\n\n// bananas：香蕉的甜度\n```cpp\nvoid findSelectedBananas(vector<int>& bananas, vector<int>& dp) {\n    vector<int> selected;\n    int i = bananas.size() - 1;\n    while (i >= 0) {\n        if (i == 0) {\n            selected.push_back(0);\n            break;\n        }\n        if (dp[i] == dp[i-1]) {\n            i--;\n        } else {\n            selected.push_back(i);\n            i -= 2;\n        }\n    }\n    reverse(selected.begin(), selected.end());\n    cout << \"小猴子吃了第: \";\n    for (int idx : selected)\n        cout << idx+1 << \" \";\n    cout << \"个香蕉\" << endl;\n}\nint main() {\n    vector<int> bananas = {1, 2, 3, 1}; // 每个香蕉的甜度\n    vector<int> dp(bananas.size());\n    dp[0] = bananas[0];\n    dp[1] = max(bananas[0], bananas[1]);\n    for (int i = 2; i < bananas.size(); i++) {\n        dp[i] = max(bananas[i] + dp[i-2], dp[i-1]);\n    }\n    findSelectedBananas(bananas, dp);\n    return 0;\n}\n```",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "动态规划",
+      "贪心算法"
+    ],
+    "id": "GESP6-202509-J10",
+    "source": "2025-09"
+  },
+  {
+    "number": 1,
+    "type": "choice",
+    "stem": "在面向对象编程中，下列关于虚函数的描述中，错误的是（ ）。",
+    "options": [
+      "A. 虚函数用于支持运行时多态",
+      "B. 通过基类指针调用虚函数时，会根据对象实际类型决定调用版本",
+      "C. 构造函数可以声明为虚函数以支持多态",
+      "D. 基类析构函数常声明为虚函数以避免资源泄漏"
+    ],
+    "answer": "C",
+    "tags": [
+      "面向对象",
+      "虚函数",
+      "多态"
+    ],
+    "id": "GESP6-202512-C01",
+    "source": "2025-12"
+  },
+  {
+    "number": 2,
+    "type": "choice",
+    "stem": "执行如下代码，会输出 钢琴：叮咚叮咚 和 吉他：咚咚当当。这体现了面向对象编程的（   ）特性。\n[注：此题引用了代码，但OCR文本中代码内容不完整]",
+    "options": [
+      "A. 继承",
+      "B. 封装",
+      "C. 多态",
+      "D. 链接"
+    ],
+    "answer": "C",
+    "tags": [
+      "面向对象",
+      "多态"
+    ],
+    "id": "GESP6-202512-C02",
+    "source": "2025-12"
+  },
+  {
+    "number": 3,
+    "type": "choice",
+    "stem": "关于以下代码，说法正确的是（   ）。\n```cpp\nclass Instrument {\npublic:\n    void play() {\n        cout << \"乐器在演奏声音\" << endl;\n    }\n    virtual ~Instrument() {}\n};\nclass Piano : public Instrument {\npublic:\n    void play() override {\n        cout << \"钢琴：叮咚叮咚\" << endl;\n    }\n};\nclass Guitar : public Instrument {\npublic:\n    void play() override {\n        cout << \"吉他：咚咚当当\" << endl;\n    }\n};\nint main() {\n    Instrument* instruments[2];\n    instruments[0] = new Piano();\n    instruments[1] = new Guitar();\n    for (int i = 0; i < 2; ++i) {\n        instruments[i]->play();\n    }\n    for (int i = 0; i < 2; ++i) {\n        delete instruments[i];\n    }\n    return 0;\n}\n```",
+    "options": [
+      "A. 执行代码会输出两行，内容分别为：钢琴：叮咚叮咚 和 吉他：咚咚当当",
+      "B. 执行代码会输出两行，内容分别为：乐器在演奏声音 和 乐器在演奏声音",
+      "C. 代码编译出现错误",
+      "D. 代码运行出现错误"
+    ],
+    "answer": "C",
+    "tags": [
+      "面向对象",
+      "虚函数",
+      "多态"
+    ],
+    "id": "GESP6-202512-C03",
+    "source": "2025-12"
+  },
+  {
+    "number": 4,
+    "type": "choice",
+    "stem": "某文本编辑器把用户输入的字符依次压入栈 S。用户依次输入 A, B, C, D 后，用户按了两次撤销（每次撤销，弹出栈顶一个字符）。此时栈从栈底到栈顶的内容是：（   ）。",
+    "options": [
+      "A. A B",
+      "B. A B C",
+      "C. A B D",
+      "D. B C"
+    ],
+    "answer": "A",
+    "tags": [
+      "栈",
+      "数据结构"
+    ],
+    "id": "GESP6-202512-C04",
+    "source": "2025-12"
+  },
+  {
+    "number": 5,
+    "type": "choice",
+    "stem": "假设循环队列数组长度为 N，其中队空判断条件为：front == rear，队满判断条件为：(rear + 1) % N == front，出队对应的操作为：`front = (front + 1)` % N，入队对于的操作为：`rear = (rear + 1)` % N。循环队列长度 N = 6，初始 front = 1, `rear = 1`，执行操作序列为：入队, 入队, 入队, 出队, 入队, 入队，则最终 (front, rear) 的值是（   ）。",
+    "options": [
+      "A. (2, 5)",
+      "B. (2, 0)",
+      "C. (3, 5)",
+      "D. (3, 0)"
+    ],
+    "answer": "B",
+    "tags": [
+      "队列",
+      "循环队列",
+      "数据结构"
+    ],
+    "id": "GESP6-202512-C05",
+    "source": "2025-12"
+  },
+  {
+    "number": 6,
+    "type": "choice",
+    "stem": "以下函数 `check()` 用于判断一棵二叉树是否为（   ）。\n```cpp\nbool check(TreeNode* root) {\n    if (!root) return true;\n    queue<TreeNode*> q;\n    q.push(root);\n    bool hasNull = false;\n    while (!q.empty()) {\n        TreeNode* cur = q.front(); q.pop();\n        if (!cur) {\n            hasNull = true;\n        } else {\n            if (hasNull) return false;\n            q.push(cur->left);\n            q.push(cur->right);\n        }\n    }\n    return true;\n}\n```",
+    "options": [
+      "A. 满二叉树",
+      "B. 完全二叉树",
+      "C. 二叉搜索树",
+      "D. 平衡二叉树"
+    ],
+    "answer": "B",
+    "tags": [
+      "二叉树",
+      "完全二叉树",
+      "数据结构"
+    ],
+    "id": "GESP6-202512-C06",
+    "source": "2025-12"
+  },
+  {
+    "number": 7,
+    "type": "choice",
+    "stem": "以下代码实现了二叉树的（  ）。\n```cpp\nvoid traverse(TreeNode* root) {\n    if (!root) return;\n    traverse(root->left);\n    traverse(root->right);\n    cout << root->val << \" \";\n}\n```",
+    "options": [
+      "A. 前序遍历",
+      "B. 中序遍历",
+      "C. 后序遍历",
+      "D. 层序遍历"
+    ],
+    "answer": "C",
+    "tags": [
+      "二叉树",
+      "后序遍历",
+      "树的遍历"
+    ],
+    "id": "GESP6-202512-C07",
+    "source": "2025-12"
+  },
+  {
+    "number": 8,
+    "type": "choice",
+    "stem": "下面代码实现了哈夫曼编码，则横线处应填写的代码是（  ）。\n[代码片段]\n`for (int k = 1; k < n; k++)` {\n```cpp\n    int x = PopMinNode(nodes, leafIdx, n, pA, internalIdx, pB);\n    int y = PopMinNode(nodes, leafIdx, n, pA, internalIdx, pB);\n    int z = (int)nodes.size();\n    ________________________\n}\n```",
+    "options": [
+      "A. nodes.push_back(Node(nodes[x].w + nodes[y].w, x, y, -1));\ninternalIdx.push_back(z);",
+      "B. nodes.push_back(Node(nodes[x].w + nodes[y].w, x, y, -1));\nleafIdx.push_back(z);",
+      "C. internalIdx.push_back(z);\nnodes.push_back(Node(nodes[x].w + nodes[y].w, x, y, x+y));",
+      "D. nodes.push_back(Node(nodes[x].w + nodes[y].w, x, y, x+y));\nleafIdx.push_back(z);"
+    ],
+    "answer": "A",
+    "tags": [
+      "哈夫曼编码",
+      "贪心算法",
+      "数据结构"
+    ],
+    "id": "GESP6-202512-C08",
+    "source": "2025-12"
+  },
+  {
+    "number": 9,
+    "type": "choice",
+    "stem": "以下关于哈夫曼编码的说法，正确的是（  ）。",
+    "options": [
+      "A. 哈夫曼编码是定长编码",
+      "B. 哈夫曼编码中，没有任何一个字符的编码是另一个字符编码的前缀",
+      "C. 哈夫曼编码一定唯一",
+      "D. 哈夫曼编码不能用于数据压缩"
+    ],
+    "answer": "B",
+    "tags": [
+      "哈夫曼编码",
+      "前缀编码"
+    ],
+    "id": "GESP6-202512-C09",
+    "source": "2025-12"
+  },
+  {
+    "number": 10,
+    "type": "choice",
+    "stem": "以下函数实现了二叉排序树（BST）的（   ）操作。\n```cpp\nTreeNode* op(TreeNode* root, int x) {\n    if (!root) return new TreeNode(x);\n    if (x < root->val)\n        root->left = op(root->left, x);\n    else\n        root->right = op(root->right, x);\n    return root;\n}\n```",
+    "options": [
+      "A. 查找",
+      "B. 插入",
+      "C. 删除",
+      "D. 遍历"
+    ],
+    "answer": "B",
+    "tags": [
+      "二叉排序树",
+      "BST",
+      "插入操作"
+    ],
+    "id": "GESP6-202512-C10",
+    "source": "2025-12"
+  },
+  {
+    "number": 11,
+    "type": "choice",
+    "stem": "下列代码实现了树的深度优先遍历，则横线处应填入（   ）。\n```cpp\nvoid dfs(TreeNode* root) {\n    if (!root) return;\n    stack<TreeNode*> st;\n    st.push(root);\n    while (!st.empty()) {\n        TreeNode* node = st.top(); st.pop();\n        cout << node->val << \" \";\n        if (node->right) st.push(node->right);\n        ________________________\n    }\n}\n```",
+    "options": [
+      "A. if (node->left) st.push(node->left);",
+      "B. if (node->left) st.pop(node->left);",
+      "C. if (node->left) st.front(node->left);",
+      "D. if (node->left) st.push(node->right);"
+    ],
+    "answer": "A",
+    "tags": [
+      "深度优先遍历",
+      "DFS",
+      "栈"
+    ],
+    "id": "GESP6-202512-C11",
+    "source": "2025-12"
+  },
+  {
+    "number": 12,
+    "type": "choice",
+    "stem": "给定一棵普通二叉树（节点值没有大小规律），下面代码判断是否存在值为 x 的结点，则横线处应填入（ ）。\n```cpp\nTreeNode* bfsFind(TreeNode* root, int x) {\n    if (!root) return nullptr;\n    queue<TreeNode*> q;\n    q.push(root);\n    while (!q.empty()) {\n        TreeNode* cur = q.front(); q.pop();\n        if (cur->val == x) return cur;\n        ________________________\n    }\n    return nullptr;\n}\n```",
+    "options": [
+      "A. q.push(cur);",
+      "B. if (cur->right) q.push(cur->right);",
+      "C. if (cur->left)\n    q.push(cur->left);\nif (cur->right)\n    q.push(cur->right);",
+      "D. q.push(cur->left);\nq.push(cur->right);"
+    ],
+    "answer": "C",
+    "tags": [
+      "广度优先遍历",
+      "BFS",
+      "队列"
+    ],
+    "id": "GESP6-202512-C12",
+    "source": "2025-12"
+  },
+  {
+    "number": 13,
+    "type": "choice",
+    "stem": "在二叉排序树（Binary Search Tree, BST）中，假设节点值互不相同。给定如下搜索函数，以下说法一定正确的是（   ）。\n```cpp\nbool find(Node* root, int x) {\n    while (root) {\n        if (root->val == x) return true;\n        root = (x < root->val) ? root->left : root->right;\n    }\n    return false;\n}\n```",
+    "options": [
+      "A. 最坏情况下，访问结点数是 [未给出具体数值]",
+      "B. 最坏情况下，访问结点数是 [未给出具体数值]",
+      "C. 无论如何，访问结点数都不超过树高的一半",
+      "D. 一定比在普通二叉树中搜索快"
+    ],
+    "answer": "B",
+    "tags": [
+      "二叉排序树",
+      "BST",
+      "搜索算法",
+      "时间复杂度"
+    ],
+    "id": "GESP6-202512-C13",
+    "source": "2025-12"
+  },
+  {
+    "number": 14,
+    "type": "choice",
+    "stem": "0/1 背包（每件物品最多选一次）问题通常可用一维动态规划求解，核心代码如下。则下面说法正确的是（  ）。\nfor each `item (w, v)`:\n    `for (int j = W; j >= w; --j)`\n        `dp[j] = max(dp[j], dp[j-w] + v)`;",
+    "options": [
+      "A. 内层 j 必须从小到大，否则会漏解",
+      "B. 内层 j 必须从大到小，否则同一件物品会被用多次",
+      "C. j 从大到小或从小到大都一样",
+      "D. 只要 dp 初始为 0，方向无所谓"
+    ],
+    "answer": "B",
+    "tags": [
+      "动态规划",
+      "0/1背包"
+    ],
+    "id": "GESP6-202512-C14",
+    "source": "2025-12"
+  },
+  {
+    "number": 15,
+    "type": "choice",
+    "stem": "以下关于动态规划的说法中，错误的是（ ）。",
+    "options": [
+      "A. 动态规划方法通常能够列出递推公式。",
+      "B. 动态规划方法的时间复杂度通常为状态的个数。",
+      "C. 动态规划方法有递推和递归两种实现形式。",
+      "D. 对很多问题，递推实现和递归实现动态规划方法的时间复杂度相当。"
+    ],
+    "answer": "B",
+    "tags": [
+      "动态规划",
+      "时间复杂度"
+    ],
+    "id": "GESP6-202512-C15",
+    "source": "2025-12"
+  },
+  {
+    "number": 16,
+    "type": "judgment",
+    "stem": "以下代码中，构造函数被调用的次数是1次。\n```cpp\nclass Test {\npublic:\n    Test() { cout << \"T \"; }\n};\nint main() {\n    Test a;\n    Test b = a;\n}\n```",
+    "options": [],
+    "answer": "false",
+    "tags": [
+      "面向对象",
+      "构造函数",
+      "拷贝构造"
+    ],
+    "id": "GESP6-202512-J01",
+    "source": "2025-12"
+  },
+  {
+    "number": 17,
+    "type": "judgment",
+    "stem": "面向对象编程中，封装是指将数据和操作数据的方法绑定在一起，并对外隐藏实现细节。",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "面向对象",
+      "封装"
+    ],
+    "id": "GESP6-202512-J02",
+    "source": "2025-12"
+  },
+  {
+    "number": 18,
+    "type": "judgment",
+    "stem": "以下代码能够正确统计二叉树中叶子结点的数量。\n```cpp\nint countLeaf(TreeNode* root) {\n    if (!root) return 0;\n    if (!root->left && !root->right) return 1;\n    return countLeaf(root->left) + countLeaf(root->right);\n}\n```",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "二叉树",
+      "递归"
+    ],
+    "id": "GESP6-202512-J03",
+    "source": "2025-12"
+  },
+  {
+    "number": 19,
+    "type": "judgment",
+    "stem": "广度优先遍历二叉树可用栈来实现。",
+    "options": [],
+    "answer": "false",
+    "tags": [
+      "广度优先遍历",
+      "BFS",
+      "队列"
+    ],
+    "id": "GESP6-202512-J04",
+    "source": "2025-12"
+  },
+  {
+    "number": 20,
+    "type": "judgment",
+    "stem": "函数调用管理可用栈来管理。",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "栈",
+      "函数调用"
+    ],
+    "id": "GESP6-202512-J05",
+    "source": "2025-12"
+  },
+  {
+    "number": 21,
+    "type": "judgment",
+    "stem": "在二叉排序树（BST）中，若某结点的左子树为空，则该结点一定是整棵树中的最小值结点。",
+    "options": [],
+    "answer": "false",
+    "tags": [
+      "二叉排序树",
+      "BST"
+    ],
+    "id": "GESP6-202512-J06",
+    "source": "2025-12"
+  },
+  {
+    "number": 22,
+    "type": "judgment",
+    "stem": "下面的函数能正确判断一棵树是不是二叉排序树（左边的数字要比当前数字小，右边的数字要比当前数字大）。\n```cpp\nbool isBST(TreeNode* root, int minVal, int maxVal) {\n    if (!root) return true;\n    if (root->val <= minVal || root->val >= maxVal)\n        return false;\n    return isBST(root->left, minVal, root->val) &&\n           isBST(root->right, root->val, maxVal);\n}\n```",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "二叉排序树",
+      "BST",
+      "递归"
+    ],
+    "id": "GESP6-202512-J07",
+    "source": "2025-12"
+  },
+  {
+    "number": 23,
+    "type": "judgment",
+    "stem": "格雷编码相邻两个编码之间必须有多位不同，以避免数据传输错误。",
+    "options": [],
+    "answer": "false",
+    "tags": [
+      "格雷码"
+    ],
+    "id": "GESP6-202512-J08",
+    "source": "2025-12"
+  },
+  {
+    "number": 24,
+    "type": "judgment",
+    "stem": "小杨在玩一个闯关游戏，从第 1 关走到第 4 关。每一关的体力消耗如下（下标表示关卡编号）：`cost = [0, 3, 5, 2, 4]`，其中 `cost[i]` 表示到达第 i 关需要消耗的体力，`cost[0]=0` 表示在开始状态，体力消耗为0。小杨每次可以从当前关卡前进 1 步或 2 步。按照上述规则，从第 1 关到第 4 关所需消耗的最小体力为 7。",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "动态规划"
+    ],
+    "id": "GESP6-202512-J09",
+    "source": "2025-12"
+  },
+  {
+    "number": 25,
+    "type": "judgment",
+    "stem": "假定只有一个根节点的树的深度为1，则一棵有n个节点的完全二叉树的深度为⌊log₂n⌋+1。",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "完全二叉树",
+      "树的深度",
+      "OCR修复"
+    ],
+    "id": "GESP6-202512-J10",
+    "source": "2025-12"
+  },
+  {
+    "number": 1,
+    "type": "choice",
+    "stem": "近年来，线上授课变得普遍，很多有助于改善教学效果的设备也逐渐流行，其中包括比较常用的手写板，那么它属于哪类设备？",
+    "options": [
+      "A. 输入",
+      "B. 输出",
+      "C. 控制",
+      "D. 记录"
+    ],
+    "answer": "A",
+    "tags": [
+      "计算机基础"
+    ],
+    "id": "GESP6-202309-C01",
+    "source": "2023-09"
+  },
+  {
+    "number": 2,
+    "type": "choice",
+    "stem": "如果a和b均为int类型的变量，且b的值不为0，那么下列能正确判断\"a是b的3倍\"的表达式是",
+    "options": [
+      "A. (a >> 3 == b)",
+      "B. (a - b) % 3 == 0",
+      "C. (a / b == 3)",
+      "D. (a == 3 * b)"
+    ],
+    "answer": "D",
+    "tags": [
+      "运算符"
+    ],
+    "id": "GESP6-202309-C02",
+    "source": "2023-09"
+  },
+  {
+    "number": 3,
+    "type": "choice",
+    "stem": "以下不属于面向对象程序设计语言的是",
+    "options": [
+      "A. C++",
+      "B. Python",
+      "C. Java",
+      "D. C"
+    ],
+    "answer": "D",
+    "tags": [
+      "面向对象"
+    ],
+    "id": "GESP6-202309-C03",
+    "source": "2023-09"
+  },
+  {
+    "number": 4,
+    "type": "choice",
+    "stem": "下面有关C++类定义的说法，错误的是",
+    "options": [
+      "A. C++类实例化时，会执行构造函数。",
+      "B. C++自定义类可以通过定义构造函数实现自动类型转换。",
+      "C. C++自定义类可以通过重载>、<等运算符实现大小比较。",
+      "D. C++自定义类可以包含任意类型的成员。"
+    ],
+    "answer": "D",
+    "tags": [
+      "面向对象",
+      "类与对象"
+    ],
+    "id": "GESP6-202309-C04",
+    "source": "2023-09"
+  },
+  {
+    "number": 5,
+    "type": "choice",
+    "stem": "有关下面C++代码的说法，错误的是\n```cpp\nclass MyStr {\npublic:\n    char* data;\n    MyStr(const char* str) {\n        data = new char[strlen(str) + 1];\n        strcpy(data, str);\n    }\n};\n```",
+    "options": [
+      "A. 代码cout << st << endl;会报错，因为没有为MyStr类重载<<运算符。",
+      "B. 第6行代码的data是MyStr类的成员变量。",
+      "C. 代码MyStr st(\"ABC\");不会报错，将执行构造函数。",
+      "D. 代码cout<< st.data <<endl;可输出ABC。"
+    ],
+    "answer": "A",
+    "tags": [
+      "面向对象",
+      "运算符重载"
+    ],
+    "id": "GESP6-202309-C05",
+    "source": "2023-09"
+  },
+  {
+    "number": 6,
+    "type": "choice",
+    "stem": "下列关于命名空间的说法错误的是",
+    "options": [
+      "A. 命名空间可以嵌套，例如namespace A { namespace B { int i;}}。",
+      "B. 命名空间只可以在全局定义。",
+      "C. 命名空间中可以存放变量和函数。",
+      "D. 如果程序中使用了using命令同时引用了多个命名空间，并且命名空间中存在相同的函数，会出现程序运行错误。"
+    ],
+    "answer": "D",
+    "tags": [
+      "命名空间"
+    ],
+    "id": "GESP6-202309-C06",
+    "source": "2023-09"
+  },
+  {
+    "number": 7,
+    "type": "choice",
+    "stem": "有关下面C++代码的说法，正确的是\n```cpp\nclass ManyData {\nprivate:\n    int __data[100];\n    int __size;\npublic:\n    ManyData() { __size = 0; }\n    void push(int x) { __data[__size++] = x; }\n    int pop() { return __data[--__size]; }\n};\n```",
+    "options": [
+      "A. 这段代码不能正常运行。",
+      "B. ManyData类可用于构造队列（Queue）数据结构。",
+      "C. 在上面代码环境，代码cout<< myData.__data[0] << endl;可以增加到代码main函数末尾（return 0;之前），且不会导致报错。",
+      "D. 可以为ManyData类的push()、pop()函数增加异常处理代码，否则在使用ManyData类时可能导致运行时错误或逻辑错误（不一定局限于上述代码中的main函数）。"
+    ],
+    "answer": "D",
+    "tags": [
+      "面向对象",
+      "栈与队列"
+    ],
+    "id": "GESP6-202309-C07",
+    "source": "2023-09"
+  },
+  {
+    "number": 8,
+    "type": "choice",
+    "stem": "有关下面C++代码的说法，错误的是\n```cpp\nclass MoreData {\nprivate:\n    int __data[100];\n    int __size;\npublic:\n    MoreData() { __size = 0; }\n    MoreData& push(int x) { __data[__size++] = x; return *this; }\n    int pop() { return __data[--__size]; }\n};\nint main() {\n    MoreData myData;\n    myData.push(1).push(2).push(3);\n    return 0;\n}\n```",
+    "options": [
+      "A. MoreData类可用于构造队列（Queue）数据结构。",
+      "B. 代码第29行，连续push()的用法将导致编译错误。",
+      "C. __data是MoreData类的私有成员，只能在类内访问。",
+      "D. 以上说法均没有错误。"
+    ],
+    "answer": "B",
+    "tags": [
+      "面向对象",
+      "栈与队列"
+    ],
+    "id": "GESP6-202309-C08",
+    "source": "2023-09"
+  },
+  {
+    "number": 9,
+    "type": "choice",
+    "stem": "某内容仅会出现ABCDEFG，其对应的出现概率为0.40、0.30、0.15、0.05、0.04、0.03、0.03。按照哈夫曼编码规则，假设B的编码为11，则D的编码为",
+    "options": [
+      "A. 10010",
+      "B. 10011",
+      "C. 10111",
+      "D. 10001"
+    ],
+    "answer": "B",
+    "tags": [
+      "哈夫曼编码"
+    ],
+    "id": "GESP6-202309-C09",
+    "source": "2023-09"
+  },
+  {
+    "number": 10,
+    "type": "choice",
+    "stem": "下面有关格雷码的说法，错误的是",
+    "options": [
+      "A. 在格雷码中，任意两个相邻的代码只有一位二进制数不同。",
+      "B. 格雷码是一种唯一性编码。",
+      "C. 在格雷码中，最大数和最小数只有一位二进制数不同。",
+      "D. 格雷码是一种可靠性编码。"
+    ],
+    "answer": "B",
+    "tags": [
+      "格雷码"
+    ],
+    "id": "GESP6-202309-C10",
+    "source": "2023-09"
+  },
+  {
+    "number": 11,
+    "type": "choice",
+    "stem": "有关下图的二叉树，说法正确的是（图中显示一棵二叉树）",
+    "options": [
+      "A. 既是完全二叉树也是满二叉树。",
+      "B. 既是二叉搜索树也是平衡二叉树。",
+      "C. 非平衡二叉树。",
+      "D. 以上说法都不正确。"
+    ],
+    "answer": "B",
+    "tags": [
+      "二叉树",
+      "BST"
+    ],
+    "id": "GESP6-202309-C11",
+    "source": "2023-09"
+  },
+  {
+    "number": 12,
+    "type": "choice",
+    "stem": "n个节点的二叉搜索树，其查找的平均时间复杂度为",
+    "options": [
+      "A. O(1)",
+      "B. O(n)",
+      "C. O(log n)",
+      "D. O(n²)"
+    ],
+    "answer": "C",
+    "tags": [
+      "BST",
+      "时间复杂度"
+    ],
+    "id": "GESP6-202309-C12",
+    "source": "2023-09"
+  },
+  {
+    "number": 13,
+    "type": "choice",
+    "stem": "青蛙每次能跳1或2步。下面是青蛙跳到第N步台阶C++实现代码。该段代码采用的算法是\n```cpp\nint dp[1000];\nint main() {\n    int N;\n    cin >> N;\n    dp[1] = 1; dp[2] = 2;\n    for (int i = 3; i <= N; i++)\n        dp[i] = dp[i-1] + dp[i-2];\n    cout << dp[N];\n    return 0;\n}\n```",
+    "options": [
+      "A. 递推算法",
+      "B. 贪心算法",
+      "C. 动态规划算法",
+      "D. 分治算法"
+    ],
+    "answer": "C",
+    "tags": [
+      "动态规划"
+    ],
+    "id": "GESP6-202309-C13",
+    "source": "2023-09"
+  },
+  {
+    "number": 14,
+    "type": "choice",
+    "stem": "n个节点的双向循环链表，在其中查找某个节点的平均时间复杂度是",
+    "options": [
+      "A. O(1)",
+      "B. O(log n)",
+      "C. O(n)",
+      "D. O(n²)"
+    ],
+    "answer": "B",
+    "tags": [
+      "链表",
+      "时间复杂度"
+    ],
+    "id": "GESP6-202309-C14",
+    "source": "2023-09"
+  },
+  {
+    "number": 15,
+    "type": "choice",
+    "stem": "关于C++语言，以下说法不正确的是",
+    "options": [
+      "A. 若对象被定义为常量，则它只能调用以const修饰的成员函数。",
+      "B. 所有的常量静态变量都只能在类外进行初始化。",
+      "C. 若类A的对象a是类B的静态成员变量，则a在main()函数调用之前应被初始化。",
+      "D. 静态全局对象、常量全局对象都是在main函数调用之前完成初始化，执行完main函数后被析构。"
+    ],
+    "answer": "D",
+    "tags": [
+      "面向对象",
+      "静态成员"
+    ],
+    "id": "GESP6-202309-C15",
+    "source": "2023-09"
+  },
+  {
+    "number": 1,
+    "type": "judgment",
+    "stem": "TCP/IP的传输层的两个不同的协议分别是UDP和TCP。",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "计算机网络"
+    ],
+    "id": "GESP6-202309-J01",
+    "source": "2023-09"
+  },
+  {
+    "number": 2,
+    "type": "judgment",
+    "stem": "5G网络中，5G中的G表示Gigabytes/s，其中1 GB = 1024 MB。",
+    "options": [],
+    "answer": "false",
+    "tags": [
+      "计算机网络"
+    ],
+    "id": "GESP6-202309-J02",
+    "source": "2023-09"
+  },
+  {
+    "number": 3,
+    "type": "judgment",
+    "stem": "在面向对象中，类是对象的实例。",
+    "options": [],
+    "answer": "false",
+    "tags": [
+      "面向对象"
+    ],
+    "id": "GESP6-202309-J03",
+    "source": "2023-09"
+  },
+  {
+    "number": 4,
+    "type": "judgment",
+    "stem": "在C++类的定义中，使用static修饰符定义的静态成员被该类的所有对象共享。",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "面向对象",
+      "静态成员"
+    ],
+    "id": "GESP6-202309-J04",
+    "source": "2023-09"
+  },
+  {
+    "number": 5,
+    "type": "judgment",
+    "stem": "在C++类的定义中，可以定义初始化函数或运算符函数等。",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "面向对象",
+      "运算符重载"
+    ],
+    "id": "GESP6-202309-J05",
+    "source": "2023-09"
+  },
+  {
+    "number": 6,
+    "type": "judgment",
+    "stem": "DFS是深度优先算法的英文简写。",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "搜索算法"
+    ],
+    "id": "GESP6-202309-J06",
+    "source": "2023-09"
+  },
+  {
+    "number": 7,
+    "type": "judgment",
+    "stem": "哈夫曼编码是一种有损压缩算法。",
+    "options": [],
+    "answer": "false",
+    "tags": [
+      "哈夫曼编码"
+    ],
+    "id": "GESP6-202309-J07",
+    "source": "2023-09"
+  },
+  {
+    "number": 8,
+    "type": "judgment",
+    "stem": "有些算法或数据结构在C/C++语言中使用指针实现，一个典型的例子就是链表。因此，链表这一数据结构在C/C++语言中只能使用指针来实现。",
+    "options": [],
+    "answer": "false",
+    "tags": [
+      "链表"
+    ],
+    "id": "GESP6-202309-J08",
+    "source": "2023-09"
+  },
+  {
+    "number": 9,
+    "type": "judgment",
+    "stem": "如果节点数为n，广度搜索算法的最差时间复杂度为`O(n)`。",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "搜索算法",
+      "时间复杂度"
+    ],
+    "id": "GESP6-202309-J09",
+    "source": "2023-09"
+  },
+  {
+    "number": 10,
+    "type": "judgment",
+    "stem": "二叉搜索树的左右子树也是二叉搜索树。",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "BST",
+      "二叉树"
+    ],
+    "id": "GESP6-202309-J10",
+    "source": "2023-09"
+  },
+  {
+    "number": 1,
+    "type": "choice",
+    "stem": "面向对象的编程思想主要包括（  ）原则。",
+    "options": [
+      "A. 贪心、动态规划、回溯",
+      "B. 并发、并行、异步",
+      "C. 递归、循环、分治",
+      "D. 封装、继承、多态"
+    ],
+    "answer": "D",
+    "tags": [
+      "面向对象"
+    ],
+    "id": "GESP6-202406-C01",
+    "source": "2024-06"
+  },
+  {
+    "number": 2,
+    "type": "choice",
+    "stem": "运行下列代码，屏幕上输出（  ）。\n```cpp\n#include <iostream>\nusing namespace std;\nclass my_class {\npublic:\n    static int count;\n    my_class() {\n        count++;\n    }\n    ~my_class() {\n        count--;\n    }\n    static void print_count() {\n       cout  << count << \" \";\n    }\n};\nint my_class::count = 0;\nint main() {\n    my_class obj1;\n    my_class::print_count();\n    my_class obj2;\n    obj2.print_count();\n    my_class obj3;\n    obj3.print_count();\n    return 0;\n}\n```",
+    "options": [
+      "A. 1 1 1",
+      "B. 1 2 3",
+      "C. 1 1 2",
+      "D. 1 2 2"
+    ],
+    "answer": "B",
+    "tags": [
+      "面向对象",
+      "静态成员"
+    ],
+    "id": "GESP6-202406-C02",
+    "source": "2024-06"
+  },
+  {
+    "number": 3,
+    "type": "choice",
+    "stem": "运行下列代码，屏幕上输出（  ）。\n```cpp\n#include <iostream>\nusing namespace std;\nclass shape {\nprotected:\n    int width, height;\npublic:\n    shape(int a = 0, int b = 0) {\n        width = a;\n        height = b;\n    }\n    virtual int area() {\n        cout << \"parent class area:\" <<endl;\n        return 0;\n    }\n};\nclass rectangle: public shape {\npublic:\n    rectangle(int a = 0, int b = 0) : shape(a, b) { }\n    int area () {\n        cout << \"rectangle area: \";\n        return (width * height);\n    }\n};\nclass triangle: public shape {\npublic:\n    triangle(int a = 0, int b = 0) : shape(a, b) { }\n    int area () {\n        cout << \"triangle area: \";\n        return (width * height / 2);\n    }\n};\nint main() {\n   shape *pshape;\n   rectangle rec(10, 7);\n   triangle  tri(10, 5);\n   pshape = &rec;\n   pshape->area();\n   pshape = &tri;\n   pshape->area();\n   return 0;\n}\n```",
+    "options": [
+      "A. rectangle area: triangle area:",
+      "B. parent class area: parent class area:",
+      "C. 运行时报错",
+      "D. 编译时报错"
+    ],
+    "answer": "A",
+    "tags": [
+      "继承与多态",
+      "虚函数"
+    ],
+    "id": "GESP6-202406-C03",
+    "source": "2024-06"
+  },
+  {
+    "number": 4,
+    "type": "choice",
+    "stem": "向一个栈顶为hs的链式栈中插入一个指针为s的结点时，应执行（  ）。",
+    "options": [
+      "A. hs->next = s;",
+      "B. s->next = hs; hs = s;",
+      "C. s->next = hs->next; hs->next = s;",
+      "D. s->next = hs; hs = hs->next;"
+    ],
+    "answer": "B",
+    "tags": [
+      "栈与队列",
+      "链表"
+    ],
+    "id": "GESP6-202406-C04",
+    "source": "2024-06"
+  },
+  {
+    "number": 5,
+    "type": "choice",
+    "stem": "在栈数据结构中，元素的添加和删除是按照什么原则进行的？",
+    "options": [
+      "A. 先进先出",
+      "B. 先进后出",
+      "C. 最小值先出",
+      "D. 随机顺序"
+    ],
+    "answer": "B",
+    "tags": [
+      "栈与队列"
+    ],
+    "id": "GESP6-202406-C05",
+    "source": "2024-06"
+  },
+  {
+    "number": 6,
+    "type": "choice",
+    "stem": "要实现将一个输入的十进制正整数转化为二进制表示，下面横线上应填入的代码为（  ）。\n```cpp\n#include <iostream>\nusing namespace std;\nstack<int> ten2bin(int n) {\n    stack<int> st;\n    int r, m;\n    r = n % 2;\n    m = n / 2;\n    st.push(r);\n    while (m != 1) {\n        r = m % 2;\n        st.push(r);\n        m = m / 2;\n    }\n    st.push(m);\n    return st;\n}\nint main() {\n    int n;\n    cin >> n;\n    stack<int> bin;\n    bin = ten2bin(n);\n    while (!bin.empty()) {\n        _____________________ // 在此处填入代码\n    }\n    return 0;\n}\n```",
+    "options": [
+      "A. cout << bin.top();  bin.pop();",
+      "B. bin.pop(); cout << bin.top();",
+      "C. cout << bin.back();  bin.pop();",
+      "D. cout << bin.front();  bin.pop();"
+    ],
+    "answer": "A",
+    "tags": [
+      "栈与队列"
+    ],
+    "id": "GESP6-202406-C06",
+    "source": "2024-06"
+  },
+  {
+    "number": 7,
+    "type": "choice",
+    "stem": "下面定义了一个循环队列的类，请补全判断队列是否满的函数，横向上应填写（  ）。\n```cpp\n#include <iostream>\nusing namespace std;\nclass circular_queue {\nprivate:\n    int *arr; // 数组用于存储队列元素\n    int capacity; // 队列容量\n    int front; // 队头指针\n    int rear; // 队尾指针\npublic:\n    circular_queue(int size) {\n        capacity = size + 1; // 为了避免队列满时与队列空时指针相等的情况，多预留一个空间\n        arr = new int[capacity];\n        front = 0;\n        rear = 0;\n    }\n    ~circular_queue() {\n        delete[] arr;\n    }\n    bool is_empty() {\n        return front == rear;\n    }\n    bool is_full() {\n        ________________ // 在此处填入代码\n    }\n    void en_queue(int data) {\n        if (is_full()) {\n            cout << \"队列已满，无法入队！\" << endl;\n            return -1;\n        }\n        arr[rear] = data;\n        rear = (rear + 1) % capacity;\n        return 1;\n    }\n    int de_queue() {\n        if (is_empty()) {\n            cout << \"队列为空，无法出队！\" << endl;\n            return -1; // 出队失败，返回一个特殊值\n        }\n        int data = arr[front];\n        front = (front + 1) % capacity;\n        return data;\n    }\n};\n```",
+    "options": [
+      "A. return (rear + 1) % capacity == front;",
+      "B. return rear % capacity == front;",
+      "C. return rear == front;",
+      "D. return (rear + 1) == front;"
+    ],
+    "answer": "A",
+    "tags": [
+      "栈与队列"
+    ],
+    "id": "GESP6-202406-C07",
+    "source": "2024-06"
+  },
+  {
+    "number": 8,
+    "type": "choice",
+    "stem": "对\"classmycls\"使用哈夫曼（Huffman）编码，最少需要（  ）比特。",
+    "options": [
+      "A. 10",
+      "B. 20",
+      "C. 25",
+      "D. 30"
+    ],
+    "answer": "C",
+    "tags": [
+      "哈夫曼编码"
+    ],
+    "id": "GESP6-202406-C08",
+    "source": "2024-06"
+  },
+  {
+    "number": 9,
+    "type": "choice",
+    "stem": "二叉树的（  ）第一个访问的节点是根节点。",
+    "options": [
+      "A. 先序遍历",
+      "B. 中序遍历",
+      "C. 后序遍历",
+      "D. 以上都是"
+    ],
+    "answer": "A",
+    "tags": [
+      "二叉树"
+    ],
+    "id": "GESP6-202406-C09",
+    "source": "2024-06"
+  },
+  {
+    "number": 10,
+    "type": "choice",
+    "stem": "一棵5层的满二叉树中节点数为（  ）。",
+    "options": [
+      "A. 31",
+      "B. 32",
+      "C. 33",
+      "D. 16"
+    ],
+    "answer": "A",
+    "tags": [
+      "二叉树"
+    ],
+    "id": "GESP6-202406-C10",
+    "source": "2024-06"
+  },
+  {
+    "number": 11,
+    "type": "choice",
+    "stem": "在求解最优化问题时，动态规划常常涉及到两个重要性质，即最优子结构和(  )。",
+    "options": [
+      "A. 重叠子问题",
+      "B. 分治法",
+      "C. 贪心策略",
+      "D. 回溯算法"
+    ],
+    "answer": "A",
+    "tags": [
+      "动态规划"
+    ],
+    "id": "GESP6-202406-C11",
+    "source": "2024-06"
+  },
+  {
+    "number": 12,
+    "type": "choice",
+    "stem": "青蛙每次能跳1或2步，下面代码计算青蛙跳到第n步台阶有多少种不同跳法。则下列说法，错误的是(  )。\n```cpp\nint jump_recur(int n) {\n    if (n == 1) return 1;\n    if (n == 2) return 2;\n    return jump_recur(n - 1) + jump_recur(n - 2);\n}\nint jump_dp(int n) {\n    vector<int> dp(n + 1); // 创建一个动态规划数组，用于保存已计算的值\n    // 初始化前两个数\n    dp[1] = 1;\n    dp[2] = 2;\n    // 从第三个数开始计算斐波那契数列\n    for (int i = 3; i <= n; ++i) {\n        dp[i] = dp[i - 1] + dp[i - 2];\n    }\n    return dp[n];\n}\n```",
+    "options": [
+      "A. 函数jump_recur()采用递归方式。",
+      "B. 函数jump_dp()采用动态规划方法。",
+      "C. 当n较大时，函数jump_recur()存在大量重复计算，执行效率低。",
+      "D. 函数jump_recur()代码量小，执行效率高。"
+    ],
+    "answer": "D",
+    "tags": [
+      "动态规划",
+      "时间复杂度"
+    ],
+    "id": "GESP6-202406-C12",
+    "source": "2024-06"
+  },
+  {
+    "number": 13,
+    "type": "choice",
+    "stem": "阅读以下二叉树的广度优先搜索代码:\n```cpp\n#include <iostream>\n#include <queue>\nusing namespace std;\n// 二叉树节点的定义\nstruct TreeNode {\n    int val;\n    TreeNode* left;\n    TreeNode* right;\n    TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}\n};\n// 宽度优先搜索（BFS）迭代实现\nTreeNode* bfs(TreeNode* root, int a) {\n    if (root == nullptr) return nullptr;\n    queue<TreeNode*> q;\n    q.push(root);\n    while (!q.empty()) {\n        TreeNode* node = q.front();\n        q.pop();\n        if (node->val == a)\n            return node;\n        cout << node->val << \" \"; // 先访问当前节点\n        if (node->left) q.push(node->left); // 将左子节点入队\n        if (node->right) q.push(node->right); // 将右子节点入队\n    }\n    return nullptr;\n}\n```\n使用以上算法，在给定的树搜索数值时，可能的输出是(  )。",
+    "options": [
+      "A. 5 2 -4 3 17 9",
+      "B. -4 2 3 5 9 17",
+      "C. 5 2 17 -4 3 9",
+      "D. 以上都不对"
+    ],
+    "answer": "C",
+    "tags": [
+      "二叉树",
+      "搜索算法"
+    ],
+    "id": "GESP6-202406-C13",
+    "source": "2024-06"
+  },
+  {
+    "number": 14,
+    "type": "choice",
+    "stem": "同上题中的二叉树，阅读以下二叉树的深度优先搜索代码:\n```cpp\n#include <iostream>\n#include <stack>\nusing namespace std;\n// 非递归深度优先搜索（DFS）\nTreeNode* dfs(TreeNode* root, int a) {\n    if (root == nullptr) return nullptr;\n    stack<TreeNode*> stk;\n    stk.push(root);\n    while (!stk.empty()) {\n        TreeNode* node = stk.top();\n        stk.pop();\n        if (node->val == a)\n            return node;\n        cout << node->val << \" \"; // 访问当前节点\n        if (node->right) stk.push(node->right); // 先压入右子节点\n        if (node->left) stk.push(node->left); // 再压入左子节点\n    }\n    return nullptr;\n}\n```\n使用以上算法，在二叉树搜索数值时，可能的输出是(  )。",
+    "options": [
+      "A. 5 2 -4 3 17 9",
+      "B. -4 2 3 5 9 17",
+      "C. 5 2 17 -4 3 9",
+      "D. 以上都不对"
+    ],
+    "answer": "A",
+    "tags": [
+      "二叉树",
+      "搜索算法"
+    ],
+    "id": "GESP6-202406-C14",
+    "source": "2024-06"
+  },
+  {
+    "number": 15,
+    "type": "choice",
+    "stem": "在上题的树中搜索数值时，采用深度优先搜索一共比较的节点数为（  ）。",
+    "options": [
+      "A. 2",
+      "B. 3",
+      "C. 4",
+      "D. 5"
+    ],
+    "answer": "C",
+    "tags": [
+      "二叉树",
+      "搜索算法"
+    ],
+    "id": "GESP6-202406-C15",
+    "source": "2024-06"
+  },
+  {
+    "number": 1,
+    "type": "judgment",
+    "stem": "哈夫曼编码本质上是一种贪心策略。",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "哈夫曼编码"
+    ],
+    "id": "GESP6-202406-J01",
+    "source": "2024-06"
+  },
+  {
+    "number": 2,
+    "type": "judgment",
+    "stem": "创建一个对象时，会自动调用该对象所属类的构造函数。如果没有定义构造函数，编译器会自动生成一个默认的构造函数。",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "面向对象"
+    ],
+    "id": "GESP6-202406-J02",
+    "source": "2024-06"
+  },
+  {
+    "number": 3,
+    "type": "judgment",
+    "stem": "定义一个类时，必须手动定义一个析构函数，用于释放对象所占用的资源。",
+    "options": [],
+    "answer": "false",
+    "tags": [
+      "面向对象"
+    ],
+    "id": "GESP6-202406-J03",
+    "source": "2024-06"
+  },
+  {
+    "number": 4,
+    "type": "judgment",
+    "stem": "C++中类内部可以嵌套定义类。",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "面向对象"
+    ],
+    "id": "GESP6-202406-J04",
+    "source": "2024-06"
+  },
+  {
+    "number": 5,
+    "type": "judgment",
+    "stem": "000, 001, 011, 010, 110, 111, 101, 100是一组格雷码。",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "格雷码"
+    ],
+    "id": "GESP6-202406-J05",
+    "source": "2024-06"
+  },
+  {
+    "number": 6,
+    "type": "judgment",
+    "stem": "n个节点的双向循环链表，在其中查找某个节点的平均时间复杂度是`O(1)`。",
+    "options": [],
+    "answer": "false",
+    "tags": [
+      "链表",
+      "时间复杂度"
+    ],
+    "id": "GESP6-202406-J06",
+    "source": "2024-06"
+  },
+  {
+    "number": 7,
+    "type": "judgment",
+    "stem": "完全二叉树可以用数组存储数据。",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "二叉树"
+    ],
+    "id": "GESP6-202406-J07",
+    "source": "2024-06"
+  },
+  {
+    "number": 8,
+    "type": "judgment",
+    "stem": "在C++中，静态成员函数只能访问静态成员变量。",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "面向对象"
+    ],
+    "id": "GESP6-202406-J08",
+    "source": "2024-06"
+  },
+  {
+    "number": 9,
+    "type": "judgment",
+    "stem": "在深度优先搜索中，通常使用队列来辅助实现。",
+    "options": [],
+    "answer": "false",
+    "tags": [
+      "搜索算法"
+    ],
+    "id": "GESP6-202406-J09",
+    "source": "2024-06"
+  },
+  {
+    "number": 10,
+    "type": "judgment",
+    "stem": "对0-1背包问题，贪心算法一定能获得最优解。",
+    "options": [],
+    "answer": "false",
+    "tags": [
+      "动态规划"
+    ],
+    "id": "GESP6-202406-J10",
+    "source": "2024-06"
+  },
+  {
+    "number": 1,
+    "type": "choice",
+    "stem": "在面向对象编程中，类是一种重要的概念。下面关于类的描述中，不正确的是（ ）。",
+    "options": [
+      "A. 类是一个抽象的概念，用于描述具有相同属性和行为的对象集合。",
+      "B. 类可以包含属性和方法，属性用于描述对象的状态，方法用于描述对象的行为。",
+      "C. 类可以被实例化，生成具体的对象。",
+      "D. 类一旦定义后，其属性和方法不能被修改或扩展。"
+    ],
+    "answer": "D",
+    "tags": [
+      "面向对象",
+      "类"
+    ],
+    "id": "GESP6-202503-C01",
+    "source": "2025-03"
+  },
+  {
+    "number": 2,
+    "type": "choice",
+    "stem": "哈夫曼编码是一种数据压缩算法。以下关于哈夫曼编码的描述中，不正确的是（ ）。",
+    "options": [
+      "A. 哈夫曼编码是一种变长编码，频率高的字符使用较短的编码，频率低的字符使用较长的编码。",
+      "B. 在构造哈夫曼树时，频率越低的字符离根节点越近，频率越高的字符离根节点越远。",
+      "C. 哈夫曼编码的生成过程基于贪心算法，每次选择频率最低的两个节点进行合并。",
+      "D. 哈夫曼编码是一种前缀编码，任何一个字符的编码都不会是另一个字符编码的前缀，因此可以实现唯一解码。"
+    ],
+    "answer": "B",
+    "tags": [
+      "哈夫曼编码",
+      "贪心算法"
+    ],
+    "id": "GESP6-202503-C02",
+    "source": "2025-03"
+  },
+  {
+    "number": 3,
+    "type": "choice",
+    "stem": "以下代码实现了树的哪种遍历方式？\n```cpp\nvoid traverse(TreeNode* root) {\n  if (root == nullptr) return;\n  cout << root->val << \" \";\n  traverse(root->left);\n  traverse(root->right);\n}\n```",
+    "options": [
+      "A. 前序遍历",
+      "B. 中序遍历",
+      "C. 后序遍历",
+      "D. 层次遍历"
+    ],
+    "answer": "A",
+    "tags": [
+      "树",
+      "遍历"
+    ],
+    "id": "GESP6-202503-C03",
+    "source": "2025-03"
+  },
+  {
+    "number": 4,
+    "type": "choice",
+    "stem": "以下关于完全二叉树的代码描述，正确的是（ ）。\n```cpp\nbool isCompleteTree(TreeNode* root) {\n  if (root == nullptr) return true;\n  queue<TreeNode*> q;\n  q.push(root);\n  bool hasNull = false;\n  while (!q.empty()) {\n    TreeNode* node = q.front(); q.pop();\n    if (node == nullptr) { hasNull = true; }\n    else {\n      if (hasNull) return false;\n      q.push(node->left);\n      q.push(node->right);\n    }\n  }\n  return true;\n}\n```",
+    "options": [
+      "A. 该代码用于判断一棵树是否为满二叉树",
+      "B. 该代码用于判断一棵树是否为完全二叉树",
+      "C. 该代码用于判断一棵树是否为二叉搜索树",
+      "D. 该代码用于计算树的高度"
+    ],
+    "answer": "B",
+    "tags": [
+      "完全二叉树",
+      "队列"
+    ],
+    "id": "GESP6-202503-C04",
+    "source": "2025-03"
+  },
+  {
+    "number": 5,
+    "type": "choice",
+    "stem": "以下代码实现了二叉排序树的哪种操作？\n```cpp\nTreeNode* op(TreeNode* root, int val) {\n  if (root == nullptr) return new TreeNode(val);\n  if (val < root->val) root->left = op(root->left, val);\n  else root->right = op(root->right, val);\n  return root;\n}\n```",
+    "options": [
+      "A. 查找",
+      "B. 插入",
+      "C. 删除",
+      "D. 遍历"
+    ],
+    "answer": "B",
+    "tags": [
+      "二叉排序树",
+      "插入"
+    ],
+    "id": "GESP6-202503-C05",
+    "source": "2025-03"
+  },
+  {
+    "number": 6,
+    "type": "choice",
+    "stem": "给定字符集 {A, B, C, D} 的出现频率分别为 {5, 1, 6, 2}，则正确的哈夫曼编码是（ ）。",
+    "options": [
+      "A. A:0, B:100, C:11, D:101",
+      "B. A:11, B:100, C:0, D:101",
+      "C. A:0, B:101, C:11, D:100",
+      "D. A:10, B:101, C:0, D:100"
+    ],
+    "answer": "B",
+    "tags": [
+      "哈夫曼编码"
+    ],
+    "id": "GESP6-202503-C06",
+    "source": "2025-03"
+  },
+  {
+    "number": 7,
+    "type": "choice",
+    "stem": "关于动态规划的描述，正确的是（ ）。",
+    "options": [
+      "A. 动态规划算法的时间复杂度总是低于贪心算法。",
+      "B. 动态规划要求问题必须具有最优子结构和重叠子问题两个性质。",
+      "C. 动态规划通过递归实现时不需要存储中间结果。",
+      "D. 动态规划的核心思想是将问题分解为互不重叠的子问题。"
+    ],
+    "answer": "B",
+    "tags": [
+      "动态规划"
+    ],
+    "id": "GESP6-202503-C07",
+    "source": "2025-03"
+  },
+  {
+    "number": 8,
+    "type": "choice",
+    "stem": "以下代码中，类的构造函数被调用了（ ）次。\n```cpp\nclass MyClass { public: MyClass() { cout << \"Constructor called!\" << endl; } };\nint main() { MyClass obj1; MyClass obj2 = obj1; return 0; }\n```",
+    "options": [
+      "A. 1",
+      "B. 2",
+      "C. 3",
+      "D. 0"
+    ],
+    "answer": "A",
+    "tags": [
+      "类",
+      "构造函数"
+    ],
+    "id": "GESP6-202503-C08",
+    "source": "2025-03"
+  },
+  {
+    "number": 9,
+    "type": "choice",
+    "stem": "以下代码实现了循环队列的哪种操作？\n```cpp\nbool enQueue(int value) {\n  if (isFull()) return false;\n  if (isEmpty()) front = 0;\n  rear = (rear + 1) % size;\n  arr[rear] = value;\n  return true;\n}\n```",
+    "options": [
+      "A. 入队",
+      "B. 出队",
+      "C. 查看队首元素",
+      "D. 判断队列是否为空"
+    ],
+    "answer": "A",
+    "tags": [
+      "循环队列"
+    ],
+    "id": "GESP6-202503-C09",
+    "source": "2025-03"
+  },
+  {
+    "number": 10,
+    "type": "choice",
+    "stem": "以下代码实现了二叉树的深度优先搜索（DFS），并统计叶子结点的数量，则横线上应填写（ ）。\n```cpp\nint countLeafNodes(TreeNode* root) {\n  if (root == nullptr) return 0;\n  stack<TreeNode*> s; s.push(root);\n  int count = 0;\n  while (!s.empty()) {\n    TreeNode* node = s.top(); s.pop();\n    if (!node->left && !node->right) count++;\n    if (node->right) s.push(node->right);\n    ________\n  }\n  return count;\n}\n```",
+    "options": [
+      "A. if (node->left) s.push(node->left);",
+      "B. if (node->left) s.pop(node->left);",
+      "C. if (node->left) s.front(node->left);",
+      "D. if (node->left) s.push(node->right);"
+    ],
+    "answer": "A",
+    "tags": [
+      "二叉树",
+      "DFS"
+    ],
+    "id": "GESP6-202503-C10",
+    "source": "2025-03"
+  },
+  {
+    "number": 11,
+    "type": "choice",
+    "stem": "以下代码实现了二叉树的广度优先搜索（BFS），并查找特定值的节点，则横线上应填写（ ）。\n```cpp\nTreeNode* findNode(TreeNode* root, int target) {\n  if (root == nullptr) return nullptr;\n  queue<TreeNode*> q; q.push(root);\n  while (!q.empty()) {\n    TreeNode* current = q.front(); q.pop();\n    if (current->val == target) return current;\n    ________\n  }\n  return nullptr;\n}\n```",
+    "options": [
+      "A. if (current->left) q.push(current->left); if (current->right) q.push(current->right);",
+      "B. if (current->left) q.pop(current->left); if (current->right) q.pop(current->right);",
+      "C. if (current->left) q.front(current->left); if (current->right) q.front(current->right);",
+      "D. if (current->left) q.push(current->right); if (current->right) q.push(current->left);"
+    ],
+    "answer": "A",
+    "tags": [
+      "二叉树",
+      "BFS"
+    ],
+    "id": "GESP6-202503-C11",
+    "source": "2025-03"
+  },
+  {
+    "number": 12,
+    "type": "choice",
+    "stem": "以下代码用于生成 n 位格雷编码。横线上应填写（ ）。\n```cpp\nvector<string> generateGrayCode(int n) {\n  if (n == 0) return {\"0\"};\n  if (n == 1) return {\"0\", \"1\"};\n  vector<string> prev = generateGrayCode(n - 1);\n  vector<string> result;\n  for (string s : prev) result.push_back(\"0\" + s);\n  for (int i = prev.size() - 1; i >= 0; i--) ________\n  return result;\n}\n```",
+    "options": [
+      "A. result.push_back(\"1\" + prev[i]);",
+      "B. result.push_back(\"0\" + prev[i]);",
+      "C. result.push_back(prev[i] + \"1\");",
+      "D. result.push_back(prev[i] + \"0\");"
+    ],
+    "answer": "A",
+    "tags": [
+      "格雷编码",
+      "递归"
+    ],
+    "id": "GESP6-202503-C12",
+    "source": "2025-03"
+  },
+  {
+    "number": 13,
+    "type": "choice",
+    "stem": "以下代码实现了 0/1 背包问题的动态规划解法，横线上应填写（ ）。\n```cpp\nint knapsack(int W, vector<int>& weights, vector<int>& values) {\n  int n = weights.size();\n  vector<vector<int>> dp(n + 1, vector<int>(W + 1, 0));\n  for (int i = 1; i <= n; i++) {\n    for (int j = 1; j <= W; j++) {\n      if (weights[i-1] > j) dp[i][j] = dp[i-1][j];\n      else dp[i][j] = max(________);\n    }\n  }\n  return dp[n][W];\n}\n```",
+    "options": [
+      "A. dp[i-1][j], values[i-1]",
+      "B. dp[i-1][j], dp[i-1][j - weights[i-1]] + values[i-1]",
+      "C. dp[i][j-1], values[i-1]",
+      "D. dp[i-1][j - weights[i-1]] + values[i-1], dp[i][j-1]"
+    ],
+    "answer": "B",
+    "tags": [
+      "动态规划",
+      "背包问题"
+    ],
+    "id": "GESP6-202503-C13",
+    "source": "2025-03"
+  },
+  {
+    "number": 14,
+    "type": "choice",
+    "stem": "以下代码用于检查字符串中的括号是否匹配，横线上应填写（ ）。\n```cpp\nbool isBalanced(string s) {\n  stack<char> st;\n  for (char c : s) {\n    if (c == '(' || c == '[' || c == '{') st.push(c);\n    else {\n      if (st.empty()) return false;\n      char top = st.top(); st.pop();\n      if ((c==')' && top!='(') || (c==']' && top!='[') || (c=='}' && top!='{')) return false;\n    }\n  }\n  return ________;\n}\n```",
+    "options": [
+      "A. true",
+      "B. false",
+      "C. st.empty()",
+      "D. !st.empty()"
+    ],
+    "answer": "C",
+    "tags": [
+      "栈",
+      "括号匹配"
+    ],
+    "id": "GESP6-202503-C14",
+    "source": "2025-03"
+  },
+  {
+    "number": 15,
+    "type": "choice",
+    "stem": "关于下面代码，说法错误的是（ ）。\n```cpp\nclass Shape { public: Shape(const string& n) : name(n) {} virtual double area() const { return 0.0; } };\nclass Circle : public Shape { ... };\nclass Rectangle : public Shape { ... };\nint main() { Circle circle(\"MyCircle\", 5.0); Rectangle rectangle(\"MyRectangle\", 4.0, 6.0); Shape* shapePtr = &circle; shapePtr = &rectangle; }\n```",
+    "options": [
+      "A. 语句 Shape* shapePtr = &circle; 和 shapePtr = &rectangle; 出现编译错误",
+      "B. Shape 为基类，Circle 和 Rectangle 是派生类",
+      "C. 通过继承，Circle 和 Rectangle 复用了 Shape 的属性和方法，并扩展了新的功能",
+      "D. Circle 和 Rectangle 通过重写基类的虚函数 area 和基类指针，实现了运行时多态"
+    ],
+    "answer": "A",
+    "tags": [
+      "面向对象",
+      "多态",
+      "继承"
+    ],
+    "id": "GESP6-202503-C15",
+    "source": "2025-03"
+  },
+  {
+    "number": 1,
+    "type": "judgment",
+    "stem": "哈夫曼树在构造过程中，每次合并权值最小的两个节点，最终生成的树带权路径长度最小。",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "哈夫曼树"
+    ],
+    "id": "GESP6-202503-J01",
+    "source": "2025-03"
+  },
+  {
+    "number": 2,
+    "type": "judgment",
+    "stem": "格雷编码的相邻两个编码之间必须有多位不同，以避免数据传输错误。",
+    "options": [],
+    "answer": "false",
+    "tags": [
+      "格雷编码"
+    ],
+    "id": "GESP6-202503-J02",
+    "source": "2025-03"
+  },
+  {
+    "number": 3,
+    "type": "judgment",
+    "stem": "在树的深度优先搜索（DFS）中，使用队列作为辅助数据结构以实现“先进后出”的访问顺序。",
+    "options": [],
+    "answer": "false",
+    "tags": [
+      "DFS"
+    ],
+    "id": "GESP6-202503-J03",
+    "source": "2025-03"
+  },
+  {
+    "number": 4,
+    "type": "judgment",
+    "stem": "以下代码实现的是二叉树的中序遍历：\n```cpp\nvoid traverse(TreeNode* root) {\n  if (root == nullptr) return;\n  traverse(root->left);\n  cout << root->val << \" \";\n  traverse(root->right);\n}\n```",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "树",
+      "遍历"
+    ],
+    "id": "GESP6-202503-J04",
+    "source": "2025-03"
+  },
+  {
+    "number": 5,
+    "type": "judgment",
+    "stem": "C++ 支持构造函数重载，但默认无参数的构造函数只能有一个。",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "C++",
+      "构造函数"
+    ],
+    "id": "GESP6-202503-J05",
+    "source": "2025-03"
+  },
+  {
+    "number": 6,
+    "type": "judgment",
+    "stem": "二叉排序树（BST）中，若某节点的左子树为空，则该节点一定是树中的最小值节点。",
+    "options": [],
+    "answer": "false",
+    "tags": [
+      "二叉排序树"
+    ],
+    "id": "GESP6-202503-J06",
+    "source": "2025-03"
+  },
+  {
+    "number": 7,
+    "type": "judgment",
+    "stem": "在动态规划解决一维硬币找零问题时，若硬币面额为 [1, 3, 4]，目标金额为 6，则最少需要 2 枚硬币（3+3）。",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "动态规划"
+    ],
+    "id": "GESP6-202503-J07",
+    "source": "2025-03"
+  },
+  {
+    "number": 8,
+    "type": "judgment",
+    "stem": "面向对象编程中，封装是指将数据和行为绑定在一起，并对外隐藏实现细节。",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "面向对象",
+      "封装"
+    ],
+    "id": "GESP6-202503-J08",
+    "source": "2025-03"
+  },
+  {
+    "number": 9,
+    "type": "judgment",
+    "stem": "以下代码创建的树是一棵完全二叉树：\n```cpp\nTreeNode* root = new TreeNode{1};\nroot->left = new TreeNode{2};\nroot->right = new TreeNode{3};\nroot->left->left = new TreeNode{4};\n```",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "完全二叉树"
+    ],
+    "id": "GESP6-202503-J09",
+    "source": "2025-03"
+  },
+  {
+    "number": 10,
+    "type": "judgment",
+    "stem": "栈和队列均可以用双向链表实现，插入和删除操作的时间复杂度为 `O(1)`。",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "栈",
+      "队列"
+    ],
+    "id": "GESP6-202503-J10",
+    "source": "2025-03"
+  },
+  {
+    "number": 1,
+    "type": "choice",
+    "stem": "下列哪一项不是面向对象编程的基本特征？",
+    "options": [
+      "A. 继承",
+      "B. 封装",
+      "C. 多态",
+      "D. 链接"
+    ],
+    "answer": "D",
+    "tags": [
+      "面向对象"
+    ],
+    "id": "GESP6-202506-C01",
+    "source": "2025-06"
+  },
+  {
+    "number": 2,
+    "type": "choice",
+    "stem": "为了让 Dog 类的构造函数能正确地调用其父类 Animal 的构造方法，横线处应填入（ ）。\n```cpp\nclass Animal { public: std::string name; Animal(std::string str) : name(str) { std::cout << \"Animal created\\n\"; } virtual void speak() { cout << \"Animal speaks\" << endl; } };\nclass Dog : public Animal { std::string breed; public: Dog(std::string name, std::string b) : ________, breed(b) { std::cout << \"Dog created\\n\"; } void speak() override { cout << \"Dog barks\" << endl; } };\n```",
+    "options": [
+      "A. Animal(name)",
+      "B. super(name)",
+      "C. Animal::Animal(name)",
+      "D. Animal()"
+    ],
+    "answer": "A",
+    "tags": [
+      "继承",
+      "构造函数"
+    ],
+    "id": "GESP6-202506-C02",
+    "source": "2025-06"
+  },
+  {
+    "number": 3,
+    "type": "choice",
+    "stem": "代码同上一题，代码执行结果是（ ）。\n```cpp\nint main() { Animal* p = new Dog(\"Rex\", \"Labrador\"); p->speak(); delete p; return 0; }\n```",
+    "options": [
+      "A. 输出 Animal speaks",
+      "B. 输出 Dog barks",
+      "C. 编译错误",
+      "D. 程序崩溃"
+    ],
+    "answer": "B",
+    "tags": [
+      "虚函数",
+      "多态"
+    ],
+    "id": "GESP6-202506-C03",
+    "source": "2025-06"
+  },
+  {
+    "number": 4,
+    "type": "choice",
+    "stem": "以下关于栈和队列的代码，执行后输出是（ ）。\n```cpp\nstack<int> s; queue<int> q;\nfor (int i = 1; i <= 3; ++i) { s.push(i); q.push(i); }\ncout << s.top() << \" \" << q.front() << endl;\n```",
+    "options": [
+      "A. 1 3",
+      "B. 3 1",
+      "C. 3 3",
+      "D. 1 1"
+    ],
+    "answer": "B",
+    "tags": [
+      "栈",
+      "队列"
+    ],
+    "id": "GESP6-202506-C04",
+    "source": "2025-06"
+  },
+  {
+    "number": 5,
+    "type": "choice",
+    "stem": "在一个循环队列中，front 是指向队头的指针，rear 指向队尾的指针，队列最大容量为 maxSize。判断队列已满的条件是（ ）。",
+    "options": [
+      "A. rear == front",
+      "B. (rear + 1) % maxSize == front",
+      "C. (rear - 1 + maxSize) % maxSize == front",
+      "D. (rear - 1) == front"
+    ],
+    "answer": "B",
+    "tags": [
+      "循环队列"
+    ],
+    "id": "GESP6-202506-C05",
+    "source": "2025-06"
+  },
+  {
+    "number": 6,
+    "type": "choice",
+    "stem": "（ ）只有最底层的节点未被填满，且最底层节点尽量靠左填充。",
+    "options": [
+      "A. 完美二叉树",
+      "B. 完全二叉树",
+      "C. 完满二叉树",
+      "D. 平衡二叉树"
+    ],
+    "answer": "B",
+    "tags": [
+      "完全二叉树"
+    ],
+    "id": "GESP6-202506-C06",
+    "source": "2025-06"
+  },
+  {
+    "number": 7,
+    "type": "choice",
+    "stem": "在使用数组表示完全二叉树时，如果一个节点的索引为 i（从 1 开始计数），那么其左子节点的索引通常是（ ）。",
+    "options": [
+      "A. i+1",
+      "B. 2i",
+      "C. 2i+1",
+      "D. i/2"
+    ],
+    "answer": "B",
+    "tags": [
+      "二叉树",
+      "数组存储"
+    ],
+    "id": "GESP6-202506-C07",
+    "source": "2025-06"
+  },
+  {
+    "number": 8,
+    "type": "choice",
+    "stem": "已知一棵二叉树的前序遍历序列为 GDAFEMHZ，中序遍历序列为 ADFGEHMZ，则其后序遍历序列为（ ）。",
+    "options": [
+      "A. ADFGEHMZ",
+      "B. ADFGHMEZ",
+      "C. AFDGEMZH",
+      "D. AFDHZMEG"
+    ],
+    "answer": "D",
+    "tags": [
+      "二叉树遍历"
+    ],
+    "id": "GESP6-202506-C08",
+    "source": "2025-06"
+  },
+  {
+    "number": 9,
+    "type": "choice",
+    "stem": "设有字符集 {a, b, c, d, e}，其出现频率分别为 {5, 8, 12, 15, 20}，得到的哈夫曼编码为（ ）。",
+    "options": [
+      "A. a: 010, b: 011, c: 00, d: 10, e: 11",
+      "B. a: 00, b: 10, c: 011, d: 100, e: 111",
+      "C. a: 10, b: 01, c: 011, d: 100, e: 111",
+      "D. a: 100, b: 01, c: 011, d: 100, e: 00"
+    ],
+    "answer": "A",
+    "tags": [
+      "哈夫曼编码"
+    ],
+    "id": "GESP6-202506-C09",
+    "source": "2025-06"
+  },
+  {
+    "number": 10,
+    "type": "choice",
+    "stem": "3 位格雷编码中，编码 101 之后的下一个编码不可能是（ ）。",
+    "options": [
+      "A. 100",
+      "B. 111",
+      "C. 110",
+      "D. 001"
+    ],
+    "answer": "C",
+    "tags": [
+      "格雷码"
+    ],
+    "id": "GESP6-202506-C10",
+    "source": "2025-06"
+  },
+  {
+    "number": 11,
+    "type": "choice",
+    "stem": "请将下列 C++ 实现的深度优先搜索（DFS）代码补充完整，横线处应填入（ ）。\n```cpp\nvoid dfs(TreeNode* root, vector<int>& result) {\n  if (root == nullptr) return;\n  ________\n}\n```",
+    "options": [
+      "A. result.push_back(root->val); dfs(root->left, result); dfs(root->right, result);",
+      "B. dfs(root->left, result); dfs(root->right, result); result.push_back(root->val);",
+      "C. dfs(root->left, result); result.push_back(root->val); dfs(root->right, result);",
+      "D. result.push_back(root->val); dfs(root->right, result); dfs(root->left, result);"
+    ],
+    "answer": "A",
+    "tags": [
+      "DFS",
+      "树"
+    ],
+    "id": "GESP6-202506-C11",
+    "source": "2025-06"
+  },
+  {
+    "number": 12,
+    "type": "choice",
+    "stem": "给定一个二叉树，返回每一层中最大的节点值，结果以数组形式返回，横线处应填入（ ）。",
+    "options": [
+      "A. node = q.back(); q.pop();",
+      "B. node = q.top(); q.pop();",
+      "C. node = q.front(); q.pop_front();",
+      "D. node = q.front(); q.pop();"
+    ],
+    "answer": "D",
+    "tags": [
+      "BFS",
+      "树"
+    ],
+    "id": "GESP6-202506-C12",
+    "source": "2025-06"
+  },
+  {
+    "number": 13,
+    "type": "choice",
+    "stem": "下面代码实现一个二叉排序树的插入函数（没有相同的数值），横线处应填入（ ）。\n```cpp\nvoid insert(TreeNode*& root, int key) {\n  if (!root) { root = new TreeNode(key); return; }\n  ________\n}\n```",
+    "options": [
+      "A. if (key < root->val) insert(root->left, key); else if (key > root->val) insert(root->right, key);",
+      "B. if (key > root->val) insert(root->left, key); else insert(root->right, key);",
+      "C. insert(root->left, key); insert(root->right, key);",
+      "D. if (key < root->val) insert(root->right, key); else insert(root->left, key);"
+    ],
+    "answer": "A",
+    "tags": [
+      "二叉排序树",
+      "插入"
+    ],
+    "id": "GESP6-202506-C13",
+    "source": "2025-06"
+  },
+  {
+    "number": 14,
+    "type": "choice",
+    "stem": "以下关于动态规划算法特性的描述，正确的是（ ）。",
+    "options": [
+      "A. 子问题相互独立，不重叠",
+      "B. 问题包含重叠子问题和最优子结构",
+      "C. 只能从底至顶迭代求解",
+      "D. 必须使用递归实现，不能使用迭代"
+    ],
+    "answer": "B",
+    "tags": [
+      "动态规划"
+    ],
+    "id": "GESP6-202506-C14",
+    "source": "2025-06"
+  },
+  {
+    "number": 15,
+    "type": "choice",
+    "stem": "给定 n 个物品和一个最大承重为 W 的背包，每个物品有一个重量 wi 和价值 vi，每个物品只能选择放或不放。目标是选择若干个物品放入背包，使得总价值最大，且总重量不超过 W。关于下面代码，说法正确的是（ ）。\n```cpp\nint knapsack1D(int W, vector<int>& wt, vector<int>& val, int n) {\n  vector<int> dp(W+1, 0);\n  for (int i = 0; i < n; ++i) {\n    for (int w = W; w >= wt[i]; --w) { dp[w] = max(dp[w], dp[w - wt[i]] + val[i]); }\n  }\n  return dp[W];\n}\n```",
+    "options": [
+      "A. 该算法不能处理背包容量为 0 的情况",
+      "B. 外层循环 i 遍历背包容量，内层遍历物品",
+      "C. 从大到小遍历 w 是为了避免重复使用同一物品",
+      "D. 这段代码计算的是最小重量而非最大价值"
+    ],
+    "answer": "C",
+    "tags": [
+      "动态规划",
+      "背包问题"
+    ],
+    "id": "GESP6-202506-C15",
+    "source": "2025-06"
+  },
+  {
+    "number": 1,
+    "type": "judgment",
+    "stem": "构造函数可以被声明为 virtual。",
+    "options": [],
+    "answer": "false",
+    "tags": [
+      "虚函数"
+    ],
+    "id": "GESP6-202506-J01",
+    "source": "2025-06"
+  },
+  {
+    "number": 2,
+    "type": "judgment",
+    "stem": "给定一组字符及其出现的频率，构造出的哈夫曼树是唯一的。",
+    "options": [],
+    "answer": "false",
+    "tags": [
+      "哈夫曼树"
+    ],
+    "id": "GESP6-202506-J02",
+    "source": "2025-06"
+  },
+  {
+    "number": 3,
+    "type": "judgment",
+    "stem": "为了实现一个队列，使其出队操作（pop）的时间复杂度为 `O(1)` 并且避免数组删除首元素的 `O(n)` 问题，一种常见且有效的方法是使用环形数组，通过调整队首和队尾指针来实现。",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "队列"
+    ],
+    "id": "GESP6-202506-J03",
+    "source": "2025-06"
+  },
+  {
+    "number": 4,
+    "type": "judgment",
+    "stem": "对一棵二叉排序树进行中序遍历，可以得到一个递增的有序序列。",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "二叉排序树"
+    ],
+    "id": "GESP6-202506-J04",
+    "source": "2025-06"
+  },
+  {
+    "number": 5,
+    "type": "judgment",
+    "stem": "如果二叉搜索树在连续的插入和删除操作后，所有节点都偏向一侧，导致其退化为类似于链表的结构，这时其查找、插入、删除操作的时间复杂度会从理想情况下的 `O(log n)` 退化到 `O(n)`。",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "二叉搜索树"
+    ],
+    "id": "GESP6-202506-J05",
+    "source": "2025-06"
+  },
+  {
+    "number": 6,
+    "type": "judgment",
+    "stem": "执行下列代码，`my_dog.name` 的最终值是 Charlie。\n```cpp\nclass Dog { public: std::string name; Dog(std::string str) : name(str) {} };\nint main() { Dog my_dog(\"Buddy\"); my_dog.name = \"Charlie\"; return 0; }\n```",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "类与对象"
+    ],
+    "id": "GESP6-202506-J06",
+    "source": "2025-06"
+  },
+  {
+    "number": 7,
+    "type": "judgment",
+    "stem": "下列 C++ 代码可以成功编译，并且子类 Child 的实例能通过其成员函数访问父类 Parent 的属性 value。\n```cpp\nclass Parent { private: int value = 100; };\nclass Child : public Parent { public: int get_private_val() { return value; } };\n```",
+    "options": [],
+    "answer": "false",
+    "tags": [
+      "继承",
+      "访问控制"
+    ],
+    "id": "GESP6-202506-J07",
+    "source": "2025-06"
+  },
+  {
+    "number": 8,
+    "type": "judgment",
+    "stem": "下列代码中的 tree 向量，表示的是一棵完全二叉树（-1 代表空节点）按照层序遍历的结果。\n```cpp\nvector<int> tree = {1, 2, 3, 4, -1, 6, 7};\n```",
+    "options": [],
+    "answer": "false",
+    "tags": [
+      "完全二叉树"
+    ],
+    "id": "GESP6-202506-J08",
+    "source": "2025-06"
+  },
+  {
+    "number": 9,
+    "type": "judgment",
+    "stem": "在树的深度优先搜索（DFS）中，使用栈作为辅助数据结构以实现「先进后出」的访问顺序。",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "DFS"
+    ],
+    "id": "GESP6-202506-J09",
+    "source": "2025-06"
+  },
+  {
+    "number": 10,
+    "type": "judgment",
+    "stem": "下面代码采用动态规划求解零钱兑换问题：给定 n 种硬币，第 i 种硬币的面值为 `coins[i-1]`，目标金额为 amt，每种硬币可以重复选取，求能够凑出目标金额的最少硬币数量；如果不能凑出目标金额，返回 -1。\n```cpp\nint coinChangeDPComp(vector<int> &coins, int amt) {\n  int n = coins.size(); int MAX = amt + 1; vector<int> dp(amt + 1, MAX); dp[0] = 0;\n  for (int i = 1; i <= n; i++) {\n    for (int a = 1; a <= amt; a++) {\n      if (coins[i - 1] > a) dp[a] = dp[a];\n      else dp[a] = min(dp[a], dp[a - coins[i - 1]] + 1);\n    }\n  }\n  return dp[amt] != MAX ? dp[amt] : -1;\n}\n```",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "动态规划",
+      "零钱兑换"
+    ],
+    "id": "GESP6-202506-J10",
+    "source": "2025-06"
+  },
+  {
+    "number": 1,
+    "type": "choice",
+    "stem": "下列关于 C++ 中类的描述，正确的是（）。",
+    "options": [
+      "A. 如果类没有用户声明的构造函数，那么编译器会隐式声明一个默认构造函数",
+      "B. 类的析构函数可以被重载，一个类可以有多个析构函数",
+      "C. 类中的所有成员都必须声明为 public",
+      "D. 类和结构体在 C++ 中没有区别，包括默认访问权限也相同"
+    ],
+    "answer": "A",
+    "tags": [
+      "C++",
+      "类"
+    ],
+    "id": "GESP6-202603-C01",
+    "source": "2026-03"
+  },
+  {
+    "number": 2,
+    "type": "choice",
+    "stem": "下列代码中，`s1->draw()`; 和 `s2->draw()`; 输出不同结果的主要原因是（）。",
+    "options": [
+      "A. draw() 是普通成员函数",
+      "B. Shape 中的 draw() 被声明为虚函数",
+      "C. Circle 和 Rectangle 中使用了 public 继承",
+      "D. 指针变量名不同"
+    ],
+    "answer": "B",
+    "tags": [
+      "多态",
+      "虚函数"
+    ],
+    "id": "GESP6-202603-C02",
+    "source": "2026-03"
+  },
+  {
+    "number": 3,
+    "type": "choice",
+    "stem": "下面的代码在 `main()` 中有一行会导致编译错误，请找出来。\n```cpp\nclass Pet {\n  public: Pet(string n, int a) : name(n), age(a) {}\n  string getName() { return name; }\n  void birthday() { age++; }\n  private: string name; int age;\n};\nint main() {\n```\n  Pet `cat(\"奶茶\", 2)`;\n  `cout` << `cat.getName()`; // ①\n  `cat.birthday()`; // ②\n  `cat.name` = \"大橘\"; // ③\n  `cout` << `cat.getName()`; // ④\n}",
+    "options": [
+      "A. 第 ①行",
+      "B. 第 ②行",
+      "C. 第 ③行",
+      "D. 第 ④行"
+    ],
+    "answer": "C",
+    "tags": [
+      "C++",
+      "访问控制",
+      "封装"
+    ],
+    "id": "GESP6-202603-C03",
+    "source": "2026-03"
+  },
+  {
+    "number": 4,
+    "type": "choice",
+    "stem": "游乐园的过山车每次限坐 4 人，用循环队列管理排队（容量 MAX=5，空一格判满）。下面代码执行后，循环队列是否已满？rear 的值是多少？\n```cpp\nconst int MAX = 5;\nint queue[MAX]; int front = 0, rear = 0;\nvoid enqueue(int x) { queue[rear] = x; rear = (rear + 1) % MAX; }\nvoid dequeue() { front = (front + 1) % MAX; }\nint main() { enqueue(1); enqueue(2); enqueue(3); enqueue(4); dequeue(); dequeue(); enqueue(5); enqueue(6); }\n```",
+    "options": [
+      "A. 已满，rear = 1",
+      "B. 未满，rear = 1",
+      "C. 已满，rear = 2",
+      "D. 未满，rear = 4"
+    ],
+    "answer": "A",
+    "tags": [
+      "循环队列"
+    ],
+    "id": "GESP6-202603-C04",
+    "source": "2026-03"
+  },
+  {
+    "number": 5,
+    "type": "choice",
+    "stem": "在以下计算机应用场景中，最适合使用循环队列的是（）。",
+    "options": [
+      "A. 函数调用过程中，保存局部变量和返回地址",
+      "B. 表达式求值中的运算符优先级处理",
+      "C. 操作系统中的进程优先级调度（高优先级先执行）",
+      "D. 生产者和消费者问题中的共享缓冲区"
+    ],
+    "answer": "D",
+    "tags": [
+      "循环队列"
+    ],
+    "id": "GESP6-202603-C05",
+    "source": "2026-03"
+  },
+  {
+    "number": 6,
+    "type": "choice",
+    "stem": "在二叉搜索树（BST）中，若中序遍历的序列为 {1, 2, 3, 4, 5}，且先序遍历的第一个元素为 3，下列说法正确的是（）。",
+    "options": [
+      "A. 该树一定是一棵完全二叉树",
+      "B. 元素 4 和 5 不可能是兄弟节点",
+      "C. 元素 1 所在节点的深度可能大于 3（根节点深度为 1）",
+      "D. 元素 2 一定是元素 1 的父节点"
+    ],
+    "answer": "B",
+    "tags": [
+      "二叉搜索树"
+    ],
+    "id": "GESP6-202603-C06",
+    "source": "2026-03"
+  },
+  {
+    "number": 7,
+    "type": "choice",
+    "stem": "某二叉树共有 10 个结点，记为 A~J，已知它的先序遍历序列为：A B D H I E C F J G，中序遍历序列为：H D I B E A F J C G，则该二叉树的后序遍历序列是（）。",
+    "options": [
+      "A. H I D E B J F G C A",
+      "B. H I D B E J F G C A",
+      "C. I H D E B J F G C A",
+      "D. H I D E B F J G C A"
+    ],
+    "answer": "A",
+    "tags": [
+      "二叉树遍历"
+    ],
+    "id": "GESP6-202603-C07",
+    "source": "2026-03"
+  },
+  {
+    "number": 8,
+    "type": "choice",
+    "stem": "下列关于树的遍历的说法中，正确的一项是（）。",
+    "options": [
+      "A. 对任意一棵树进行深度优先遍历，所得序列一定唯一",
+      "B. 已知一棵二叉树的先序遍历和后序遍历序列，可以唯一确定这棵二叉树",
+      "C. 已知一棵二叉树的先序遍历和中序遍历序列，可以唯一确定这棵二叉树",
+      "D. 已知一棵二叉树的先序遍历序列，可以唯一确定这棵二叉树"
+    ],
+    "answer": "C",
+    "tags": [
+      "二叉树遍历"
+    ],
+    "id": "GESP6-202603-C08",
+    "source": "2026-03"
+  },
+  {
+    "number": 9,
+    "type": "choice",
+    "stem": "有 6 个字符，它们出现的次数分别为：{2, 3, 3, 4, 6, 8}，现在用哈夫曼编码为这些字符编码，最小加权路径长度 WPL 的值为（）。",
+    "options": [
+      "A. 58",
+      "B. 60",
+      "C. 62",
+      "D. 64"
+    ],
+    "answer": "D",
+    "tags": [
+      "哈夫曼编码"
+    ],
+    "id": "GESP6-202603-C09",
+    "source": "2026-03"
+  },
+  {
+    "number": 10,
+    "type": "choice",
+    "stem": "对 n 个不同符号进行哈夫曼编码。若生成的哈夫曼树共有 m 个结点，则 n 的值是（）。",
+    "options": [
+      "A. (m+1)/2",
+      "B. (m-1)/2",
+      "C. m-1",
+      "D. m"
+    ],
+    "answer": "A",
+    "tags": [
+      "哈夫曼树"
+    ],
+    "id": "GESP6-202603-C10",
+    "source": "2026-03"
+  },
+  {
+    "number": 11,
+    "type": "choice",
+    "stem": "关于格雷编码（Gray Code），下列说法正确的是（）。",
+    "options": [
+      "A. 格雷编码中，编码位数越多，相邻编码之间变化的位数也越多",
+      "B. 格雷编码中，相邻两个编码的二进制位恰好有一位不同",
+      "C. 格雷编码就是把普通二进制编码按位取反后得到的结果",
+      "D. 格雷编码不能用于数字电路和状态转换的设计中"
+    ],
+    "answer": "B",
+    "tags": [
+      "格雷码"
+    ],
+    "id": "GESP6-202603-C11",
+    "source": "2026-03"
+  },
+  {
+    "number": 12,
+    "type": "choice",
+    "stem": "给定一棵二叉树，采用广度优先搜索(BFS)算法，返回右视图所有节点的值。补全代码横线。\n```cpp\nvector<int> rightSideView(TreeNode* root) {\n  unordered_map<int, int> rightmostValueAtDepth;\n  int max_depth = -1;\n  queue<TreeNode*> nodeQueue; queue<int> depthQueue;\n  // ... push logic ...\n  while (!nodeQueue.empty()) { ... }\n  vector<int> rightView;\n  for (int depth = 0; ________; ++depth) {\n    rightView.push_back(rightmostValueAtDepth[depth]);\n  }\n}\n```",
+    "options": [
+      "A. depth < max_depth",
+      "B. depth <= max_depth",
+      "C. depth + 1 < max_depth",
+      "D. depth < nodeQueue.size()"
+    ],
+    "answer": "B",
+    "tags": [
+      "BFS",
+      "二叉树"
+    ],
+    "id": "GESP6-202603-C12",
+    "source": "2026-03"
+  },
+  {
+    "number": 13,
+    "type": "choice",
+    "stem": "下列关于树的深度优先搜索（DFS）的说法中，正确的是（）。",
+    "options": [
+      "A. 对树进行 DFS 时，一定按层从上到下依次访问结点",
+      "B. 对任意一棵树进行 DFS，得到的遍历序列唯一",
+      "C. 对一棵树进行 DFS 时，常借助递归或栈实现",
+      "D. DFS 只能用于二叉树，不能用于普通树"
+    ],
+    "answer": "C",
+    "tags": [
+      "DFS"
+    ],
+    "id": "GESP6-202603-C13",
+    "source": "2026-03"
+  },
+  {
+    "number": 14,
+    "type": "choice",
+    "stem": "小朋友们去邻居拜年，每个家里有不同数量的糖果。规则是不能连续进入两个相邻的房子。目标是拿到最多糖果。补全代码横线。\n`dp[0] = nums[0]`;\n`dp[1] = max(nums[0], nums[1])`;\n`for (int i = 2; i < size; i++)` {\n  `dp[i] = ________`;\n}",
+    "options": [
+      "A. dp[i-1] + nums[i]",
+      "B. max(dp[i-1], dp[i-2] * nums[i])",
+      "C. max(dp[i-1], dp[i-2] + nums[i])",
+      "D. dp[i-2] + nums[i]"
+    ],
+    "answer": "C",
+    "tags": [
+      "动态规划"
+    ],
+    "id": "GESP6-202603-C14",
+    "source": "2026-03"
+  },
+  {
+    "number": 15,
+    "type": "choice",
+    "stem": "元宵节晚上，小朋友沿着一条发光石板路前进，每次可向前走 1 块或 2 块石板。动态规划定义如下：`dp[i] = dp[i-1] + dp[i-2]`，下面关于 `dp[i]` 的含义最合适的是（）。",
+    "options": [
+      "A. 走到第 i 块石板的不同走法数量",
+      "B. 走到第 i 块石板时，已经走过的石板总数",
+      "C. 从第 i 块石板走回起点的最少步数",
+      "D. 从第 i 块石板走回起点的最大步数"
+    ],
+    "answer": "A",
+    "tags": [
+      "动态规划"
+    ],
+    "id": "GESP6-202603-C15",
+    "source": "2026-03"
+  },
+  {
+    "number": 1,
+    "type": "judgment",
+    "stem": "下面定义了一个表示二维坐标点的类 Point，并提供了一个带参数的构造函数，但第②行 Point b; 会调用编译器自动生成的默认构造函数，将 `b.x` 和 `b.y` 初始化为 0.0，程序可以正常编译运行。",
+    "options": [],
+    "answer": "false",
+    "tags": [
+      "C++",
+      "构造函数"
+    ],
+    "id": "GESP6-202603-J01",
+    "source": "2026-03"
+  },
+  {
+    "number": 2,
+    "type": "judgment",
+    "stem": "C++ 中的继承支持单继承和多继承，但子类无法直接访问父类的私有成员。",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "继承",
+      "访问控制"
+    ],
+    "id": "GESP6-202603-J02",
+    "source": "2026-03"
+  },
+  {
+    "number": 3,
+    "type": "judgment",
+    "stem": "对如下结构的树（根1，左2右3，2有左4右5），执行使用栈的DFS遍历函数，输出结果是 1 2 3 4 5。",
+    "options": [],
+    "answer": "false",
+    "tags": [
+      "DFS",
+      "树遍历"
+    ],
+    "id": "GESP6-202603-J03",
+    "source": "2026-03"
+  },
+  {
+    "number": 4,
+    "type": "judgment",
+    "stem": "若所有字符出现频率相同，则哈夫曼编码一定会得到完全二叉树。",
+    "options": [],
+    "answer": "false",
+    "tags": [
+      "哈夫曼编码"
+    ],
+    "id": "GESP6-202603-J04",
+    "source": "2026-03"
+  },
+  {
+    "number": 5,
+    "type": "judgment",
+    "stem": "哈夫曼编码是一种变长的前缀编码，在解码时不需要额外的分隔符就能唯一还原，这是因为在哈夫曼树中，任何一个字符的叶子结点都不会成为另一个字符结点的祖先。",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "哈夫曼编码"
+    ],
+    "id": "GESP6-202603-J05",
+    "source": "2026-03"
+  },
+  {
+    "number": 6,
+    "type": "judgment",
+    "stem": "在 C++ 中使用一维数组 `vector<int>` tree 存储按层序遍历的完全二叉树时，若根节点存储在 `tree[0]`，则对于任意非空节点 `tree[i]`，其右孩子（如果存在）必然位于 `tree[2*i+2]`。",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "完全二叉树",
+      "数组存储"
+    ],
+    "id": "GESP6-202603-J06",
+    "source": "2026-03"
+  },
+  {
+    "number": 7,
+    "type": "judgment",
+    "stem": "在 C++ 中使用栈来非递归地实现二叉树的前序遍历时，为了保证遍历顺序正确，在处理完当前结点后，应该先将该结点的左孩子压入栈中，然后再将右孩子压入栈中。",
+    "options": [],
+    "answer": "false",
+    "tags": [
+      "栈",
+      "前序遍历"
+    ],
+    "id": "GESP6-202603-J07",
+    "source": "2026-03"
+  },
+  {
+    "number": 8,
+    "type": "judgment",
+    "stem": "设二叉树共有 n 个结点，函数 preorderTraversal 的时间复杂度为 `O(n)`，空间复杂度为 `O(h)`，其中 h 为树高。",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "时间复杂度"
+    ],
+    "id": "GESP6-202603-J08",
+    "source": "2026-03"
+  },
+  {
+    "number": 9,
+    "type": "judgment",
+    "stem": "下列代码实现了一个 0-1 背包的一维动态规划代码，内层循环是经典的逆序写法。若将内层循环改成正序遍历（即 `for (int j = w[i]; j <= W; j++)`），仍能得到正确答案。",
+    "options": [],
+    "answer": "false",
+    "tags": [
+      "动态规划",
+      "背包问题"
+    ],
+    "id": "GESP6-202603-J09",
+    "source": "2026-03"
+  },
+  {
+    "number": 10,
+    "type": "judgment",
+    "stem": "在动态规划问题中，状态空间相同且没有重复计算的情况下，「状态转移方程 + 递推」与「递归 + 记忆化搜索」的时间复杂度通常相同。",
+    "options": [],
+    "answer": "true",
+    "tags": [
+      "动态规划"
+    ],
+    "id": "GESP6-202603-J10",
+    "source": "2026-03"
+  }
+]

@@ -8,6 +8,11 @@ interface Env {
   ADMIN_API_KEY: string;
 }
 
+// Helper: get today's date string in Asia/Shanghai timezone
+function todayCN(): string {
+  return new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Shanghai' });
+}
+
 export const onRequestGet: PagesFunction<Env> = async (context) => {
   const url = new URL(context.request.url);
   const userId = url.searchParams.get('userId');
@@ -15,7 +20,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   if (!userId) return Response.json({ error: 'userId required' }, { status: 400 });
 
   const db = context.env.DB;
-  const today = new Date().toISOString().slice(0, 10);
+  const today = todayCN();
 
   // Total words in deck
   const totalRow = await db.prepare('SELECT COUNT(*) as cnt FROM vocabulary WHERE user_id = ?').bind(userId).first() as any;
@@ -88,7 +93,8 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 
   // Count how many NEW words the user already learned today
   // (words that had their FIRST-EVER review today)
-  const todayStart = new Date(today + 'T00:00:00Z').getTime();
+  // Use Asia/Shanghai midnight as "today start"
+  const todayStart = new Date(today + 'T00:00:00+08:00').getTime();
   const newLearnedTodayRow = await db.prepare(`
     SELECT COUNT(DISTINCT vr.vocabulary_id) as cnt
     FROM vocabulary_reviews vr
@@ -207,7 +213,7 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
 
   const db = context.env.DB;
   const id = crypto.randomUUID();
-  const today = new Date().toISOString().slice(0, 10);
+  const today = todayCN();
   const farFuture = '2099-12-31';
 
   await db.prepare(

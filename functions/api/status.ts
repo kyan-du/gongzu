@@ -36,11 +36,23 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 
       // Count submissions for this quiz
       const submissions = await context.env.DB.prepare(
-        'SELECT question_id, correct FROM submissions WHERE user_id = ? AND quiz_id = ?'
+        'SELECT question_id, correct, score FROM submissions WHERE user_id = ? AND quiz_id = ?'
       ).bind(userId, quiz.id).all();
 
       const submittedSet = new Set(submissions.results.map((s: any) => s.question_id));
       const correctCount = submissions.results.filter((s: any) => s.correct === 1).length;
+
+      // Memory game quizzes store actual accuracy in score field (not just 0/1 correct)
+      const isMemoryGame = (quiz.tag as string).startsWith('记忆·');
+      let quizAccuracy: number | null = null;
+      if (submittedSet.size > 0) {
+        if (isMemoryGame && submissions.results.length > 0) {
+          // Use the stored score directly (it's the real accuracy percentage)
+          quizAccuracy = (submissions.results[0] as any).score ?? 0;
+        } else {
+          quizAccuracy = Math.round((correctCount / submittedSet.size) * 100);
+        }
+      }
 
       results.push({
         quizId: quiz.id,
@@ -51,7 +63,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
         answered: submittedSet.size,
         correct: correctCount,
         completed: submittedSet.size >= questionIds.length,
-        accuracy: submittedSet.size > 0 ? Math.round((correctCount / submittedSet.size) * 100) : null,
+        accuracy: quizAccuracy,
       });
     }
 

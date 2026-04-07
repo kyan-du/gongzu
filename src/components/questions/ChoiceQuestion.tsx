@@ -1,5 +1,7 @@
 import { useState, useMemo } from 'react';
 import { Check, X } from 'lucide-react';
+import CodeAwareStem from '../CodeAwareStem';
+import InlineCodeText from '../InlineCodeText';
 
 interface ChoiceQuestionProps {
   question: any;
@@ -40,7 +42,7 @@ export default function ChoiceQuestion({ question, onAnswer, submitted, result, 
 
   return (
     <div>
-      <p className="text-base text-gray-900 dark:text-gray-100 leading-relaxed mb-4">{content.stem}</p>
+      <CodeAwareStem text={content.stem} className="mb-4" />
 
       <div className={useGrid ? 'grid grid-cols-2 gap-2' : 'space-y-2'}>
         {options.map((opt: any) => {
@@ -65,7 +67,7 @@ export default function ChoiceQuestion({ question, onAnswer, submitted, result, 
               className={`w-full text-left px-3 py-2.5 rounded-lg border-2 transition text-sm ${style}`}
             >
               <span className="font-medium mr-1.5">{opt.label}.</span>
-              <span>{opt.text}</span>
+              <InlineCodeText text={opt.text} />
               {submitted && isCorrect && <Check className="inline w-4 h-4 text-green-500 float-right mt-0.5" />}
               {submitted && isWrong && <X className="inline w-4 h-4 text-red-500 float-right mt-0.5" />}
             </button>
