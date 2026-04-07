@@ -91,10 +91,19 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   const dailyNewWords = settingsRow?.daily_new_words ?? 15;
   const dailyTotalLimit = settingsRow?.daily_total_limit ?? 20;
 
-  // Count how many NEW words the user already learned today
-  // (words that had their FIRST-EVER review today)
+  // Count how many words the user already reviewed/learned today (any review)
   // Use Asia/Shanghai midnight as "today start"
   const todayStart = new Date(today + 'T00:00:00+08:00').getTime();
+
+  // Total distinct words reviewed today (both new and review)
+  const totalReviewedTodayRow = await db.prepare(`
+    SELECT COUNT(DISTINCT vocabulary_id) as cnt
+    FROM vocabulary_reviews
+    WHERE user_id = ? AND reviewed_at >= ?
+  `).bind(userId, todayStart).first() as any;
+  const totalReviewedToday = totalReviewedTodayRow?.cnt || 0;
+
+  // Count NEW words learned today (first-ever review today)
   const newLearnedTodayRow = await db.prepare(`
     SELECT COUNT(DISTINCT vr.vocabulary_id) as cnt
     FROM vocabulary_reviews vr
@@ -108,7 +117,10 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 
   const reviewCount = reviewWords.results?.length || 0;
   const remainingNewQuota = Math.max(0, dailyNewWords - newLearnedToday);
-  const newLimit = Math.max(0, Math.min(remainingNewQuota, dailyTotalLimit - reviewCount));
+  // If user already completed a full session (reviewed >= dailyTotalLimit words today),
+  // don't serve more new cards — the session is done
+  const sessionDone = totalReviewedToday >= dailyTotalLimit;
+  const newLimit = sessionDone ? 0 : Math.max(0, Math.min(remainingNewQuota, dailyTotalLimit - reviewCount));
 
   const newWords = await db.prepare(`
     SELECT v.id, v.word, v.meaning, v.phonetic, v.example, v.example_cn
