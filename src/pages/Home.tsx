@@ -245,7 +245,6 @@ export default function Home() {
   const completedQuizzes = quizzes.filter(q => quizStatus[q.id]?.completed).length;
   const allCompleted = totalQuizzes > 0 && completedQuizzes === totalQuizzes;
   const hasAnyAnswer = quizzes.some(q => (quizStatus[q.id]?.answered || 0) > 0);
-  const hasMemoryQuizInList = quizzes.some(q => isMemoryGameTag(q.tag));
 
   const sortedQuizzes = [...quizzes].sort((a, b) => {
     const ac = quizStatus[a.id]?.completed || false, bc = quizStatus[b.id]?.completed || false;
@@ -510,7 +509,7 @@ export default function Home() {
                 </div>
               )}
               {/* 记忆游戏任务卡 — 仅 isTask 的用户 */}
-              {modIsTask('memory_game') && selectedDate === todayStr && !hasMemoryQuizInList && (
+              {modIsTask('memory_game') && selectedDate === todayStr && (
                 <>
                   {/* 套娃记忆 */}
                   <button
@@ -566,6 +565,24 @@ export default function Home() {
                         {gridCompleted > 0 ? `${gridCompleted}/${modTarget('memory_game')}` : '未完成'}
                       </div>
                     )}
+                  </button>
+
+                  {/* 宫格推理 */}
+                  <button
+                    onClick={() => navigate(`/${userId}/memory/reasoning`)}
+                    className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition active:scale-[0.98] mt-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/30 dark:to-teal-900/30">
+                        <span className="text-xl">🧩</span>
+                      </div>
+                      <div className="text-left">
+                        <div className="font-medium text-gray-900 dark:text-gray-100">宫格推理</div>
+                        <div className="text-sm text-gray-500 dark:text-gray-400">今天可做</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1 text-sm text-emerald-600 dark:text-emerald-400 font-medium">
+                      去挑战
+                    </div>
                   </button>
                 </>
               )}
