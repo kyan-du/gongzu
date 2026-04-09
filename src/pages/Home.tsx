@@ -1,6 +1,6 @@
 import { getSlug, isMemoryGameTag, memoryGameType } from '../lib/tags';
 import { normalizeQuiz } from '../lib/types';
-import { CheckCircle, Clock, BookX, ChevronLeft, ChevronRight, BookOpen, Languages, PenLine, Boxes } from 'lucide-react';
+import { CheckCircle, Clock, BookX, ChevronLeft, ChevronRight, BookOpen, Languages, PenLine, Brain } from 'lucide-react';
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Layout from '../components/Layout';
@@ -450,10 +450,10 @@ export default function Home() {
               className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-3 hover:shadow-md transition active:scale-[0.98] mt-3">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-amber-50 dark:bg-amber-900/30">
-                  <Boxes className="w-4 h-4 text-amber-500 dark:text-amber-400" />
+                  <Brain className="w-4 h-4 text-amber-500 dark:text-amber-400" />
                 </div>
                 <div className="text-left flex-1">
-                  <div className="text-sm font-medium text-gray-900 dark:text-gray-100">记忆游戏</div>
+                  <div className="text-sm font-medium text-gray-900 dark:text-gray-100">思维训练</div>
                   <div className="text-xs text-gray-500 dark:text-gray-400">套娃 / 宫格</div>
                 </div>
                 <ChevronRight className="w-4 h-4 text-gray-400 dark:text-gray-500" />
@@ -660,7 +660,7 @@ export default function Home() {
                 )}
 
                 {/* 记忆游戏任务卡 — 按模块配置 */}
-                {modIsTask('memory_game') && selectedDate === todayStr && !hasMemoryQuizInList && (
+                {modIsTask('memory_game') && selectedDate === todayStr && (
                   <>
                     {/* 套娃记忆 */}
                     <button
@@ -716,6 +716,24 @@ export default function Home() {
                           {gridCompleted > 0 ? `${gridCompleted}/${modTarget('memory_game')}` : '未完成'}
                         </div>
                       )}
+                    </button>
+
+                    {/* 宫格推理 */}
+                    <button
+                      onClick={() => navigate(`/${userId}/memory/reasoning`)}
+                      className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition active:scale-[0.98] mt-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/30 dark:to-teal-900/30">
+                          <span className="text-xl">🧩</span>
+                        </div>
+                        <div className="text-left">
+                          <div className="font-medium text-gray-900 dark:text-gray-100">宫格推理</div>
+                          <div className="text-sm text-gray-500 dark:text-gray-400">今天可做</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1 text-sm text-emerald-600 dark:text-emerald-400 font-medium">
+                        去挑战
+                      </div>
                     </button>
                   </>
                 )}

@@ -1,5 +1,5 @@
 // ========================================
-// 宫格记忆游戏 — 核心引擎（完全重写版 v5）
+// 思维训练 — 宫格记忆引擎（完全重写版 v5）
 // ========================================
 
 // ── 数据模型 ──
@@ -147,7 +147,7 @@ function computeThemeCompat(): Record<string, { rotate: boolean; mirror: boolean
   return result;
 }
 
-const EMOJI_GROUPS = {
+export const EMOJI_GROUPS = {
   animals: ['🐶', '🐱', '🐭', '🐹', '🐰', '🐸', '🐵', '🐷', '🐻', '🐼', '🦊', '🐨', '🦁', '🐯', '🐮'],
   birds: ['🐔', '🐧', '🐦', '🐤', '🦆', '🦅', '🦉', '🦜', '🦚', '🦩', '🕊️', '🦢', '🦤', '🐓', '🦃'],
   ocean: ['🐙', '🦑', '🦐', '🦀', '🐡', '🐠', '🐟', '🐬', '🐳', '🦈', '🐊', '🦭', '🐚', '🪸', '🦞'],
@@ -190,7 +190,7 @@ const EMOJI_GROUPS = {
   hanzi3: ['棘', '枣', '壁', '璧', '睛', '晴', '情', '清', '请', '精', '蜻', '靖', '菁', '倩', '婧'],
 };
 
-const THEME_TRANSFORM_COMPAT = computeThemeCompat();
+export const THEME_TRANSFORM_COMPAT = computeThemeCompat();
 
 // 按变换能力分类（从 THEME_TRANSFORM_COMPAT 派生）
 const ROTATE_THEMES = Object.keys(THEME_TRANSFORM_COMPAT).filter(k => THEME_TRANSFORM_COMPAT[k].rotate);
@@ -395,7 +395,7 @@ function mergeMiniGrids(col1: MiniGrid, col2: MiniGrid, rules: PuzzleRules): Min
 
 // ── 生成规则（排除无效组合）──
 
-function generateValidRules(): PuzzleRules {
+export function generateValidRules(): PuzzleRules {
   const allSameActions: SameAction[] = ['keep', 'shrink', 'blank', 'broken'];
   const allDiffActions: DiffAction[] = ['first', 'second', 'blank', 'broken'];
 
@@ -406,54 +406,43 @@ function generateValidRules(): PuzzleRules {
     { same: 'broken', diff: 'blank' },
   ];
 
-  // 生成4个各不相同的 CellMergeRule
-  const cellRules: CellMergeRule[] = [];
-  const usedCombinations = new Set<string>();
-
+  // 强制 4 个位置的 same / diff 规则都尽量拉开，
+  // 避免“4 个位置看起来只是同一套套路的小变体”。
+  let cellRules: CellMergeRule[] = [];
   let attempts = 0;
   const maxAttempts = 1000;
 
-  while (cellRules.length < 4 && attempts < maxAttempts) {
+  while (attempts < maxAttempts) {
     attempts++;
 
-    const rule: CellMergeRule = {
-      same: randomChoice(allSameActions),
-      diff: randomChoice(allDiffActions),
-    };
+    const sameActions = shuffle([...allSameActions]);
+    const diffActions = shuffle([...allDiffActions]);
+    const candidate = sameActions.map((same, i) => ({ same, diff: diffActions[i] as DiffAction }));
 
-    // 检查是否是无效组合
-    const isInvalid = invalidCombinations.some(
-      c => rule.same === c.same && rule.diff === c.diff
+    const hasInvalid = candidate.some((rule) =>
+      invalidCombinations.some((c) => c.same === rule.same && c.diff === rule.diff)
     );
-    if (isInvalid) continue;
+    if (hasInvalid) continue;
 
-    // 检查是否已经存在相同的组合
-    const key = `${rule.same}-${rule.diff}`;
-    if (usedCombinations.has(key)) continue;
-
-    cellRules.push(rule);
-    usedCombinations.add(key);
+    cellRules = candidate;
+    break;
   }
 
-  // 如果生成失败，使用默认规则
+  // 如果生成失败，使用默认的高差异规则集
   if (cellRules.length < 4) {
-    cellRules.push(
+    cellRules = [
       { same: 'keep', diff: 'first' },
       { same: 'shrink', diff: 'second' },
-      { same: 'keep', diff: 'blank' },
-      { same: 'shrink', diff: 'broken' }
-    );
+      { same: 'blank', diff: 'first' },
+      { same: 'broken', diff: 'second' },
+    ];
   }
 
-  // 生成 cellTransforms: 随机2-3个位置有变换
-  const elementTransformOptions = ['rotate-cw-90', 'rotate-180', 'rotate-ccw-90', 'mirror-h', 'mirror-v'];
-  const numWithTransform = 2 + Math.floor(Math.random() * 2); // 2 or 3
-  const positions = shuffle([0, 1, 2, 3]);
-  const cellTransforms: [string, string, string, string] = ['none', 'none', 'none', 'none'];
-
-  for (let i = 0; i < numWithTransform; i++) {
-    cellTransforms[positions[i]] = randomChoice(elementTransformOptions);
-  }
+  // 生成 cellTransforms：4 个位置规则都不同，但不要 4 个都强变形，
+  // 否则题面很容易连续出现一串“列图”，人眼会觉得同质化过重。
+  // 这里固定为 1 个 none + 3 个不同变换：既保留明显变换，也留一个不变的位置做参照。
+  const activeTransformOptions = ['rotate-cw-90', 'rotate-180', 'rotate-ccw-90', 'mirror-h', 'mirror-v'];
+  const cellTransforms = shuffle(['none', ...shuffle([...activeTransformOptions]).slice(0, 3)]) as [string, string, string, string];
 
   // 生成 positionTransform
   const allPositionTransforms = [
@@ -480,8 +469,11 @@ function generateValidRules(): PuzzleRules {
   if (!hasCellTransform && !hasPositionTransform) {
     // 强制添加一个变换
     if (Math.random() < 0.5) {
-      // 添加 cellTransform
-      cellTransforms[randomChoice([0, 1, 2, 3])] = randomChoice(elementTransformOptions);
+      // 理论上不会走到这里；保底维持“1 个 none + 3 个不同变换”
+      const fallbackTransforms = shuffle(['none', ...shuffle([...activeTransformOptions]).slice(0, 3)]) as [string, string, string, string];
+      for (let i = 0; i < 4; i++) {
+        cellTransforms[i] = fallbackTransforms[i];
+      }
     } else {
       // 修改 positionTransform 为非 none
       const nonNonePos = allPositionTransforms.filter(p => p !== 'none');
@@ -507,18 +499,12 @@ function generateValidRules(): PuzzleRules {
 /**
  * 合并类矩阵：col1 + col2 独立生成，col3 = merge(col1, col2)
  */
-function buildMergeMatrix(rules: PuzzleRules, emojiPool: string[]): Matrix {
+export function buildMergeMatrix(rules: PuzzleRules, emojiPool: string[]): Matrix {
 
-  // 为每个位置生成 same/diff 分布
-  // 核心约束：前2行（可观察行）必须 same 和 diff 各出现至少1次
-  // 这样观察者在答题前能推出该位置的两种规律
-  // 前2行一个 true 一个 false，第3行随机
-  const sameDiffMap: boolean[][] = [];
-  for (let i = 0; i < 4; i++) {
-    const first2 = Math.random() < 0.5 ? [true, false] : [false, true];
-    const third = Math.random() < 0.5;
-    sameDiffMap.push([first2[0], first2[1], third]);
-  }
+  // same/diff 必须按 cellIdx 固定，不能同一位置三行各用各的规则。
+  // 否则会出现“第一排像 same，第二排又像 diff”的假题。
+  // 同时强制 4 个位置里既有 same 也有 diff，避免整盘过度同质化。
+  const sameDiffByCellIdx = shuffle([true, true, false, false]);
 
   const matrix: Matrix = [];
 
@@ -529,10 +515,10 @@ function buildMergeMatrix(rules: PuzzleRules, emojiPool: string[]): Matrix {
       col1.push({ type: 'emoji', emoji, rotation: 0, mirror: 'none', scaled: false, grown: false });
     }
 
-    // 主动构造 col2，根据 sameDiffMap 决定每个位置是 same 还是 diff
+    // 主动构造 col2：同一 cellIdx 在三行里保持同一种 same/diff 关系
     const col2: CellContent[] = [];
     for (let i = 0; i < 4; i++) {
-      if (sameDiffMap[i][row]) {
+      if (sameDiffByCellIdx[i]) {
         // same: 复制 col1 的 emoji
         col2.push({ ...col1[i] });
       } else {
@@ -556,8 +542,18 @@ function buildMergeMatrix(rules: PuzzleRules, emojiPool: string[]): Matrix {
 /**
  * 递推类矩阵：col1 → transform → col2 → transform → col3
  */
-function buildTransformMatrix(rules: PuzzleRules, emojiPool: string[]): Matrix {
+export function buildTransformMatrix(rules: PuzzleRules, emojiPool: string[]): Matrix {
   const matrix: Matrix = [];
+
+  const applyPerCellTransforms = (grid: MiniGrid): MiniGrid => {
+    const transformed = [...grid] as CellContent[];
+    for (let i = 0; i < 4; i++) {
+      if (rules.cellTransforms[i] !== 'none' && transformed[i].type === 'emoji') {
+        transformed[i] = applyElementTransform(transformed[i], rules.cellTransforms[i]);
+      }
+    }
+    return transformed as MiniGrid;
+  };
 
   for (let row = 0; row < 3; row++) {
     const col1: CellContent[] = [];
@@ -567,8 +563,8 @@ function buildTransformMatrix(rules: PuzzleRules, emojiPool: string[]): Matrix {
     }
 
     // 递推：col1 → col2 → col3
-    const col2 = applyTransforms(col1 as MiniGrid, rules);
-    const col3 = applyTransforms(col2, rules);
+    const col2 = applyPerCellTransforms(applyTransforms(col1 as MiniGrid, rules));
+    const col3 = applyPerCellTransforms(applyTransforms(col2, rules));
 
     matrix.push([col1 as MiniGrid, col2, col3]);
   }
@@ -579,15 +575,11 @@ function buildTransformMatrix(rules: PuzzleRules, emojiPool: string[]): Matrix {
 /**
  * 混合类矩阵：col1 → transform → col2，col3 = merge(col1, col2)
  */
-function buildMixedMatrix(rules: PuzzleRules, emojiPool: string[]): Matrix {
+export function buildMixedMatrix(rules: PuzzleRules, emojiPool: string[]): Matrix {
 
-  // 前2行（可观察行）每个位置 same/diff 各至少1次
-  const sameDiffMap: boolean[][] = [];
-  for (let i = 0; i < 4; i++) {
-    const first2 = Math.random() < 0.5 ? [true, false] : [false, true];
-    const third = Math.random() < 0.5;
-    sameDiffMap.push([first2[0], first2[1], third]);
-  }
+  // 混合题也一样：same/diff 规则按 cellIdx 固定，不允许跨行漂移。
+  // 4 个位置里至少保留两种关系，避免四个位置都长成同一种“列图”。
+  const sameDiffByCellIdx = shuffle([true, true, false, false]);
 
   const matrix: Matrix = [];
 
@@ -598,10 +590,10 @@ function buildMixedMatrix(rules: PuzzleRules, emojiPool: string[]): Matrix {
       col1.push({ type: 'emoji', emoji, rotation: 0, mirror: 'none', scaled: false, grown: false });
     }
 
-    // 混合：主动构造 col2，确保 same/diff 分布合理
+    // 混合：同一 cellIdx 在三行里保持同一种 same/diff 关系
     const col2: CellContent[] = [];
     for (let i = 0; i < 4; i++) {
-      if (sameDiffMap[i][row]) {
+      if (sameDiffByCellIdx[i]) {
         col2.push({ ...col1[i] });
       } else {
         const col1Emoji = (col1[i] as EmojiContent).emoji;
