@@ -180,7 +180,7 @@ export default function MemorySelect() {
             <div className="absolute inset-0 bg-gradient-to-br from-rose-50 to-pink-50 dark:from-rose-900/10 dark:to-pink-900/10 opacity-0 group-hover:opacity-100 transition-opacity" />
 
             <div className="relative flex flex-col items-center">
-              <div className="w-16 h-16 mb-3 flex items-center justify-center bg-rose-100 dark:bg-rose-900/30 rounded-2xl group-hover:scale-110 transition-transform">
+              <div className="w-16 h-16 mb-3 flex items-center justify-center bg-teal-100 dark:bg-teal-900/30 rounded-2xl group-hover:scale-110 transition-transform">
                 <span className="text-4xl">🔄</span>
               </div>
 
@@ -193,17 +193,17 @@ export default function MemorySelect() {
               </p>
 
               <div className="flex items-center gap-2 text-xs">
-                <span className="px-2 py-1 bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400 rounded-full font-medium">
+                <span className="px-2 py-1 bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400 rounded-full font-medium">
                   等量关系
                 </span>
-                <span className="px-2 py-1 bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400 rounded-full font-medium">
+                <span className="px-2 py-1 bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400 rounded-full font-medium">
                   代换推理
                 </span>
               </div>
             </div>
 
             <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-              <div className="w-8 h-8 rounded-full bg-rose-500 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-full bg-teal-500 flex items-center justify-center">
                 <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
