@@ -17,6 +17,7 @@ import MemoryGrid from './pages/MemoryGrid';
 import MemorySelect from './pages/MemorySelect';
 import GridReasoning from './pages/GridReasoning';
 import BalanceSort from './pages/BalanceSort';
+import EquivSubstitution from './pages/EquivSubstitution';
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
         <Route path="/:userId/brain/grid" element={<MemoryGrid />} />
         <Route path="/:userId/brain/reasoning" element={<GridReasoning />} />
         <Route path="/:userId/brain/balance" element={<BalanceSort />} />
+        <Route path="/:userId/brain/equivalence" element={<EquivSubstitution />} />
         {/* Legacy /memory redirects */}
         <Route path="/:userId/memory" element={<Navigate to="../brain" replace />} />
         <Route path="/:userId/memory/*" element={<Navigate to="../brain" replace />} />
