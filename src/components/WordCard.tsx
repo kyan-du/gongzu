@@ -33,7 +33,20 @@ function speak(word: string) {
 // Returns segments: array of { type: 'text', value } or { type: 'blank', index, answer }
 function makeSpellBlanks(word: string) {
   const chars = word.split('');
-  if (chars.length <= 3) return { blankedIndices: [] as number[], segments: [{ type: 'text' as const, value: word }] };
+  if (chars.length <= 3) {
+    // For very short words, blank the middle letter(s) if possible, else no blanks
+    if (chars.length === 3 && /[a-z]/i.test(chars[1])) {
+      return {
+        blankedIndices: [1],
+        segments: [
+          { type: 'text' as const, value: chars[0] },
+          { type: 'blank' as const, index: 0, answer: chars[1] },
+          { type: 'text' as const, value: chars[2] },
+        ],
+      };
+    }
+    return { blankedIndices: [] as number[], segments: [{ type: 'text' as const, value: word }] };
+  }
   
   const candidates = [];
   for (let i = 1; i < chars.length - 1; i++) {
@@ -234,8 +247,18 @@ export default function WordCard({
 
       {/* Answer area */}
       {mode === 'spell' ? (
-        // Spell mode: no separate input area needed, inline blanks handle it
-        null
+        // Spell mode: submit button for blanks
+        !answered ? (
+          <div className="text-center mt-4">
+            <button
+              onClick={handleSpellSubmit}
+              disabled={blankInputs.some(v => !v)}
+              className="px-8 py-3 rounded-full bg-violet-600 dark:bg-violet-500 text-white font-semibold text-base hover:bg-violet-700 dark:hover:bg-violet-600 transition shadow-sm active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              确认
+            </button>
+          </div>
+        ) : null
       ) : (
         // Choice options (en2cn or cn2en)
         <div className={useGrid ? 'grid grid-cols-2 gap-2.5' : 'space-y-2.5'}>

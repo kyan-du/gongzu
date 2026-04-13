@@ -19,7 +19,7 @@ export default function MemorySelect() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-3xl">
           {/* 套娃记忆 */}
           <button
-            onClick={() => navigate(`/${userId}/memory/matryoshka`)}
+            onClick={() => navigate(`/${userId}/brain/matryoshka`)}
             className="group relative bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden active:scale-[0.98] p-8"
           >
             <div className="absolute inset-0 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/10 dark:to-orange-900/10 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -58,7 +58,7 @@ export default function MemorySelect() {
 
           {/* 宫格记忆 */}
           <button
-            onClick={() => navigate(`/${userId}/memory/grid`)}
+            onClick={() => navigate(`/${userId}/brain/grid`)}
             className="group relative bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden active:scale-[0.98] p-8"
           >
             <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/10 dark:to-indigo-900/10 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -97,7 +97,7 @@ export default function MemorySelect() {
 
           {/* 宫格推理 */}
           <button
-            onClick={() => navigate(`/${userId}/memory/reasoning`)}
+            onClick={() => navigate(`/${userId}/brain/reasoning`)}
             className="group relative bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden active:scale-[0.98] p-8"
           >
             <div className="absolute inset-0 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/10 dark:to-emerald-900/10 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -127,6 +127,44 @@ export default function MemorySelect() {
 
             <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
               <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center">
+                <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </div>
+            </div>
+          </button>
+          {/* 天平排序 */}
+          <button
+            onClick={() => navigate(`/${userId}/brain/balance`)}
+            className="group relative bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden active:scale-[0.98] p-8"
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-violet-50 to-purple-50 dark:from-violet-900/10 dark:to-purple-900/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+
+            <div className="relative flex flex-col items-center">
+              <div className="w-20 h-20 mb-4 flex items-center justify-center bg-violet-100 dark:bg-violet-900/30 rounded-2xl group-hover:scale-110 transition-transform">
+                <span className="text-5xl">⚖️</span>
+              </div>
+
+              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+                天平排序
+              </h2>
+
+              <p className="text-sm text-gray-500 dark:text-gray-400 text-center mb-3">
+                观察天平，推理重量排序
+              </p>
+
+              <div className="flex items-center gap-2 text-xs">
+                <span className="px-2 py-1 bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400 rounded-full font-medium">
+                  比较推理
+                </span>
+                <span className="px-2 py-1 bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400 rounded-full font-medium">
+                  排序逻辑
+                </span>
+              </div>
+            </div>
+
+            <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="w-8 h-8 rounded-full bg-violet-500 flex items-center justify-center">
                 <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>

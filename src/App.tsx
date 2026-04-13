@@ -16,6 +16,7 @@ import MemoryMatryoshka from './pages/MemoryMatryoshka';
 import MemoryGrid from './pages/MemoryGrid';
 import MemorySelect from './pages/MemorySelect';
 import GridReasoning from './pages/GridReasoning';
+import BalanceSort from './pages/BalanceSort';
 
 function App() {
   return (
@@ -39,10 +40,14 @@ function App() {
         {/* Mistakes book */}
         <Route path="/:userId/mistakes" element={<Mistakes />} />
         {/* Memory games */}
-        <Route path="/:userId/memory" element={<MemorySelect />} />
-        <Route path="/:userId/memory/matryoshka" element={<MemoryMatryoshka />} />
-        <Route path="/:userId/memory/grid" element={<MemoryGrid />} />
-        <Route path="/:userId/memory/reasoning" element={<GridReasoning />} />
+        <Route path="/:userId/brain" element={<MemorySelect />} />
+        <Route path="/:userId/brain/matryoshka" element={<MemoryMatryoshka />} />
+        <Route path="/:userId/brain/grid" element={<MemoryGrid />} />
+        <Route path="/:userId/brain/reasoning" element={<GridReasoning />} />
+        <Route path="/:userId/brain/balance" element={<BalanceSort />} />
+        {/* Legacy /memory redirects */}
+        <Route path="/:userId/memory" element={<Navigate to="../brain" replace />} />
+        <Route path="/:userId/memory/*" element={<Navigate to="../brain" replace />} />
         {/* Quiz by date + tag slug */}
         <Route path="/:userId/:date/:tag" element={<Quiz />} />
         {/* Date view (same as home but with date anchor) */}

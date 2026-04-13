@@ -445,7 +445,7 @@ export default function Home() {
 
             {/* 记忆游戏 — 按模块配置 */}
             {modEnabled('memory_game') && (
-            <button onClick={() => navigate(`/${userId}/memory`)}
+            <button onClick={() => navigate(`/${userId}/brain`)}
               className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-3 hover:shadow-md transition active:scale-[0.98] mt-3">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-amber-50 dark:bg-amber-900/30">
@@ -513,7 +513,7 @@ export default function Home() {
                 <>
                   {/* 套娃记忆 */}
                   <button
-                    onClick={() => navigate(`/${userId}/memory/matryoshka`)}
+                    onClick={() => navigate(`/${userId}/brain/matryoshka`)}
                     className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition active:scale-[0.98] mt-3">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br from-red-50 to-pink-50 dark:from-red-900/30 dark:to-pink-900/30">
@@ -541,7 +541,7 @@ export default function Home() {
 
                   {/* 宫格记忆 */}
                   <button
-                    onClick={() => navigate(`/${userId}/memory/grid`)}
+                    onClick={() => navigate(`/${userId}/brain/grid`)}
                     className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition active:scale-[0.98] mt-3">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30">
@@ -569,7 +569,7 @@ export default function Home() {
 
                   {/* 宫格推理 */}
                   <button
-                    onClick={() => navigate(`/${userId}/memory/reasoning`)}
+                    onClick={() => navigate(`/${userId}/brain/reasoning`)}
                     className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition active:scale-[0.98] mt-3">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/30 dark:to-teal-900/30">
@@ -597,7 +597,7 @@ export default function Home() {
                     return (
                     <button key={quiz.id}
                       onClick={() => isMemGame && gameType
-                        ? navigate(`/${userId}/memory/${gameType}?mode=exam&quizId=${quiz.id}`)
+                        ? navigate(`/${userId}/brain/${gameType}?mode=exam&quizId=${quiz.id}`)
                         : navigate(`/${userId}/${quiz.date}/${getSlug(quiz.tag)}`)
                       }
                       className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition active:scale-[0.98]">
@@ -681,7 +681,7 @@ export default function Home() {
                   <>
                     {/* 套娃记忆 */}
                     <button
-                      onClick={() => navigate(`/${userId}/memory/matryoshka`)}
+                      onClick={() => navigate(`/${userId}/brain/matryoshka`)}
                       className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition active:scale-[0.98] mt-3">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br from-red-50 to-pink-50 dark:from-red-900/30 dark:to-pink-900/30">
@@ -709,7 +709,7 @@ export default function Home() {
 
                     {/* 宫格记忆 */}
                     <button
-                      onClick={() => navigate(`/${userId}/memory/grid`)}
+                      onClick={() => navigate(`/${userId}/brain/grid`)}
                       className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition active:scale-[0.98] mt-3">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30">
@@ -737,7 +737,7 @@ export default function Home() {
 
                     {/* 宫格推理 */}
                     <button
-                      onClick={() => navigate(`/${userId}/memory/reasoning`)}
+                      onClick={() => navigate(`/${userId}/brain/reasoning`)}
                       className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition active:scale-[0.98] mt-3">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/30 dark:to-teal-900/30">

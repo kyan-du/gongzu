@@ -933,7 +933,7 @@ export default function MemoryGrid() {
             再玩一题
           </button>
           <button
-            onClick={() => navigate(`/${userId}/memory`)}
+            onClick={() => navigate(`/${userId}/brain`)}
             className="px-6 py-2.5 rounded-full border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition"
           >
             返回选择
@@ -953,7 +953,7 @@ export default function MemoryGrid() {
   ];
 
   return (
-    <Layout userId={userId || ''} showBack backTo={`/${userId}/memory`} maxWidth="max-w-4xl">
+    <Layout userId={userId || ''} showBack backTo={`/${userId}/brain`} maxWidth="max-w-4xl">
       {/* Debug Tab — 左侧竖排，fixed 不影响布局 */}
       {isFixture && (
         <div className="fixed left-2 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-1">

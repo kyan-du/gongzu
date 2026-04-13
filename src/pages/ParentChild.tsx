@@ -23,7 +23,7 @@ interface ParentData {
 const MODULE_DEFS: Record<string, { name: string; icon: string; hasTarget: boolean; targetLabel?: string }> = {
   vocab: { name: '单词本', icon: '📖', hasTarget: true, targetLabel: '每日新词数' },
   mistakes: { name: '错题本', icon: '❌', hasTarget: false },
-  memory_game: { name: '记忆游戏', icon: '🧩', hasTarget: true, targetLabel: '每日轮数' },
+  memory_game: { name: '思维训练', icon: '🧩', hasTarget: true, targetLabel: '每日轮数' },
 };
 
 export default function ParentChild() {

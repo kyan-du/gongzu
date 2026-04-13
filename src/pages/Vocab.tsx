@@ -123,12 +123,16 @@ export default function Vocab() {
   }, [current, words]);
 
   // Cycle mode per word based on review count — ensures all types get covered
-  const modes = ['en2cn', 'cn2en', 'spell'] as const;
+  // Skip spell mode for very short words (≤3 chars) — not enough letters to blank
   const cardMode = useMemo(() => {
     if (!current) return 'en2cn' as const;
     const reviewCount = current.reviewCount || 0;
+    const canSpell = current.front.length > 3;
+    const modes = canSpell
+      ? (['en2cn', 'cn2en', 'spell'] as const)
+      : (['en2cn', 'cn2en'] as const);
     return modes[reviewCount % modes.length];
-  }, [current?.id]);
+  }, [current?.id, current?.front]);
 
   // Build confuser words for cn2en mode (similar looking words)
   const confuserWords = useMemo(() => {

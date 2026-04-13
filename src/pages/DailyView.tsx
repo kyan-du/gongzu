@@ -182,7 +182,7 @@ export default function DailyView() {
               <button
                 key={quiz.id}
                 onClick={() => isMemGame && gameType
-                  ? navigate(`/${userId}/memory/${gameType}?mode=exam&quizId=${quiz.id}`)
+                  ? navigate(`/${userId}/brain/${gameType}?mode=exam&quizId=${quiz.id}`)
                   : navigate(`/${userId}/${quiz.date}/${getSlug(quiz.tag)}`)
                 }
                 className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 flex items-center justify-between hover:shadow-md transition active:scale-[0.98]"

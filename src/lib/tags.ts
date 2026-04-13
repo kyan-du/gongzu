@@ -12,6 +12,7 @@ const tagToSlug: Record<string, string> = {
   '名人故事': 'celebrity-stories',
   '记忆·套娃': 'memory-matryoshka',
   '记忆·宫格': 'memory-grid',
+  '记忆·天平': 'memory-balance',
   'GESP-6': 'gesp-6',
   '骆驼祥子': 'camel-xiangzi',
   '单词记忆': 'vocab-memory',
@@ -19,13 +20,14 @@ const tagToSlug: Record<string, string> = {
 
 /** Check if a tag represents a memory game quiz */
 export function isMemoryGameTag(tag: string): boolean {
-  return tag === '记忆·套娃' || tag === '记忆·宫格';
+  return tag === '记忆·套娃' || tag === '记忆·宫格' || tag === '记忆·天平';
 }
 
 /** Get the game type from a memory game tag */
-export function memoryGameType(tag: string): 'matryoshka' | 'grid' | null {
+export function memoryGameType(tag: string): 'matryoshka' | 'grid' | 'balance' | null {
   if (tag === '记忆·套娃') return 'matryoshka';
   if (tag === '记忆·宫格') return 'grid';
+  if (tag === '记忆·天平') return 'balance';
   return null;
 }
 
