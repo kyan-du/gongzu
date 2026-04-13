@@ -166,26 +166,24 @@ export default function MemoryMatryoshka() {
   const [draggedCard, setDraggedCard] = useState<string | null>(null);
   const [dragPosition, setDragPosition] = useState<{ x: number; y: number } | null>(null);
 
-  // 每日进度
-  const [dailyCompleted, setDailyCompleted] = useState(0);
-  const dailyTarget = 5;
   // 计时
   const [startTime, setStartTime] = useState<number>(0);
-  // 是否已提交
   const [submitted, setSubmitted] = useState(false);
+  const [dailyCompleted, setDailyCompleted] = useState(0);
+  const dailyTarget = 5;
 
   const gridRef = useRef<HTMLDivElement>(null);
   const dragOffsetRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
 
-  // 获取今日进度
+  // 获取今日进度（仅测验模式）
   useEffect(() => {
-    if (!userId) return;
+    if (!userId || !examMode) return;
     const today = new Date().toLocaleDateString('sv-SE'); // YYYY-MM-DD
     fetch(`/api/memory-game?userId=${userId}&date=${today}&type=matryoshka`)
       .then(r => r.json())
       .then((data: any) => setDailyCompleted(data.completed || 0))
       .catch(() => {});
-  }, [userId]);
+  }, [userId, examMode]);
 
   // 初始化游戏
   useEffect(() => {
@@ -352,8 +350,8 @@ export default function MemoryMatryoshka() {
       }),
     })
       .then(r => r.json())
-      .then((data: any) => {
-        setDailyCompleted(data.alreadySubmitted ? dailyCompleted : dailyCompleted + 1);
+      .then(() => {
+        setDailyCompleted(prev => prev + 1);
         setSubmitted(true);
       })
       .catch(() => setSubmitted(true));
@@ -484,7 +482,6 @@ export default function MemoryMatryoshka() {
           className="grid grid-cols-6 gap-3 max-w-3xl mx-auto mb-8 select-none"
         >
           {[...Array(12)].map((_, idx) => {
-            const isTarget = cards.some(c => c.position === idx);
             const answer = userAnswers.find(a => a.position === idx);
             const card = answer ? allChoices.find(c => c.id === answer.cardId) : null;
 
@@ -492,20 +489,16 @@ export default function MemoryMatryoshka() {
               <div
                 key={idx}
                 data-position={idx}
-                className={`aspect-[3/4] rounded-xl flex items-center justify-center transition-all ${
-                  isTarget ? 'cursor-pointer hover:scale-105' : ''
-                } ${
-                  isTarget
-                    ? card
-                      ? 'bg-white dark:bg-gray-800'
-                      : 'bg-gray-50 dark:bg-gray-800/50 border-2 border-dashed border-gray-400 dark:border-gray-500'
-                    : 'bg-gray-100 dark:bg-gray-800/30 border-2 border-gray-200 dark:border-gray-700'
+                className={`aspect-[3/4] rounded-xl flex items-center justify-center transition-all cursor-pointer hover:scale-105 ${
+                  card
+                    ? 'bg-white dark:bg-gray-800'
+                    : 'bg-gray-50 dark:bg-gray-800/50 border-2 border-dashed border-gray-300 dark:border-gray-600'
                 }`}
                 style={{
-                  ...(isTarget && card ? { border: `5px solid ${card.borderColor}` } : {}),
+                  ...(card ? { border: `5px solid ${card.borderColor}` } : {}),
                   touchAction: 'none',
                 }}
-                onClick={() => isTarget && handleCellClick(idx)}
+                onClick={() => handleCellClick(idx)}
               >
                 {card && (
                   <div
@@ -727,26 +720,28 @@ export default function MemoryMatryoshka() {
           </div>
         </div>
 
-        {/* 今日进度 */}
-        <div className="max-w-xs mx-auto mb-6">
-          <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mb-2">
-            <span>今日进度</span>
-            <span className={dailyCompleted >= dailyTarget ? 'text-emerald-500 font-medium' : ''}>
-              {dailyCompleted} / {dailyTarget}
-            </span>
+        {/* 今日进度（仅测验模式） */}
+        {examMode && (
+          <div className="max-w-xs mx-auto mb-6">
+            <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mb-2">
+              <span>今日进度</span>
+              <span className={dailyCompleted >= dailyTarget ? 'text-emerald-500 font-medium' : ''}>
+                {dailyCompleted} / {dailyTarget}
+              </span>
+            </div>
+            <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+              <div
+                className={`h-full rounded-full transition-all duration-500 ${
+                  dailyCompleted >= dailyTarget ? 'bg-emerald-500' : 'bg-violet-500'
+                }`}
+                style={{ width: `${Math.min((dailyCompleted / dailyTarget) * 100, 100)}%` }}
+              />
+            </div>
+            {dailyCompleted >= dailyTarget && (
+              <p className="text-center text-xs text-emerald-500 mt-1 font-medium">🎉 今日任务完成！</p>
+            )}
           </div>
-          <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-            <div
-              className={`h-full rounded-full transition-all duration-500 ${
-                dailyCompleted >= dailyTarget ? 'bg-emerald-500' : 'bg-violet-500'
-              }`}
-              style={{ width: `${Math.min((dailyCompleted / dailyTarget) * 100, 100)}%` }}
-            />
-          </div>
-          {dailyCompleted >= dailyTarget && (
-            <p className="text-center text-xs text-emerald-500 mt-1 font-medium">🎉 今日任务完成！</p>
-          )}
-        </div>
+        )}
 
         {/* 操作按钮 */}
         <div className="flex justify-center gap-4">
