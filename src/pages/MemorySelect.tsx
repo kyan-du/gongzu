@@ -16,17 +16,17 @@ export default function MemorySelect() {
           选择一种训练开始
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-3xl">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 w-full max-w-4xl">
           {/* 套娃记忆 */}
           <button
             onClick={() => navigate(`/${userId}/brain/matryoshka`)}
-            className="group relative bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden active:scale-[0.98] p-8"
+            className="group relative bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden active:scale-[0.98] p-6"
           >
             <div className="absolute inset-0 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/10 dark:to-orange-900/10 opacity-0 group-hover:opacity-100 transition-opacity" />
 
             <div className="relative flex flex-col items-center">
-              <div className="w-20 h-20 mb-4 flex items-center justify-center bg-amber-100 dark:bg-amber-900/30 rounded-2xl group-hover:scale-110 transition-transform">
-                <span className="text-5xl">🪆</span>
+              <div className="w-16 h-16 mb-3 flex items-center justify-center bg-amber-100 dark:bg-amber-900/30 rounded-2xl group-hover:scale-110 transition-transform">
+                <span className="text-4xl">🪆</span>
               </div>
 
               <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
@@ -59,12 +59,12 @@ export default function MemorySelect() {
           {/* 宫格记忆 */}
           <button
             onClick={() => navigate(`/${userId}/brain/grid`)}
-            className="group relative bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden active:scale-[0.98] p-8"
+            className="group relative bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden active:scale-[0.98] p-6"
           >
             <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/10 dark:to-indigo-900/10 opacity-0 group-hover:opacity-100 transition-opacity" />
 
             <div className="relative flex flex-col items-center">
-              <div className="w-20 h-20 mb-4 flex items-center justify-center bg-blue-100 dark:bg-blue-900/30 rounded-2xl group-hover:scale-110 transition-transform p-2">
+              <div className="w-16 h-16 mb-3 flex items-center justify-center bg-blue-100 dark:bg-blue-900/30 rounded-2xl group-hover:scale-110 transition-transform p-2">
                 <Grid3X3 className="w-full h-full text-blue-500 dark:text-blue-400" strokeWidth={2} />
               </div>
 
@@ -98,13 +98,13 @@ export default function MemorySelect() {
           {/* 宫格推理 */}
           <button
             onClick={() => navigate(`/${userId}/brain/reasoning`)}
-            className="group relative bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden active:scale-[0.98] p-8"
+            className="group relative bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden active:scale-[0.98] p-6"
           >
             <div className="absolute inset-0 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/10 dark:to-emerald-900/10 opacity-0 group-hover:opacity-100 transition-opacity" />
 
             <div className="relative flex flex-col items-center">
-              <div className="w-20 h-20 mb-4 flex items-center justify-center bg-green-100 dark:bg-green-900/30 rounded-2xl group-hover:scale-110 transition-transform">
-                <span className="text-5xl">🧩</span>
+              <div className="w-16 h-16 mb-3 flex items-center justify-center bg-green-100 dark:bg-green-900/30 rounded-2xl group-hover:scale-110 transition-transform">
+                <span className="text-4xl">🧩</span>
               </div>
 
               <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
@@ -136,13 +136,13 @@ export default function MemorySelect() {
           {/* 天平排序 */}
           <button
             onClick={() => navigate(`/${userId}/brain/balance`)}
-            className="group relative bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden active:scale-[0.98] p-8"
+            className="group relative bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden active:scale-[0.98] p-6"
           >
             <div className="absolute inset-0 bg-gradient-to-br from-violet-50 to-purple-50 dark:from-violet-900/10 dark:to-purple-900/10 opacity-0 group-hover:opacity-100 transition-opacity" />
 
             <div className="relative flex flex-col items-center">
-              <div className="w-20 h-20 mb-4 flex items-center justify-center bg-violet-100 dark:bg-violet-900/30 rounded-2xl group-hover:scale-110 transition-transform">
-                <span className="text-5xl">⚖️</span>
+              <div className="w-16 h-16 mb-3 flex items-center justify-center bg-violet-100 dark:bg-violet-900/30 rounded-2xl group-hover:scale-110 transition-transform">
+                <span className="text-4xl">⚖️</span>
               </div>
 
               <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
@@ -175,13 +175,13 @@ export default function MemorySelect() {
           {/* 等量代换 */}
           <button
             onClick={() => navigate(`/${userId}/brain/equivalence`)}
-            className="group relative bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden active:scale-[0.98] p-8"
+            className="group relative bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden active:scale-[0.98] p-6"
           >
             <div className="absolute inset-0 bg-gradient-to-br from-rose-50 to-pink-50 dark:from-rose-900/10 dark:to-pink-900/10 opacity-0 group-hover:opacity-100 transition-opacity" />
 
             <div className="relative flex flex-col items-center">
-              <div className="w-20 h-20 mb-4 flex items-center justify-center bg-rose-100 dark:bg-rose-900/30 rounded-2xl group-hover:scale-110 transition-transform">
-                <span className="text-5xl">🔄</span>
+              <div className="w-16 h-16 mb-3 flex items-center justify-center bg-rose-100 dark:bg-rose-900/30 rounded-2xl group-hover:scale-110 transition-transform">
+                <span className="text-4xl">🔄</span>
               </div>
 
               <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
