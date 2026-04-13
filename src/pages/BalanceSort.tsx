@@ -37,6 +37,7 @@ export default function BalanceSort() {
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [scores, setScores] = useState<boolean[]>([]);    // true = correct per round
   const [roundDifficulties, setRoundDifficulties] = useState<BalanceDifficulty[]>([]);
+  const [wrongPicks, setWrongPicks] = useState<Set<number>>(new Set());
   const [submitted, setSubmitted] = useState(false);
 
   // Generate puzzle for current round
@@ -49,6 +50,7 @@ export default function BalanceSort() {
       return next;
     });
     setSelectedOption(null);
+    setWrongPicks(new Set());
     setPhase('playing');
   }, [round]);
 
@@ -58,11 +60,18 @@ export default function BalanceSort() {
 
   // Handle option selection
   const handleSelect = (index: number) => {
-    if (phase !== 'playing' || selectedOption !== null) return;
-    setSelectedOption(index);
-    const isCorrect = puzzle ? index === puzzle.correctIndex : false;
-    setScores((prev) => [...prev, isCorrect]);
-    setPhase('feedback');
+    if (phase !== 'playing') return;
+    if (wrongPicks.has(index)) return; // already tried this one
+
+    if (puzzle && index === puzzle.correctIndex) {
+      // Correct! Record score (first try = no wrong picks)
+      setSelectedOption(index);
+      setScores((prev) => [...prev, wrongPicks.size === 0]);
+      setPhase('feedback');
+    } else {
+      // Wrong — mark this option and let them try again
+      setWrongPicks((prev) => new Set(prev).add(index));
+    }
   };
 
   // After feedback, advance round or show results
@@ -282,6 +291,7 @@ export default function BalanceSort() {
                 {puzzle.options.map((option, idx) => {
                   const isSelected = selectedOption === idx;
                   const isAnswer = idx === puzzle.correctIndex;
+                  const isWrong = wrongPicks.has(idx);
 
                   let btnClass =
                     'w-full px-4 py-3 rounded-xl font-medium transition-all ';
@@ -295,6 +305,9 @@ export default function BalanceSort() {
                     } else {
                       btnClass += 'bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500';
                     }
+                  } else if (isWrong) {
+                    // Wrong pick during playing: dim with red strike-through
+                    btnClass += 'bg-red-50 dark:bg-red-900/10 text-red-300 dark:text-red-800 border border-red-200 dark:border-red-800 opacity-50 cursor-not-allowed';
                   } else {
                     btnClass +=
                       'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 shadow-sm hover:shadow-md hover:scale-[1.01] active:scale-[0.99] border border-gray-200 dark:border-gray-700';

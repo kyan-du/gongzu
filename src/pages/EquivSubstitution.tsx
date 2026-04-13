@@ -38,6 +38,7 @@ export default function EquivSubstitution() {
   const [scores, setScores] = useState<boolean[]>([]);
   const [roundDifficulties, setRoundDifficulties] = useState<EquivDifficulty[]>([]);
   const [submitted, setSubmitted] = useState(false);
+  const [wrongPicks, setWrongPicks] = useState<Set<number>>(new Set());
 
   // Generate puzzle for current round
   const newPuzzle = useCallback(() => {
@@ -49,6 +50,7 @@ export default function EquivSubstitution() {
       return next;
     });
     setSelectedOption(null);
+    setWrongPicks(new Set());
     setPhase('playing');
   }, [round]);
 
@@ -58,11 +60,16 @@ export default function EquivSubstitution() {
 
   // Handle option selection
   const handleSelect = (index: number) => {
-    if (phase !== 'playing' || selectedOption !== null) return;
-    setSelectedOption(index);
-    const isCorrect = puzzle ? index === puzzle.correctIndex : false;
-    setScores((prev) => [...prev, isCorrect]);
-    setPhase('feedback');
+    if (phase !== 'playing') return;
+    if (wrongPicks.has(index)) return;
+
+    if (puzzle && index === puzzle.correctIndex) {
+      setSelectedOption(index);
+      setScores((prev) => [...prev, wrongPicks.size === 0]);
+      setPhase('feedback');
+    } else {
+      setWrongPicks((prev) => new Set(prev).add(index));
+    }
   };
 
   // After feedback, advance round or show results
@@ -267,6 +274,7 @@ export default function EquivSubstitution() {
           {puzzle.options.map((option, idx) => {
             const isSelected = selectedOption === idx;
             const isAnswer = idx === puzzle.correctIndex;
+            const isWrong = wrongPicks.has(idx);
 
             let btnClass =
               'w-full px-4 py-3.5 rounded-xl font-medium transition-all text-center ';
@@ -279,6 +287,8 @@ export default function EquivSubstitution() {
               } else {
                 btnClass += 'bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500';
               }
+            } else if (isWrong) {
+              btnClass += 'bg-red-50 dark:bg-red-900/10 text-red-300 dark:text-red-800 border border-red-200 dark:border-red-800 opacity-50 cursor-not-allowed';
             } else {
               btnClass +=
                 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 shadow-sm hover:shadow-md hover:scale-[1.01] active:scale-[0.99] border border-gray-200 dark:border-gray-700';

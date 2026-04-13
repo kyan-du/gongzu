@@ -111,82 +111,102 @@ function generateEasy(emojis: string[]): { equations: EquivEquation[]; question:
   };
 }
 
-// ── Medium puzzle: 2 equations with bigger numbers, or 3 equations with small numbers ──
-// e.g. 🍎 = 🍊🍊🍊, 🍊 = 🍌🍌🍌, question: 🍎 = ?🍌 (answer: 9)
+// ── Medium puzzle: substitution required (mixed items on one side) ──
+// Pattern 1: A+B = nC,  A = mC  → B = (n-m)C
+// Pattern 2: nA = B+mC, A = pC  → B = (n*p - m)C
 
 function generateMedium(emojis: string[]): { equations: EquivEquation[]; question: { item: string; targetItem: string }; answer: number } {
-  // 50% chance: 2-equation with bigger range, 50% chance: 3-equation with small numbers
-  if (Math.random() < 0.5) {
-    // 2-equation, answer 9-12
-    const [a, b, c] = emojis;
-    const pairs: [number, number][] = [];
-    for (let p = 2; p <= 6; p++) {
-      for (let q = 2; q <= 6; q++) {
-        if (p * q >= 9 && p * q <= 12) pairs.push([p, q]);
-      }
-    }
-    const [p, q] = pickRandom(pairs);
+  const [a, b, c] = emojis;
+  const pattern = Math.random();
+
+  if (pattern < 0.5) {
+    // Pattern 1: A + B = nC, A = mC → B = (n-m)C
+    // m in [2..4], answer(n-m) in [2..6], so n = m + answer
+    const m = 2 + Math.floor(Math.random() * 3); // 2-4
+    const ans = 2 + Math.floor(Math.random() * 5); // 2-6
+    const n = m + ans;
     return {
       equations: [
-        { left: [a], right: Array(p).fill(b) },
-        { left: [b], right: Array(q).fill(c) },
+        { left: [a, b], right: Array(n).fill(c) },
+        { left: [a], right: Array(m).fill(c) },
       ],
-      question: { item: a, targetItem: c },
-      answer: p * q,
+      question: { item: b, targetItem: c },
+      answer: ans,
     };
   } else {
-    // 3-equation chain, answer ≤ 12
-    const [a, b, c, d] = emojis;
-    const triples: [number, number, number][] = [];
-    for (let p = 2; p <= 3; p++) {
-      for (let q = 2; q <= 3; q++) {
-        for (let r = 2; r <= 3; r++) {
-          if (p * q * r <= 12) triples.push([p, q, r]);
-        }
-      }
-    }
-    const [p, q, r] = pickRandom(triples);
+    // Pattern 2: A = nB, A + C = mB → C = (m-n)B
+    const n = 2 + Math.floor(Math.random() * 3); // 2-4
+    const ans = 2 + Math.floor(Math.random() * 4); // 2-5
+    const m = n + ans;
     return {
       equations: [
-        { left: [a], right: Array(p).fill(b) },
-        { left: [b], right: Array(q).fill(c) },
-        { left: [c], right: Array(r).fill(d) },
+        { left: [a], right: Array(n).fill(b) },
+        { left: [a, c], right: Array(m).fill(b) },
       ],
-      question: { item: a, targetItem: d },
-      answer: p * q * r,
+      question: { item: c, targetItem: b },
+      answer: ans,
     };
   }
 }
 
-// ── Hard puzzle: 3 equations, three-step chain ──
-// e.g. 🍎 = 🍊🍊, 🍊 = 🍌🍌, 🍌 = 🍇🍇, question: 🍎 = ?🍇 (answer: 8)
+// ── Hard puzzle: 3 equations with substitution + chain ──
+// Pattern 1: A = pB, B + C = qD, A = rD → C = (q - r/p)D (needs multi-step)
+// Pattern 2: A + B = nC, A = mC, B = pD → D = ? C (chain + substitution)
+// Pattern 3: A = pB, C = qB, A + C = ?B (additive after resolving)
 
 function generateHard(emojis: string[]): { equations: EquivEquation[]; question: { item: string; targetItem: string }; answer: number } {
   const [a, b, c, d] = emojis;
+  const pattern = Math.random();
 
-  // 1 A = p B, 1 B = q C, 1 C = r D → 1 A = p*q*r D
-  // Constraint: p*q*r ≤ 20, each >= 2
-  const triples: [number, number, number][] = [];
-  for (let p = 2; p <= 5; p++) {
-    for (let q = 2; q <= 5; q++) {
-      for (let r = 2; r <= 5; r++) {
-        if (p * q * r <= 20) triples.push([p, q, r]);
-      }
-    }
+  if (pattern < 0.33) {
+    // Pattern: A = pB, B = qC, A + D = nC → D = (n - p*q)C
+    const p = 2 + Math.floor(Math.random() * 2); // 2-3
+    const q = 2 + Math.floor(Math.random() * 2); // 2-3
+    const ans = 2 + Math.floor(Math.random() * 5); // 2-6
+    const n = p * q + ans; // total on right
+    return {
+      equations: [
+        { left: [a], right: Array(p).fill(b) },
+        { left: [b], right: Array(q).fill(c) },
+        { left: [a, d], right: Array(n).fill(c) },
+      ],
+      question: { item: d, targetItem: c },
+      answer: ans,
+    };
+  } else if (pattern < 0.66) {
+    // Pattern: A + B = nC, A = mC, B = pD → find D = ?C
+    // B = (n-m)C, B = pD → D = (n-m)/p C. Need (n-m) divisible by p.
+    const m = 2 + Math.floor(Math.random() * 3); // 2-4
+    const p = 2 + Math.floor(Math.random() * 2); // 2-3
+    const dVal = 2 + Math.floor(Math.random() * 3); // 2-4 (answer)
+    const bVal = p * dVal;
+    const n = m + bVal;
+    return {
+      equations: [
+        { left: [a, b], right: Array(n).fill(c) },
+        { left: [a], right: Array(m).fill(c) },
+        { left: [b], right: Array(p).fill(d) },
+      ],
+      question: { item: d, targetItem: c },
+      answer: dVal,
+    };
+  } else {
+    // Pattern: A = pC, B = qC, A + B = ?C (need to add after resolving each)
+    const p = 2 + Math.floor(Math.random() * 4); // 2-5
+    const q = 2 + Math.floor(Math.random() * 4); // 2-5
+    const ans = p + q;
+    // Show two equations + the combined question differently:
+    // Eq1: A = pC, Eq2: B = qC, Eq3: A + B = nD, D = ?C → nah, keep it simpler
+    // Just ask: A + B = ?C
+    return {
+      equations: [
+        { left: [a], right: Array(p).fill(c) },
+        { left: [b], right: Array(q).fill(c) },
+      ],
+      question: { item: `${a}${b}`, targetItem: c },
+      answer: ans,
+    };
   }
-  const [p, q, r] = pickRandom(triples);
-
-  const equations: EquivEquation[] = [
-    { left: [a], right: Array(p).fill(b) },
-    { left: [b], right: Array(q).fill(c) },
-    { left: [c], right: Array(r).fill(d) },
-  ];
-
-  return {
-    equations,
-    question: { item: a, targetItem: d },
-    answer: p * q * r,
-  };
 }
 
 // ── Main generator ──
