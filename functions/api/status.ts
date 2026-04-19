@@ -1,7 +1,4 @@
-interface Env {
-  DB: D1Database;
-  ADMIN_API_KEY: string;
-}
+import type { Env } from '../lib/env';
 
 // GET /api/status?userId=cyan&date=2026-04-01
 // Returns completion status for a user on a given date (or all dates)

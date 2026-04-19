@@ -5,11 +5,14 @@
  * Query: ?userId=cyan&date=2026-04-19&questionId=xxx
  */
 
-interface Env {
-  R2: R2Bucket;
-}
+import type { Env } from '../lib/env';
+import { requireAdminAuth, unauthorizedResponse } from '../lib/auth';
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
+  // Require admin authentication
+  if (!requireAdminAuth(context.request, context.env)) {
+    return unauthorizedResponse();
+  }
   try {
     const url = new URL(context.request.url);
     const userId = url.searchParams.get('userId');

@@ -1,14 +1,7 @@
 // POST /api/vocab/extract-stream — SSE streaming word extraction
 // Returns text/event-stream with incremental word results
 
-interface Env {
-  DB: D1Database;
-  R2: R2Bucket;
-  AI_PROXY_KEY: string;
-  AI_BASE_URL?: string;
-  AI_MODEL?: string;
-  AI_VISION_MODEL?: string;
-}
+import type { Env } from '../../lib/env';
 
 function getAIConfig(env: Env, vision = false) {
   return {

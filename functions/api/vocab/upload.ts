@@ -2,9 +2,7 @@
 // Body: { image: "data:image/jpeg;base64,..." }
 // Returns: { url: "https://..." }
 
-interface Env {
-  R2: R2Bucket;
-}
+import type { Env } from '../../lib/env';
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
   const body = await context.request.json() as any;

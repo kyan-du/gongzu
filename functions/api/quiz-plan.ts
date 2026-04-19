@@ -3,11 +3,7 @@
 // prompt = 用户出题要求 + 复习点 + 自动生成的 JSON 格式模板
 
 import { buildFormatPrompt } from '../lib/question-types';
-
-interface Env {
-  DB: D1Database;
-  ADMIN_API_KEY: string;
-}
+import type { Env } from '../lib/env';
 
 function checkAuth(request: Request, env: Env): boolean {
   const token = request.headers.get('Authorization')?.replace('Bearer ', '');

@@ -1,7 +1,4 @@
-interface Env {
-  DB: D1Database;
-  ADMIN_API_KEY: string;
-}
+import type { Env } from '../lib/env';
 
 // GET /api/quiz?userId=cyan&date=2026-04-01
 export const onRequestGet: PagesFunction<Env> = async (context) => {

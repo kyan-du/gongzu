@@ -1,28 +1,32 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import Landing from './pages/Landing';
-import Login from './pages/Login';
-import SelectUser from './pages/SelectUser';
-import DailyView from './pages/DailyView';
-import Quiz from './pages/Quiz';
-import Result from './pages/Result';
-import ParentDashboard from './pages/ParentDashboard';
-import ParentChild from './pages/ParentChild';
-import Mistakes from './pages/Mistakes';
-import Home from './pages/Home';
-import Vocab from './pages/Vocab';
-import AddWords from './pages/AddWords';
-import WordList from './pages/WordList';
-import MemoryMatryoshka from './pages/MemoryMatryoshka';
-import MemoryGrid from './pages/MemoryGrid';
-import MemorySelect from './pages/MemorySelect';
-import GridReasoning from './pages/GridReasoning';
-import BalanceSort from './pages/BalanceSort';
-import EquivSubstitution from './pages/EquivSubstitution';
+import { lazy, Suspense } from 'react';
+import Loading from './components/Loading';
+
+const Landing = lazy(() => import('./pages/Landing'));
+const Login = lazy(() => import('./pages/Login'));
+const SelectUser = lazy(() => import('./pages/SelectUser'));
+const DailyView = lazy(() => import('./pages/DailyView'));
+const Quiz = lazy(() => import('./pages/Quiz'));
+const Result = lazy(() => import('./pages/Result'));
+const ParentDashboard = lazy(() => import('./pages/ParentDashboard'));
+const ParentChild = lazy(() => import('./pages/ParentChild'));
+const Mistakes = lazy(() => import('./pages/Mistakes'));
+const Home = lazy(() => import('./pages/Home'));
+const Vocab = lazy(() => import('./pages/Vocab'));
+const AddWords = lazy(() => import('./pages/AddWords'));
+const WordList = lazy(() => import('./pages/WordList'));
+const MemoryMatryoshka = lazy(() => import('./pages/MemoryMatryoshka'));
+const MemoryGrid = lazy(() => import('./pages/MemoryGrid'));
+const MemorySelect = lazy(() => import('./pages/MemorySelect'));
+const GridReasoning = lazy(() => import('./pages/GridReasoning'));
+const BalanceSort = lazy(() => import('./pages/BalanceSort'));
+const EquivSubstitution = lazy(() => import('./pages/EquivSubstitution'));
 
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
+      <Suspense fallback={<Loading />}>
+        <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/home" element={<SelectUser />} />
@@ -60,6 +64,7 @@ function App() {
         <Route path="/parent/home" element={<Navigate to="/parent" replace />} />
         <Route path="/parent/:childId" element={<ParentChild />} />
       </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 }

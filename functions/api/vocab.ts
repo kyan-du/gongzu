@@ -3,10 +3,7 @@
 // POST /api/vocab — admin: bulk add words
 // PATCH /api/vocab — mark word as "mastered" (斩)
 
-interface Env {
-  DB: D1Database;
-  ADMIN_API_KEY: string;
-}
+import type { Env } from '../lib/env';
 
 // Helper: get today's date string in Asia/Shanghai timezone
 function todayCN(): string {

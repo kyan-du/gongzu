@@ -1,7 +1,4 @@
-interface Env {
-  DB: D1Database;
-  FAMILY_PASSPHRASE: string;
-}
+import type { Env } from '../lib/env';
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
   try {

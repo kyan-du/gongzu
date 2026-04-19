@@ -4,13 +4,7 @@
 //   { word, userId, enrichOnly: true } → AI enrich single word, return (don't save)
 //   { words, userId } → save confirmed words to DB
 
-interface Env {
-  DB: D1Database;
-  AI_PROXY_KEY: string;
-  AI_BASE_URL?: string;
-  AI_MODEL?: string;
-  AI_VISION_MODEL?: string;
-}
+import type { Env } from '../../lib/env';
 
 function getAIConfig(env: Env, vision = false) {
   return {

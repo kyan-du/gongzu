@@ -1,9 +1,7 @@
 // GET /api/parent/activity?limit=20
 // 返回最近的活动事件（提交答题、完成记忆游戏等）
 
-interface Env {
-  DB: D1Database;
-}
+import type { Env } from '../../lib/env';
 
 const JSON_HEADERS = { 'Content-Type': 'application/json' };
 

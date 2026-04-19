@@ -1,9 +1,7 @@
 // GET /api/modules?userId=cyan — 前端查询
 // PATCH /api/modules — 前端更新模块配置（parent 用）
 
-interface Env {
-  DB: D1Database;
-}
+import type { Env } from '../lib/env';
 
 interface ModuleRow {
   user_id: string;

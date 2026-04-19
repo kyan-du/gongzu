@@ -1,6 +1,4 @@
-interface Env {
-  DB: D1Database;
-}
+import type { Env } from '../../lib/env';
 
 // 获取今天的日期（CST）
 function todayCST(): string {

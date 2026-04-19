@@ -1,8 +1,5 @@
 import type { EventContext } from '@cloudflare/workers-types';
-
-interface Env {
-  DB: D1Database;
-}
+import type { Env } from '../lib/env';
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
   const url = new URL(context.request.url);

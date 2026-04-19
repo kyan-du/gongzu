@@ -1,6 +1,4 @@
-interface Env {
-  DB: D1Database;
-}
+import type { Env } from '../lib/env';
 
 interface KnowledgePoint {
   id: string;

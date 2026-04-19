@@ -1,7 +1,4 @@
-interface Env {
-  DB: D1Database;
-  ADMIN_API_KEY: string;
-}
+import type { Env } from '../../lib/env';
 
 interface DayStats {
   quizCount: number;

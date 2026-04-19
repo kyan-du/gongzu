@@ -1,10 +1,10 @@
-interface Env {
-  DB: D1Database;
-  R2: R2Bucket;
-  WEBHOOK_URL: string;
-  WEBHOOK_TOKEN: string;
-  AI_PROXY_KEY: string;
-}
+import type { Env } from '../lib/env';
+import { gradeChoice } from '../lib/graders/choice';
+import { gradeBlank } from '../lib/graders/blank';
+import { gradeReading } from '../lib/graders/reading';
+import { gradeRewrite } from '../lib/graders/rewrite';
+import { gradeProof } from '../lib/graders/proof';
+import { gradeJudgment } from '../lib/graders/judgment';
 
 // 获取今天的日期（CST）
 function todayCST(): string {
@@ -73,117 +73,33 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       let aiScore: number | undefined;
 
       if (question.type === 'choice') {
-        if (qAnswer.correctIndex !== undefined) {
-          // correctIndex is 0-based → convert to letter (0=A, 1=B, 2=C, 3=D)
-          const correctLetter = String.fromCharCode(65 + qAnswer.correctIndex);
-          correct = ans.answer?.toUpperCase() === correctLetter;
-          correctAnswer = correctLetter;
-        } else {
-          correct = ans.answer?.toUpperCase() === qAnswer.answer?.toUpperCase();
-          correctAnswer = qAnswer.answer || '';
-        }
+        const result = gradeChoice(qAnswer, ans.answer);
+        correct = result.correct;
+        correctAnswer = result.correctAnswer;
       } else if (question.type === 'blank') {
-        // Normalize: lowercase, strip punctuation/separators, collapse whitespace
-        const normBlank = (s: string) =>
-          s.trim().toLowerCase()
-           .replace(/[;；,，]/g, ' ')   // treat ; , as spaces
-           .replace(/[.!?。！？]+$/, '') // strip trailing punctuation
-           .replace(/\s+/g, ' ')         // collapse whitespace
-           .trim();
-
-        const userAns = normBlank(ans.answer || '');
-        // qAnswer can be: string "peaceful", object {answers:["peaceful"]}, or "tall as" for multi-blank
-        let expectedAnswers: string[] = [];
-        if (typeof qAnswer === 'string') {
-          expectedAnswers = [qAnswer];
-        } else if (Array.isArray(qAnswer)) {
-          expectedAnswers = qAnswer;
-        } else if (qAnswer.answers) {
-          expectedAnswers = Array.isArray(qAnswer.answers) ? qAnswer.answers : [qAnswer.answers];
-        }
-        // Single-blank: check accepts[0] or expectedAnswers
-        const accepts = qContent.blanks?.[0]?.accepts;
-        const flatAccepted = accepts
-          ? accepts.map((a: string) => normBlank(a))
-          : expectedAnswers.map((a: string) => normBlank(a));
-        // Multi-blank: also match per-blank individually
-        const blanksDef = qContent.blanks || [];
-        if (blanksDef.length > 1) {
-          // Split user answer into parts (front-end joins with space)
-          const userParts = userAns.split(/\s+/);
-          // Try per-blank matching: each part matches its blank's accepts
-          let allBlanksCorrect = userParts.length === blanksDef.length;
-          if (allBlanksCorrect) {
-            for (let bi = 0; bi < blanksDef.length; bi++) {
-              const blankAccepts = (blanksDef[bi].accepts || []).map((a: string) => normBlank(a));
-              if (blankAccepts.length > 0) {
-                allBlanksCorrect = blankAccepts.includes(userParts[bi]);
-              } else {
-                // No accepts for this blank, fall through to full-string match
-                allBlanksCorrect = false;
-                break;
-              }
-            }
-          }
-          correct = allBlanksCorrect || flatAccepted.some((a: string) => a === userAns);
-        } else {
-          correct = flatAccepted.some((a: string) => a === userAns);
-        }
-        correctAnswer = expectedAnswers[0] || '';
+        const result = gradeBlank(qAnswer, qContent, ans.answer);
+        correct = result.correct;
+        correctAnswer = result.correctAnswer;
       } else if (question.type === 'reading') {
-        // answer is array like ["B", "A", "C"], user submits comma-separated "B,A,C"
-        const userAnswers = (ans.answer || '').split(',').map((a: string) => a.trim().toUpperCase());
-        const expectedAnswers = Array.isArray(qAnswer) ? qAnswer : (qAnswer.answers || []);
-        correct = expectedAnswers.length > 0 && expectedAnswers.every((exp: string, i: number) => 
-          userAnswers[i]?.toUpperCase() === exp.toUpperCase()
-        );
-        correctAnswer = expectedAnswers.join(',');
+        const result = gradeReading(qAnswer, ans.answer);
+        correct = result.correct;
+        correctAnswer = result.correctAnswer;
       } else if (question.type === 'rewrite') {
-        // AI-powered judging for rewrite questions
-        const { judgeRewrite } = await import('../lib/ai-judge');
-        const expectedAnswer = typeof qAnswer === 'string' ? qAnswer : (qAnswer.answer || qAnswer.answers?.[0] || '');
-        const judgeResult = await judgeRewrite({
-          instruction: qContent.stem || qContent.instruction || '请改写下列句子',
-          original: qContent.original || '',
-          correctAnswer: expectedAnswer,
-          studentAnswer: ans.answer || '',
-        }, { AI_PROXY_KEY: context.env.AI_PROXY_KEY });
-
-        correct = judgeResult.correct;
-        correctAnswer = judgeResult.correctedAnswer || expectedAnswer;
-        aiFeedback = judgeResult.feedback;
-        aiScore = judgeResult.score;
+        const result = await gradeRewrite(qAnswer, qContent, ans.answer, context.env);
+        correct = result.correct;
+        correctAnswer = result.correctAnswer;
+        aiFeedback = result.aiFeedback;
+        aiScore = result.aiScore;
       } else if (question.type === 'proof') {
-        // AI-powered judging for handwritten proof/solution
-        const { judgeProof } = await import('../lib/ai-judge-proof');
-        const solution = typeof qAnswer === 'string' ? qAnswer : (qAnswer.solution || qAnswer.answer || '');
-        const finalAnswer = qAnswer.finalAnswer || '';
-        const expectedDesc = finalAnswer ? `${solution}\n最终答案：${finalAnswer}` : solution;
-        const imageKey = ans.answer || '';  // R2 key from upload
-
-        try {
-          const judgeResult = await judgeProof({
-            stem: qContent.stem || '',
-            expectedAnswer: expectedDesc,
-            imageKey,
-          }, { AI_PROXY_KEY: context.env.AI_PROXY_KEY, R2: context.env.R2 });
-
-          correct = judgeResult.correct;
-          correctAnswer = finalAnswer || solution;
-          aiFeedback = judgeResult.feedback;
-          aiScore = judgeResult.score;
-        } catch (e: any) {
-          // If AI judge fails, mark as needs-review
-          correct = false;
-          correctAnswer = finalAnswer || solution;
-          aiFeedback = `AI判分暂时不可用：${e.message}。请等待老师批改。`;
-          aiScore = undefined;
-        }
+        const result = await gradeProof(qAnswer, qContent, ans.answer, context.env);
+        correct = result.correct;
+        correctAnswer = result.correctAnswer;
+        aiFeedback = result.aiFeedback;
+        aiScore = result.aiScore;
       } else if (question.type === 'judgment') {
-        const expectedCorrect = qAnswer.correct;
-        const userBool = ans.answer === 'true';
-        correct = userBool === expectedCorrect;
-        correctAnswer = expectedCorrect ? 'true' : 'false';
+        const result = gradeJudgment(qAnswer, ans.answer);
+        correct = result.correct;
+        correctAnswer = result.correctAnswer;
       }
 
       if (correct) correctCount++;

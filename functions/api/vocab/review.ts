@@ -1,8 +1,6 @@
 // POST /api/vocab/review — submit remembered/not-remembered for a card
 
-interface Env {
-  DB: D1Database;
-}
+import type { Env } from '../../lib/env';
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
   const body = await context.request.json() as any;

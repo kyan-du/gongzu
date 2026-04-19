@@ -1,7 +1,4 @@
-interface Env {
-  DB: D1Database;
-  ADMIN_API_KEY: string;
-}
+import type { Env } from '../../lib/env';
 
 const JSON_HEADERS = { 'Content-Type': 'application/json' };
 

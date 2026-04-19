@@ -1,9 +1,7 @@
 // GET /api/vocab/manage?userId=xxx&page=1&pageSize=20&sort=newest&q=xxx
 // DELETE /api/vocab/manage?userId=xxx&id=xxx
 
-interface Env {
-  DB: D1Database;
-}
+import type { Env } from '../../lib/env';
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
   const url = new URL(context.request.url);

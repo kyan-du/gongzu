@@ -3,23 +3,15 @@
 // PUT  /api/admin/modules              — 整行写入/更新
 // PATCH /api/admin/modules             — 部分字段更新
 
-interface Env {
-  DB: D1Database;
-  ADMIN_API_KEY: string;
-  FAMILY_PASSPHRASE: string;
-}
-
-function checkAuth(request: Request, env: Env): boolean {
-  const token = request.headers.get('Authorization')?.replace('Bearer ', '');
-  return token === env.ADMIN_API_KEY || token === env.FAMILY_PASSPHRASE;
-}
+import type { Env } from '../../lib/env';
+import { requireAuth, unauthorizedResponse } from '../../lib/auth';
 
 const JSON_HEADERS = { 'Content-Type': 'application/json' };
 
 // GET — 查询某用户所有模块配置
 export const onRequestGet: PagesFunction<Env> = async (context) => {
-  if (!checkAuth(context.request, context.env)) {
-    return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: JSON_HEADERS });
+  if (!requireAuth(context.request, context.env)) {
+    return unauthorizedResponse();
   }
 
   const url = new URL(context.request.url);
@@ -49,8 +41,8 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 // Body: { userId, module, enabled?, isTask?, dailyTarget?, config? }
 // 或批量: { userId, modules: [{ module, enabled?, isTask?, dailyTarget?, config? }] }
 export const onRequestPut: PagesFunction<Env> = async (context) => {
-  if (!checkAuth(context.request, context.env)) {
-    return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: JSON_HEADERS });
+  if (!requireAuth(context.request, context.env)) {
+    return unauthorizedResponse();
   }
 
   const body: any = await context.request.json();
@@ -96,8 +88,8 @@ export const onRequestPut: PagesFunction<Env> = async (context) => {
 // PATCH — 部分更新（只改传入的字段）
 // Body: { userId, module, enabled?, isTask?, dailyTarget?, config? }
 export const onRequestPatch: PagesFunction<Env> = async (context) => {
-  if (!checkAuth(context.request, context.env)) {
-    return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: JSON_HEADERS });
+  if (!requireAuth(context.request, context.env)) {
+    return unauthorizedResponse();
   }
 
   const body: any = await context.request.json();

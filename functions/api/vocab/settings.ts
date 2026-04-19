@@ -1,9 +1,7 @@
 // GET /api/vocab/settings?userId=cyan — get card learning settings
 // PUT /api/vocab/settings — update settings
 
-interface Env {
-  DB: D1Database;
-}
+import type { Env } from '../../lib/env';
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
   const url = new URL(context.request.url);

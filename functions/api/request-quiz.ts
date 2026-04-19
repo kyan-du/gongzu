@@ -1,8 +1,4 @@
-interface Env {
-  DB: D1Database;
-  WEBHOOK_URL: string;
-  WEBHOOK_TOKEN: string;
-}
+import type { Env } from '../lib/env';
 
 function todayCST(): string {
   const now = new Date();

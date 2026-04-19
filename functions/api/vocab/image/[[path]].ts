@@ -1,7 +1,5 @@
 // GET /api/vocab/image/tmp/[uuid].[ext] — serve image from R2
-interface Env {
-  R2: R2Bucket;
-}
+import type { Env } from '../../../lib/env';
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
   // context.params.path is an array of path segments: ["tmp", "uuid.ext"]

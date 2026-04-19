@@ -161,3 +161,57 @@ CREATE TABLE IF NOT EXISTS card_settings (
   created_at INTEGER NOT NULL DEFAULT (unixepoch()),
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
+
+-- 作业请求跟踪表（用于"出题"按钮 webhook）
+CREATE TABLE IF NOT EXISTS quiz_requests (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  date TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'pending',
+  created_at INTEGER NOT NULL DEFAULT (unixepoch())
+);
+
+-- 记忆游戏成绩表
+CREATE TABLE IF NOT EXISTS memory_games (
+  id TEXT PRIMARY KEY,              -- UUID
+  user_id TEXT NOT NULL,
+  game_type TEXT NOT NULL DEFAULT 'matryoshka',  -- 游戏类型
+  date TEXT NOT NULL,               -- 'YYYY-MM-DD'
+  total INTEGER NOT NULL,           -- 总题数（如 6 张卡片）
+  correct INTEGER NOT NULL,         -- 正确数
+  accuracy REAL NOT NULL,           -- 正确率 0-100
+  duration_sec INTEGER,             -- 用时（秒）
+  detail TEXT,                      -- 详细数据（JSON，如每张卡的对错）
+  created_at INTEGER NOT NULL DEFAULT (unixepoch()),
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_memory_games_user_date
+  ON memory_games(user_id, date, game_type);
+
+-- 用户模块配置表（每个用户可独立配置启用哪些模块、哪些计入每日任务）
+CREATE TABLE IF NOT EXISTS user_modules (
+  user_id TEXT NOT NULL,
+  module TEXT NOT NULL,
+  enabled INTEGER DEFAULT 1,
+  is_task INTEGER DEFAULT 0,
+  daily_target INTEGER,
+  config TEXT,
+  updated_at INTEGER NOT NULL DEFAULT (unixepoch()),
+  PRIMARY KEY (user_id, module),
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+-- 彤彤默认配置
+INSERT OR IGNORE INTO user_modules (user_id, module, enabled, is_task, daily_target, config) VALUES
+  ('cyan', 'quiz',        1, 1, NULL, '{"tags":[{"tag":"英语语法","type":"blank+rewrite","count":10,"focus":["词性变换","句型转换"],"exclude":["宾语从句","被动语态"],"difficulty":3,"schedule":"daily"},{"tag":"西游记","type":"choice","count":3,"schedule":"daily"},{"tag":"名人故事","type":"reading","count":1,"schedule":"daily","config":{"passage_length":"800-1200字","question_count":3}}]}'),
+  ('cyan', 'vocab',       1, 1, 20,   '{"daily_new_words":15}'),
+  ('cyan', 'mistakes',    1, 0, NULL, '{}'),
+  ('cyan', 'memory_game', 1, 0, NULL, '{"game_types":["matryoshka"]}');
+
+-- 可可默认配置
+INSERT OR IGNORE INTO user_modules (user_id, module, enabled, is_task, daily_target, config) VALUES
+  ('ryan', 'quiz',        0, 0, NULL, '{}'),
+  ('ryan', 'vocab',       0, 0, NULL, '{}'),
+  ('ryan', 'mistakes',    0, 0, NULL, '{}'),
+  ('ryan', 'memory_game', 1, 1, 5,    '{"game_types":["matryoshka"]}');
