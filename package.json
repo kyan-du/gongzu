@@ -16,10 +16,12 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "jsxgraph": "^1.12.2",
     "lucide-react": "^1.7.0",
     "prism-react-renderer": "^2.4.1",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
+    "react-image-crop": "^11.0.10",
     "react-router-dom": "^7.13.2"
   },
   "devDependencies": {

@@ -3,7 +3,7 @@
 
 export interface Question {
   id: string;
-  type: 'choice' | 'blank' | 'reading';
+  type: 'choice' | 'blank' | 'reading' | 'rewrite' | 'judgment' | 'proof';
   content: any;
   answer: any;
   explanation?: string;

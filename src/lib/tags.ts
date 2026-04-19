@@ -17,6 +17,7 @@ const tagToSlug: Record<string, string> = {
   'GESP-6': 'gesp-6',
   '骆驼祥子': 'camel-xiangzi',
   '单词记忆': 'vocab-memory',
+  '几何题': 'geometry',
 };
 
 /** Check if a tag represents a memory game quiz */

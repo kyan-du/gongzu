@@ -1,5 +1,6 @@
 interface Env {
   DB: D1Database;
+  R2: R2Bucket;
   WEBHOOK_URL: string;
   WEBHOOK_TOKEN: string;
   AI_PROXY_KEY: string;
@@ -152,6 +153,32 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
         correctAnswer = judgeResult.correctedAnswer || expectedAnswer;
         aiFeedback = judgeResult.feedback;
         aiScore = judgeResult.score;
+      } else if (question.type === 'proof') {
+        // AI-powered judging for handwritten proof/solution
+        const { judgeProof } = await import('../lib/ai-judge-proof');
+        const solution = typeof qAnswer === 'string' ? qAnswer : (qAnswer.solution || qAnswer.answer || '');
+        const finalAnswer = qAnswer.finalAnswer || '';
+        const expectedDesc = finalAnswer ? `${solution}\n最终答案：${finalAnswer}` : solution;
+        const imageKey = ans.answer || '';  // R2 key from upload
+
+        try {
+          const judgeResult = await judgeProof({
+            stem: qContent.stem || '',
+            expectedAnswer: expectedDesc,
+            imageKey,
+          }, { AI_PROXY_KEY: context.env.AI_PROXY_KEY, R2: context.env.R2 });
+
+          correct = judgeResult.correct;
+          correctAnswer = finalAnswer || solution;
+          aiFeedback = judgeResult.feedback;
+          aiScore = judgeResult.score;
+        } catch (e: any) {
+          // If AI judge fails, mark as needs-review
+          correct = false;
+          correctAnswer = finalAnswer || solution;
+          aiFeedback = `AI判分暂时不可用：${e.message}。请等待老师批改。`;
+          aiScore = undefined;
+        }
       } else if (question.type === 'judgment') {
         const expectedCorrect = qAnswer.correct;
         const userBool = ans.answer === 'true';

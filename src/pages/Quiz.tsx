@@ -111,7 +111,7 @@ export default function Quiz() {
 
   return (
     <Layout userId={userId || ''} showBack maxWidth="max-w-3xl"
-      title={quiz?.tag || tag}
+      title={quiz?.title || quiz?.tag || tag}
       rightAction={<span className="text-sm text-gray-400 dark:text-gray-500">{date}</span>}
     >
 
@@ -168,6 +168,8 @@ export default function Quiz() {
             }
           } else if (q.type === 'rewrite') {
             label = q.content?.stem || q.content?.instruction || '请改写下列句子';
+          } else if (q.type === 'proof') {
+            label = '证明/解答题（拍照上传）';
           }
 
           const commonProps = {
@@ -183,6 +185,14 @@ export default function Quiz() {
               {...commonProps}
               value={answers[q.id] || ''}
               onChange={(answer: string) => handleAnswer(q.id, answer)}
+            />
+          ) : q.type === 'proof' ? (
+            <QuestionRenderer
+              {...commonProps}
+              value={answers[q.id] || ''}
+              onChange={(answer: string) => handleAnswer(q.id, answer)}
+              userId={userId}
+              date={date}
             />
           ) : (
             <QuestionRenderer

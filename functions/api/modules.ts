@@ -85,3 +85,33 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
     headers: { 'Content-Type': 'application/json' },
   });
 };
+
+// PUT — 替换模块配置（前端 quiz tag 配置用）
+export const onRequestPut: PagesFunction<Env> = async (context) => {
+  const body: any = await context.request.json();
+  const { userId, module: mod, config } = body;
+  if (!userId || !mod) {
+    return new Response(JSON.stringify({ error: 'userId and module required' }), {
+      status: 400, headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  const existing = await context.env.DB.prepare(
+    'SELECT * FROM user_modules WHERE user_id = ? AND module = ?'
+  ).bind(userId, mod).first<any>();
+
+  if (!existing) {
+    await context.env.DB.prepare(
+      `INSERT INTO user_modules (user_id, module, enabled, is_task, daily_target, config, updated_at)
+       VALUES (?, ?, 1, 1, NULL, ?, unixepoch())`
+    ).bind(userId, mod, config != null ? JSON.stringify(config) : '{}').run();
+  } else {
+    await context.env.DB.prepare(
+      `UPDATE user_modules SET config = ?, updated_at = unixepoch() WHERE user_id = ? AND module = ?`
+    ).bind(config != null ? JSON.stringify(config) : '{}', userId, mod).run();
+  }
+
+  return new Response(JSON.stringify({ ok: true }), {
+    headers: { 'Content-Type': 'application/json' },
+  });
+};

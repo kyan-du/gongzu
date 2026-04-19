@@ -91,6 +91,22 @@ export const QUESTION_TYPES: QuestionTypeSchema[] = [
     },
     requiredFields: ['title', 'passage', 'questions'],
   },
+  {
+    type: 'proof',
+    label: '证明/解答题（拍照上传）',
+    example: {
+      type: 'proof',
+      content: {
+        stem: '在△ABC中，D是BC中点，E是AD中点，求证：...',
+        hint: '提示：可连接BE延长...',
+      },
+      answer: { solution: '标准解法文字描述', finalAnswer: '具体数值或结论' },
+      explanation: '详细解法',
+      tags: ['几何', '中考几何秘籍', '角平分线'],
+      difficulty: 4,
+    },
+    requiredFields: ['stem'],
+  },
 ];
 
 // 根据题型列表动态生成 prompt 中的格式说明
