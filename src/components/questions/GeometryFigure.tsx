@@ -216,18 +216,17 @@ export default function GeometryFigure({ geometry, height = 280 }: Props) {
         orthoSensitivity: 0.5,
       });
 
-      // Place text along the angle bisector, outside the arc
+      // Place text along the angle bisector, just outside the arc
       const uVF = m1 > 0 ? [vf[0] / m1, vf[1] / m1] : [0, 1];
       const uVT = m2 > 0 ? [vt_vec[0] / m2, vt_vec[1] / m2] : [1, 0];
       const bisector = [uVF[0] + uVT[0], uVF[1] + uVT[1]];
       const bisLen = Math.sqrt(bisector[0] ** 2 + bisector[1] ** 2) || 1;
-      const textDist = arcRadius + 0.7;
+      const textDist = arcRadius + 0.3;
       const tx = v[0] + bisector[0] / bisLen * textDist;
       const ty = v[1] + bisector[1] / bisLen * textDist;
 
       board.create('text', [tx, ty, al.text || ''], {
-        fontSize: 14,
-        fontWeight: 'bold',
+        fontSize: 12,
         color: ANGLE_COLOR,
         anchorX: 'middle',
         anchorY: 'middle',
