@@ -181,7 +181,7 @@ export default function GeometryFigure({ geometry, height = 280 }: Props) {
       });
     }
 
-    // Angle arcs with labels (e.g. "36°")
+    // Angle arcs with labels (e.g. "36°") — manual text placement
     const ANGLE_COLOR = '#dc2626';
     for (const al of geometry.angleLabels || []) {
       const v = pts[al.vertex];
@@ -194,7 +194,6 @@ export default function GeometryFigure({ geometry, height = 280 }: Props) {
       const pT = jxgPoints[al.to];
       if (!pV || !pF || !pT) continue;
 
-      // Draw arc — radius scales with angle size to avoid label overlap
       const vf = [f[0] - v[0], f[1] - v[1]];
       const vt_vec = [t[0] - v[0], t[1] - v[1]];
       const dot = vf[0] * vt_vec[0] + vf[1] * vt_vec[1];
@@ -203,23 +202,36 @@ export default function GeometryFigure({ geometry, height = 280 }: Props) {
       const angleDeg = m1 > 0 && m2 > 0
         ? Math.acos(Math.max(-1, Math.min(1, dot / (m1 * m2)))) * 180 / Math.PI
         : 90;
-      // Smaller angles get larger radius so label doesn't crowd the vertex
-      const arcRadius = angleDeg < 50 ? 1.4 : angleDeg < 90 ? 1.0 : 0.7;
+      const arcRadius = angleDeg < 50 ? 1.2 : angleDeg < 90 ? 0.9 : 0.7;
 
+      // Draw arc only, no built-in label
       board.create('angle', [pF, pV, pT], {
         radius: arcRadius,
         strokeColor: ANGLE_COLOR,
         fillColor: 'transparent',
         strokeWidth: 1.5,
-        name: al.text || '',
-        label: {
-          fontSize: 13,
-          fontWeight: 'bold',
-          color: ANGLE_COLOR,
-          offset: [0, -2],
-        },
+        name: '',
+        withLabel: false,
         orthoType: 'square',
         orthoSensitivity: 0.5,
+      });
+
+      // Place text along the angle bisector, outside the arc
+      const uVF = m1 > 0 ? [vf[0] / m1, vf[1] / m1] : [0, 1];
+      const uVT = m2 > 0 ? [vt_vec[0] / m2, vt_vec[1] / m2] : [1, 0];
+      const bisector = [uVF[0] + uVT[0], uVF[1] + uVT[1]];
+      const bisLen = Math.sqrt(bisector[0] ** 2 + bisector[1] ** 2) || 1;
+      const textDist = arcRadius + 0.7;
+      const tx = v[0] + bisector[0] / bisLen * textDist;
+      const ty = v[1] + bisector[1] / bisLen * textDist;
+
+      board.create('text', [tx, ty, al.text || ''], {
+        fontSize: 14,
+        fontWeight: 'bold',
+        color: ANGLE_COLOR,
+        anchorX: 'middle',
+        anchorY: 'middle',
+        fixed: true,
       });
     }
 
