@@ -10,11 +10,12 @@ import JXG from 'jsxgraph';
 interface GeometrySpec {
   points: Record<string, [number, number]>;
   segments?: { from: string; to: string; style?: string; color?: string }[];
-  angles?: { points: [string, string, string]; type?: string }[];
+  angles?: { points: [string, string, string]; type?: string; label?: string }[];
   highlights?: { from: string; to: string; color?: string }[];
   equalMarks?: [string, string][];
   labels?: Record<string, [number, number]>;
   boundingBox?: [number, number, number, number];
+  angleLabels?: { vertex: string; from: string; to: string; text: string }[];
 }
 
 interface Props {
@@ -162,6 +163,36 @@ export default function GeometryFigure({ geometry, height = 280 }: Props) {
         strokeColor: LABEL_COLOR,
         strokeWidth: 2,
         fixed: true,
+      });
+    }
+
+    // Angle arcs with labels (e.g. "36°")
+    const ANGLE_COLOR = '#dc2626';
+    for (const al of geometry.angleLabels || []) {
+      const v = pts[al.vertex];
+      const f = pts[al.from];
+      const t = pts[al.to];
+      if (!v || !f || !t) continue;
+
+      const pV = jxgPoints[al.vertex];
+      const pF = jxgPoints[al.from];
+      const pT = jxgPoints[al.to];
+      if (!pV || !pF || !pT) continue;
+
+      // Draw arc
+      board.create('angle', [pF, pV, pT], {
+        radius: 0.6,
+        strokeColor: ANGLE_COLOR,
+        fillColor: 'transparent',
+        strokeWidth: 1.5,
+        name: al.text || '',
+        label: {
+          fontSize: 12,
+          color: ANGLE_COLOR,
+          offset: [0, 0],
+        },
+        orthoType: 'square',
+        orthoSensitivity: 0.5,
       });
     }
 
