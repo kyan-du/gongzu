@@ -61,10 +61,25 @@ export default function GeometryFigure({ geometry, height = 280 }: Props) {
     const DEFAULT_COLOR = '#2563eb';
     const LABEL_COLOR = '#1e293b';
 
+    // Collect vertices that have angle labels — their point labels need more offset
+    const angleLabelVertices = new Set(
+      (geometry.angleLabels || []).map((al: any) => al.vertex)
+    );
+
     // Create points
     const jxgPoints: Record<string, any> = {};
     for (const [name, coords] of Object.entries(pts)) {
-      const labelOffset = geometry.labels?.[name] || [0, 15];
+      let labelOffset = geometry.labels?.[name] || [0, 15];
+      // Push vertex label further away if it has an angle label to avoid overlap
+      if (angleLabelVertices.has(name) && !geometry.labels?.[name]) {
+        // Compute outward direction from centroid
+        const cx = Object.values(pts).reduce((s, p) => s + p[0], 0) / Object.values(pts).length;
+        const cy = Object.values(pts).reduce((s, p) => s + p[1], 0) / Object.values(pts).length;
+        const dx = coords[0] - cx;
+        const dy = coords[1] - cy;
+        const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+        labelOffset = [Math.round(dx / dist * 20), Math.round(dy / dist * 20)];
+      }
       jxgPoints[name] = board.create('point', coords, {
         name,
         size: 2,
@@ -179,17 +194,29 @@ export default function GeometryFigure({ geometry, height = 280 }: Props) {
       const pT = jxgPoints[al.to];
       if (!pV || !pF || !pT) continue;
 
-      // Draw arc
+      // Draw arc — radius scales with angle size to avoid label overlap
+      const vf = [f[0] - v[0], f[1] - v[1]];
+      const vt_vec = [t[0] - v[0], t[1] - v[1]];
+      const dot = vf[0] * vt_vec[0] + vf[1] * vt_vec[1];
+      const m1 = Math.sqrt(vf[0] ** 2 + vf[1] ** 2);
+      const m2 = Math.sqrt(vt_vec[0] ** 2 + vt_vec[1] ** 2);
+      const angleDeg = m1 > 0 && m2 > 0
+        ? Math.acos(Math.max(-1, Math.min(1, dot / (m1 * m2)))) * 180 / Math.PI
+        : 90;
+      // Smaller angles get larger radius so label doesn't crowd the vertex
+      const arcRadius = angleDeg < 50 ? 1.4 : angleDeg < 90 ? 1.0 : 0.7;
+
       board.create('angle', [pF, pV, pT], {
-        radius: 0.6,
+        radius: arcRadius,
         strokeColor: ANGLE_COLOR,
         fillColor: 'transparent',
         strokeWidth: 1.5,
         name: al.text || '',
         label: {
-          fontSize: 12,
+          fontSize: 13,
+          fontWeight: 'bold',
           color: ANGLE_COLOR,
-          offset: [0, 0],
+          offset: [0, -2],
         },
         orthoType: 'square',
         orthoSensitivity: 0.5,
