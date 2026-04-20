@@ -1,4 +1,6 @@
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
+
+const GeometryFigure = lazy(() => import('./GeometryFigure'));
 
 interface BlankQuestionProps {
   question: any;
@@ -134,6 +136,13 @@ export default function BlankQuestion({ question, onAnswer, submitted, result, i
 
   return (
     <div>
+      {/* Geometry figure */}
+      {content.geometry && (
+        <Suspense fallback={<div className="h-[280px] bg-gray-50 dark:bg-gray-800 rounded-xl animate-pulse" />}>
+          <GeometryFigure geometry={content.geometry} />
+        </Suspense>
+      )}
+
       {/* Stem */}
       <div className="text-base leading-relaxed text-gray-900 dark:text-gray-100">
         {lines.map((lineTokens, li) => (

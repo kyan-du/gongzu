@@ -1,7 +1,9 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, lazy, Suspense } from 'react';
 import { Check, X } from 'lucide-react';
 import CodeAwareStem from '../CodeAwareStem';
 import InlineCodeText from '../InlineCodeText';
+
+const GeometryFigure = lazy(() => import('./GeometryFigure'));
 
 interface ChoiceQuestionProps {
   question: any;
@@ -43,6 +45,12 @@ export default function ChoiceQuestion({ question, onAnswer, submitted, result, 
   return (
     <div>
       <CodeAwareStem text={content.stem} className="mb-4" />
+
+      {content.geometry && (
+        <Suspense fallback={<div className="h-[280px] bg-gray-50 dark:bg-gray-800 rounded-xl animate-pulse" />}>
+          <GeometryFigure geometry={content.geometry} />
+        </Suspense>
+      )}
 
       <div className={useGrid ? 'grid grid-cols-2 gap-2' : 'space-y-2'}>
         {options.map((opt: any) => {
