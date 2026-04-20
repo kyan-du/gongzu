@@ -1,6 +1,6 @@
 import { getSlug, isMemoryGameTag, memoryGameType } from '../lib/tags';
 import { normalizeQuiz } from '../lib/types';
-import { CheckCircle, Clock, BookX, ChevronLeft, ChevronRight, BookOpen, Languages, PenLine, Brain, Grid3X3 } from 'lucide-react';
+import { CheckCircle, Clock, BookX, ChevronLeft, ChevronRight, BookOpen, Languages, PenLine, Brain, Grid3X3, Ruler, Code, BookMarked } from 'lucide-react';
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Layout from '../components/Layout';
@@ -607,12 +607,18 @@ export default function Home() {
                           quiz.tag.includes('英语') ? 'bg-blue-50 dark:bg-blue-900/30' :
                           quiz.tag.includes('阅读') ? 'bg-emerald-50 dark:bg-emerald-900/30' :
                           quiz.tag.includes('西游') ? 'bg-amber-50 dark:bg-amber-900/30' :
+                          quiz.tag.includes('几何') ? 'bg-violet-50 dark:bg-violet-900/30' :
+                          quiz.tag.includes('骆驼') ? 'bg-orange-50 dark:bg-orange-900/30' :
+                          quiz.tag.includes('GESP') ? 'bg-cyan-50 dark:bg-cyan-900/30' :
                           'bg-gray-50 dark:bg-gray-700'
                         }`}>
                           {isMemGame ? <span className="text-xl">{gameType === 'matryoshka' ? '🎭' : '🔢'}</span> :
                            quiz.tag.includes('英语') ? <Languages className="w-5 h-5 text-blue-500 dark:text-blue-400" /> :
                            quiz.tag.includes('阅读') ? <BookOpen className="w-5 h-5 text-emerald-500 dark:text-emerald-400" /> :
                            quiz.tag.includes('西游') ? <BookOpen className="w-5 h-5 text-amber-500 dark:text-amber-400" /> :
+                           quiz.tag.includes('几何') ? <Ruler className="w-5 h-5 text-violet-500 dark:text-violet-400" /> :
+                           quiz.tag.includes('骆驼') ? <BookMarked className="w-5 h-5 text-orange-500 dark:text-orange-400" /> :
+                           quiz.tag.includes('GESP') ? <Code className="w-5 h-5 text-cyan-500 dark:text-cyan-400" /> :
                            <PenLine className="w-5 h-5 text-gray-500 dark:text-gray-400" />}
                         </div>
                         <div className="text-left">
