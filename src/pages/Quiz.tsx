@@ -63,6 +63,11 @@ export default function Quiz() {
 
   const handleSubmit = async () => {
     if (!quiz || submitting) return;
+    const unanswered = quiz.questions.filter((q: any) => !String(answers[q.id] || '').trim());
+    if (unanswered.length > 0) {
+      alert(`还有 ${unanswered.length} 题没有作答，请答完后再交卷。`);
+      return;
+    }
     setSubmitting(true);
     try {
       const answerList = quiz.questions.map((q: any) => ({
@@ -232,14 +237,14 @@ export default function Quiz() {
         {!submitted ? (
           <button
             onClick={handleSubmit}
-            disabled={submitting}
+            disabled={submitting || answeredCount < totalCount}
             className={`py-3 px-10 rounded-full font-semibold text-base transition shadow-sm ${
-              submitting
+              submitting || answeredCount < totalCount
                 ? 'bg-gray-400 dark:bg-gray-600 text-gray-200 cursor-not-allowed'
                 : 'bg-emerald-600 dark:bg-emerald-500 text-white hover:bg-emerald-700 dark:hover:bg-emerald-600'
             }`}
           >
-            {submitting ? '正在判分…' : `交卷（${answeredCount}/${totalCount}）`}
+            {submitting ? '正在判分…' : answeredCount < totalCount ? `还有 ${totalCount - answeredCount} 题未答` : `交卷（${answeredCount}/${totalCount}）`}
           </button>
         ) : (
           <button
