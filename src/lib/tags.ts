@@ -18,6 +18,7 @@ const tagToSlug: Record<string, string> = {
   '骆驼祥子': 'camel-xiangzi',
   '单词记忆': 'vocab-memory',
   '几何题': 'geometry',
+  '数学思维·答牛TS': 'daniu-ts-math',
 };
 
 /** Check if a tag represents a memory game quiz */
