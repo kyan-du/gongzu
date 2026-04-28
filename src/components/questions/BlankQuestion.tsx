@@ -19,7 +19,7 @@ type Token = { kind: 'text'; text: string } | { kind: 'blank'; idx: number } | {
 
 export default function BlankQuestion({ question, onAnswer, submitted, result, initialAnswer }: BlankQuestionProps) {
   const content = question.content;
-  const isCompactCalc = question.tags?.[0] === '口算50题' || question.tags?.[0] === '答牛TS口算50题';
+  const isCompactCalc = question.tags?.[0] === '口算题' || question.tags?.[0] === '口算50题' || question.tags?.[0] === '答牛TS口算50题';
   const stem: string = content.stem || '';
   const blanksData: Array<{ hint?: string; answer?: string }> = content.blanks || [];
 
