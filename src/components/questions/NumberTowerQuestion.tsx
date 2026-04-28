@@ -64,21 +64,29 @@ export default function NumberTowerQuestion({ question, onAnswer, submitted, res
   };
 
   const renderSubmittedBlank = (idx: number) => {
-    const userValue = values[idx] || '—';
-    const correctValue = flatAnswers[idx] || '';
+    const userValue = values[idx] || '';
+    const correctValue = String(flatAnswers[idx] || '');
     const isWholeQuestionCorrect = !!result?.correct;
-    const isCellCorrect = userValue !== '—' && String(userValue) === String(correctValue);
+    const isCellCorrect = userValue !== '' && String(userValue) === correctValue;
 
     if (isWholeQuestionCorrect || isCellCorrect) {
       return (
         <div className="w-14 h-10 rounded-lg bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300 flex items-center justify-center font-semibold">
-          {userValue}
+          {userValue || correctValue}
+        </div>
+      );
+    }
+
+    if (!userValue) {
+      return (
+        <div className="w-14 h-10 rounded-lg bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-200 flex items-center justify-center font-semibold ring-1 ring-amber-200 dark:ring-amber-700/60">
+          {correctValue}
         </div>
       );
     }
 
     return (
-      <div className="w-14 h-12 rounded-lg bg-amber-50 text-amber-800 dark:bg-amber-900/25 dark:text-amber-200 flex flex-col items-center justify-center leading-tight">
+      <div className="w-14 h-12 rounded-lg bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-200 flex flex-col items-center justify-center leading-tight ring-1 ring-amber-200 dark:ring-amber-700/60">
         <span className="text-xs line-through decoration-red-500 decoration-2">{userValue}</span>
         <span className="text-sm font-semibold">{correctValue}</span>
       </div>
@@ -104,11 +112,6 @@ export default function NumberTowerQuestion({ question, onAnswer, submitted, res
           </div>
         ))}
       </div>
-      {submitted && !result?.correct && (
-        <div className="text-sm text-green-700 dark:text-green-300 font-medium">
-          ✅ 正确答案：{flatAnswers.map((answer: string, i: number) => `第${i + 1}空 ${answer}`).join('，')}
-        </div>
-      )}
       {submitted && question.explanation && <p className="text-sm text-gray-500 dark:text-gray-400">💡 {question.explanation}</p>}
     </div>
   );
