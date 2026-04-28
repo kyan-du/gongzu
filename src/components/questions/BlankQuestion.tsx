@@ -19,6 +19,7 @@ type Token = { kind: 'text'; text: string } | { kind: 'blank'; idx: number } | {
 
 export default function BlankQuestion({ question, onAnswer, submitted, result, initialAnswer }: BlankQuestionProps) {
   const content = question.content;
+  const isCompactCalc = question.tags?.[0] === '答牛TS口算50题';
   const stem: string = content.stem || '';
   const blanksData: Array<{ hint?: string; answer?: string }> = content.blanks || [];
 
@@ -144,9 +145,9 @@ export default function BlankQuestion({ question, onAnswer, submitted, result, i
       )}
 
       {/* Stem */}
-      <div className="text-base leading-relaxed text-gray-900 dark:text-gray-100">
+      <div className={isCompactCalc ? 'text-base leading-tight text-gray-900 dark:text-gray-100' : 'text-base leading-relaxed text-gray-900 dark:text-gray-100'}>
         {lines.map((lineTokens, li) => (
-          <div key={li} className="flex flex-wrap items-center gap-y-1">
+          <div key={li} className={isCompactCalc ? 'flex flex-wrap items-center gap-y-0' : 'flex flex-wrap items-center gap-y-1'}>
             {lineTokens.map((tok, ti) => renderToken(tok, `${li}-${ti}`))}
           </div>
         ))}

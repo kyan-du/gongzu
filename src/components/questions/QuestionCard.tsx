@@ -1,10 +1,24 @@
 interface QuestionCardProps {
   index: number;
   label?: string;
+  compact?: boolean;
   children: React.ReactNode;
 }
 
-export default function QuestionCard({ index, label, children }: QuestionCardProps) {
+export default function QuestionCard({ index, label, compact = false, children }: QuestionCardProps) {
+  if (compact) {
+    return (
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm px-3 py-3">
+        <div className="flex items-start gap-2">
+          <span className="w-5 h-5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[11px] font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
+            {index}
+          </span>
+          <div className="min-w-0 flex-1">{children}</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4">
       {/* Header: number + label, vertically centered */}

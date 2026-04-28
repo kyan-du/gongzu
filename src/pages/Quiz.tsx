@@ -143,7 +143,7 @@ export default function Quiz() {
         </div>
       )}
 
-      <div className="py-4 space-y-4">
+      <div className={quiz.tag === '答牛TS口算50题' ? 'py-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3' : 'py-4 space-y-4'}>
         {quiz.questions?.map((q: any, i: number) => {
           const QuestionRenderer = questionRenderers[q.type];
           if (!QuestionRenderer) return null;
@@ -203,13 +203,13 @@ export default function Quiz() {
           );
 
           return (
-            <QuestionCard key={q.id} index={i + 1} label={label}>
+            <QuestionCard key={q.id} index={i + 1} label={quiz.tag === '答牛TS口算50题' ? '' : label} compact={quiz.tag === '答牛TS口算50题'}>
               {questionComponent}
             </QuestionCard>
           );
         })}
 
-        <div className="flex justify-center mt-6 mb-8">
+        <div className={quiz.tag === '答牛TS口算50题' ? 'col-span-2 sm:col-span-3 lg:col-span-4 flex justify-center mt-6 mb-8' : 'flex justify-center mt-6 mb-8'}>
         {!submitted ? (
           <button
             onClick={handleSubmit}
