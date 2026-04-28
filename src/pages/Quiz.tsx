@@ -2,6 +2,7 @@ import { getTag } from '../lib/tags';
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { questionRenderers, QuestionCard } from '../components/questions';
+import NumberTowerQuestion from '../components/questions/NumberTowerQuestion';
 import Layout from '../components/Layout';
 import RichPassage from '../components/RichPassage';
 import type { Quiz as QuizType, SubmissionResult } from '../lib/types';
@@ -180,7 +181,15 @@ export default function Quiz() {
             result: getResult(q.id),
           };
 
-          const questionComponent = q.type === 'rewrite' ? (
+          const isNumberTower = q.type === 'blank' && q.tags?.includes('数塔');
+
+          const questionComponent = isNumberTower ? (
+            <NumberTowerQuestion
+              {...commonProps}
+              onAnswer={(answer: string) => handleAnswer(q.id, answer)}
+              initialAnswer={answers[q.id]}
+            />
+          ) : q.type === 'rewrite' ? (
             <QuestionRenderer
               {...commonProps}
               value={answers[q.id] || ''}
