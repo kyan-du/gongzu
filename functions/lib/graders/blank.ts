@@ -6,6 +6,9 @@ export interface BlankGradeResult {
 // Normalize: lowercase, strip punctuation/separators, collapse whitespace
 function normBlank(s: string): string {
   return s.trim().toLowerCase()
+    .replace(/[×＊]/g, '*')       // normalize multiplication symbols
+    .replace(/[÷／]/g, '/')       // normalize division symbols
+    .replace(/[＝]/g, '=')        // normalize full-width equals
     .replace(/[;；,，]/g, ' ')   // treat ; , as spaces
     .replace(/[.!?。！？]+$/, '') // strip trailing punctuation
     .replace(/\s+/g, ' ')         // collapse whitespace

@@ -40,6 +40,12 @@ export default function WordProblemQuestion({ question, onAnswer, submitted, res
             className={inputClass}
             placeholder="如：36 + 28 - 19 = 45"
             autoComplete="off"
+            autoCorrect="off"
+            autoCapitalize="off"
+            spellCheck={false}
+            enterKeyHint="next"
+            data-lpignore="true"
+            data-form-type="other"
           />
         )}
 
@@ -55,6 +61,12 @@ export default function WordProblemQuestion({ question, onAnswer, submitted, res
             className={`${inputClass} max-w-40`}
             placeholder="只写数字"
             autoComplete="off"
+            autoCorrect="off"
+            autoCapitalize="off"
+            spellCheck={false}
+            enterKeyHint="done"
+            data-lpignore="true"
+            data-form-type="other"
           />
         )}
       </div>
