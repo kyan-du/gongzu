@@ -83,6 +83,7 @@ export default function Home() {
     config: Record<string, any>;
   }
   const [userModules, setUserModules] = useState<UserModule[]>([]);
+  const modulesLoaded = userModules.length > 0;
   const mod = (name: string) => userModules.find(m => m.module === name);
   const modEnabled = (name: string) => mod(name)?.enabled ?? false;
   const modIsTask = (name: string) => mod(name)?.isTask ?? false;
@@ -135,14 +136,16 @@ export default function Home() {
 
   // Fetch mistakes count once
   useEffect(() => {
+    if (!userId || !modulesLoaded || !modEnabled('mistakes')) return;
     fetch(`/api/review?userId=${userId}`)
       .then(r => r.json())
       .then(d => setMistakesCount((d.points || []).length))
       .catch(() => {});
-  }, [userId]);
+  }, [userId, modulesLoaded, userModules]);
 
   // Fetch card stats
   useEffect(() => {
+    if (!userId || !modulesLoaded || !modEnabled('vocab')) return;
     fetch(`/api/vocab?userId=${userId}&mode=stats`)
       .then(r => r.json())
       .then(d => {
@@ -153,19 +156,20 @@ export default function Home() {
         setCardReviewDue(s.reviewDueCount || 0);
       })
       .catch(() => {});
-  }, [userId]);
+  }, [userId, modulesLoaded, userModules]);
 
   useEffect(() => {
+    if (!userId || !modulesLoaded || !modEnabled('vocab')) return;
     if (selectedDate !== todayStr) { setCardCount(0); return; }
     fetch(`/api/vocab?userId=${userId}`)
       .then(r => r.json())
       .then(d => setCardCount((d.words || []).length))
       .catch(() => setCardCount(0));
-  }, [userId, selectedDate, todayStr]);
+  }, [userId, selectedDate, todayStr, modulesLoaded, userModules]);
 
   // 记忆游戏今日进度（仅启用了的用户）
   useEffect(() => {
-    if (!userId || !modEnabled('memory_game')) return;
+    if (!userId || !modulesLoaded || !modEnabled('memory_game')) return;
     Promise.all([
       fetch(`/api/memory-game?userId=${userId}&date=${todayStr}&type=matryoshka`).then(r => r.json()),
       fetch(`/api/memory-game?userId=${userId}&date=${todayStr}&type=grid`).then(r => r.json()),
@@ -177,40 +181,34 @@ export default function Home() {
       .catch(() => {});
   }, [userId, todayStr, userModules]);
 
-  // Monthly data with cache — load current + adjacent months for overflow dates
+  // Monthly data with cache — keep first paint light: load only the visible month.
+  // Overflow dates from adjacent months can show without rings; navigating loads that month on demand.
   useEffect(() => {
+    if (!userId || !modulesLoaded) return;
     const monthKey = toMonthStr(calMonth);
-    const prevMonth = new Date(calMonth.getFullYear(), calMonth.getMonth() - 1, 1);
-    const nextMonth = new Date(calMonth.getFullYear(), calMonth.getMonth() + 1, 1);
-    const prevKey = toMonthStr(prevMonth);
-    const nextKey = toMonthStr(nextMonth);
-    const keysToLoad = [monthKey, prevKey, nextKey].filter(k => !monthlyCache[k]);
 
-    if (keysToLoad.length === 0) {
-      // All cached, merge and set
-      setMonthlyData({ ...monthlyCache[prevKey], ...monthlyCache[monthKey], ...monthlyCache[nextKey] });
+    if (monthlyCache[monthKey]) {
+      setMonthlyData(monthlyCache[monthKey]);
       return;
     }
 
-    Promise.all(keysToLoad.map(k =>
-      fetch(`/api/status/monthly?userId=${userId}&month=${k}`)
-        .then(r => r.json())
-        .then(data => {
-          const map: Record<string, MonthlyDayData> = {};
-          const days = data.days || {};
-          for (const [date, d] of Object.entries(days) as [string, any][]) {
-            map[date] = { date, ...d };
-          }
-          return { key: k, map };
-        })
-        .catch(() => ({ key: k, map: {} as Record<string, MonthlyDayData> }))
-    )).then(results => {
-      const newCache = { ...monthlyCache };
-      for (const r of results) newCache[r.key] = r.map;
-      setMonthlyCache(newCache);
-      setMonthlyData({ ...newCache[prevKey], ...newCache[monthKey], ...newCache[nextKey] });
-    });
-  }, [userId, calMonth, monthlyCache]);
+    let cancelled = false;
+    fetch(`/api/status/monthly?userId=${userId}&month=${monthKey}`)
+      .then(r => r.json())
+      .then(data => {
+        if (cancelled) return;
+        const map: Record<string, MonthlyDayData> = {};
+        const days = data.days || {};
+        for (const [date, d] of Object.entries(days) as [string, any][]) {
+          map[date] = { date, ...d };
+        }
+        setMonthlyCache(prev => ({ ...prev, [monthKey]: map }));
+        setMonthlyData(map);
+      })
+      .catch(() => { if (!cancelled) setMonthlyData({}); });
+
+    return () => { cancelled = true; };
+  }, [userId, calMonth, modulesLoaded]);
 
   // Calendar grid
   const calendarDays = useMemo(() => {
@@ -383,7 +381,7 @@ export default function Home() {
                           rings={ringDefs}
                           dimmed={isDimmed}
                           size={32}
-                          animationMs={500}
+                          animationMs={0}
                           bgOpacity={0.2}
                         />
                       )}
