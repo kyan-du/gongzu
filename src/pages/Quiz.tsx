@@ -35,7 +35,7 @@ export default function Quiz() {
         setQuiz(normalized);
 
         // Check if already submitted — restore answers and results
-        const subRes = await fetch(`/api/submit?userId=${userId}&quizId=${normalized.id}`);
+        const subRes = await fetch(`/api/submission-status?userId=${userId}&quizId=${normalized.id}`);
         const subData = await subRes.json();
         if (subData.submitted) {
           const normalizedResults = normalizeSubmissionResults(subData.results || []);
