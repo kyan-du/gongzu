@@ -381,7 +381,7 @@ export default function Home() {
                           rings={ringDefs}
                           dimmed={isDimmed}
                           size={32}
-                          animationMs={0}
+                          animationMs={500}
                           bgOpacity={0.2}
                         />
                       )}
