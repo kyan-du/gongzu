@@ -9,11 +9,12 @@ import JXG from 'jsxgraph';
 
 interface GeometrySpec {
   points: Record<string, [number, number]>;
-  segments?: { from: string; to: string; style?: string; color?: string }[];
+  segments?: { from: string; to: string; style?: string; color?: string; label?: string; text?: string }[];
   angles?: { points: [string, string, string]; type?: string; label?: string }[];
-  highlights?: { from: string; to: string; color?: string }[];
+  highlights?: { from: string; to: string; color?: string; label?: string; text?: string }[];
   equalMarks?: [string, string][];
   labels?: Record<string, [number, number]>;
+  sideLabels?: { from: string; to: string; text?: string; label?: string; offset?: number; color?: string }[];
   boundingBox?: [number, number, number, number];
   angleLabels?: { vertex: string; from: string; to: string; text: string }[];
 }
@@ -61,6 +62,37 @@ export default function GeometryFigure({ geometry, height = 280 }: Props) {
     const DEFAULT_COLOR = '#2563eb';
     const LABEL_COLOR = '#1e293b';
 
+    const drawSideLabel = (from: string, to: string, text?: string, offset = 0.35, color = LABEL_COLOR) => {
+      if (!text) return;
+      const p1Coords = pts[from];
+      const p2Coords = pts[to];
+      if (!p1Coords || !p2Coords) return;
+
+      const mx = (p1Coords[0] + p2Coords[0]) / 2;
+      const my = (p1Coords[1] + p2Coords[1]) / 2;
+      const dx = p2Coords[0] - p1Coords[0];
+      const dy = p2Coords[1] - p1Coords[1];
+      const len = Math.sqrt(dx * dx + dy * dy) || 1;
+      const cx = Object.values(pts).reduce((s, p) => s + p[0], 0) / Object.values(pts).length;
+      const cy = Object.values(pts).reduce((s, p) => s + p[1], 0) / Object.values(pts).length;
+
+      // Normal vector; pick the side away from the figure centroid so letters don't sit on the line.
+      let nx = -dy / len;
+      let ny = dx / len;
+      const outwardDot = nx * (mx - cx) + ny * (my - cy);
+      if (outwardDot < 0) { nx = -nx; ny = -ny; }
+
+      board.create('text', [mx + nx * offset, my + ny * offset, text], {
+        fontSize: 13,
+        fontWeight: 'bold',
+        color,
+        anchorX: 'middle',
+        anchorY: 'middle',
+        fixed: true,
+        highlight: false,
+      });
+    };
+
     // Collect vertices that have angle labels — their point labels need more offset
     const angleLabelVertices = new Set(
       (geometry.angleLabels || []).map((al: any) => al.vertex)
@@ -104,6 +136,7 @@ export default function GeometryFigure({ geometry, height = 280 }: Props) {
         strokeWidth: 2,
         dash: seg.style === 'dashed' ? 2 : 0,
       });
+      drawSideLabel(seg.from, seg.to, seg.label || seg.text, 0.35, seg.color || LABEL_COLOR);
     }
 
     // Draw highlights
@@ -115,6 +148,11 @@ export default function GeometryFigure({ geometry, height = 280 }: Props) {
         strokeColor: hl.color || '#16a34a',
         strokeWidth: 3,
       });
+      drawSideLabel(hl.from, hl.to, hl.label || hl.text, 0.45, hl.color || '#16a34a');
+    }
+
+    for (const sl of geometry.sideLabels || []) {
+      drawSideLabel(sl.from, sl.to, sl.text || sl.label, sl.offset ?? 0.35, sl.color || LABEL_COLOR);
     }
 
     // Draw right-angle marks manually (small square at vertex)

@@ -6,13 +6,8 @@
  */
 
 import type { Env } from '../lib/env';
-import { requireAdminAuth, unauthorizedResponse } from '../lib/auth';
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
-  // Require admin authentication
-  if (!requireAdminAuth(context.request, context.env)) {
-    return unauthorizedResponse();
-  }
   try {
     const url = new URL(context.request.url);
     const userId = url.searchParams.get('userId');
