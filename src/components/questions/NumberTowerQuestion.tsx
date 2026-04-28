@@ -63,6 +63,28 @@ export default function NumberTowerQuestion({ question, onAnswer, submitted, res
     onAnswer(next.join(' ').trim());
   };
 
+  const renderSubmittedBlank = (idx: number) => {
+    const userValue = values[idx] || '—';
+    const correctValue = flatAnswers[idx] || '';
+    const isWholeQuestionCorrect = !!result?.correct;
+    const isCellCorrect = userValue !== '—' && String(userValue) === String(correctValue);
+
+    if (isWholeQuestionCorrect || isCellCorrect) {
+      return (
+        <div className="w-14 h-10 rounded-lg bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300 flex items-center justify-center font-semibold">
+          {userValue}
+        </div>
+      );
+    }
+
+    return (
+      <div className="w-14 h-12 rounded-lg bg-amber-50 text-amber-800 dark:bg-amber-900/25 dark:text-amber-200 flex flex-col items-center justify-center leading-tight">
+        <span className="text-xs line-through decoration-red-500 decoration-2">{userValue}</span>
+        <span className="text-sm font-semibold">{correctValue}</span>
+      </div>
+    );
+  };
+
   return (
     <div className="space-y-3">
       <p className="text-sm text-gray-700 dark:text-gray-300">{tower.instruction}</p>
@@ -73,7 +95,7 @@ export default function NumberTowerQuestion({ question, onAnswer, submitted, res
               const bi = blankIndexByCell.get(`${ri}-${ci}`);
               if (bi !== undefined) {
                 if (submitted) {
-                  return <div key={ci} className={`w-14 h-10 rounded-lg flex items-center justify-center font-semibold ${result?.correct ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'}`}>{values[bi] || '—'}</div>;
+                  return <div key={ci}>{renderSubmittedBlank(bi)}</div>;
                 }
                 return <input key={ci} inputMode="numeric" pattern="[0-9]*" value={values[bi]} onChange={(e) => handleChange(bi, e.target.value)} className="w-14 h-10 rounded-lg border-2 border-blue-300 dark:border-blue-600 bg-blue-50/60 dark:bg-blue-950/30 text-center font-semibold text-blue-700 dark:text-blue-300 focus:outline-none focus:border-blue-500" />;
               }
@@ -82,7 +104,11 @@ export default function NumberTowerQuestion({ question, onAnswer, submitted, res
           </div>
         ))}
       </div>
-      {submitted && !result?.correct && <div className="text-sm text-green-700 dark:text-green-300 font-medium">✅ {flatAnswers.join(' ')}</div>}
+      {submitted && !result?.correct && (
+        <div className="text-sm text-green-700 dark:text-green-300 font-medium">
+          ✅ 正确答案：{flatAnswers.map((answer: string, i: number) => `第${i + 1}空 ${answer}`).join('，')}
+        </div>
+      )}
       {submitted && question.explanation && <p className="text-sm text-gray-500 dark:text-gray-400">💡 {question.explanation}</p>}
     </div>
   );
