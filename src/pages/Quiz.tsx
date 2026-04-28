@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { questionRenderers, QuestionCard } from '../components/questions';
 import NumberTowerQuestion from '../components/questions/NumberTowerQuestion';
+import WordProblemQuestion from '../components/questions/WordProblemQuestion';
 import Layout from '../components/Layout';
 import RichPassage from '../components/RichPassage';
 import type { Quiz as QuizType, SubmissionResult } from '../lib/types';
@@ -162,6 +163,8 @@ export default function Quiz() {
             const instrMatch = stem.match(/^([\u4e00-\u9fff\u3000-\u303f\uff00-\uffef（）]+)[：:]\s*/);
             if (instrMatch) {
               label = instrMatch[1];
+            } else if (q.tags?.[0] === '应用题') {
+              label = '写式子计算';
             } else if (hints.length > 0) {
               label = '用所给词的适当形式填空';
             } else if (q.tags?.length > 1) {
@@ -182,8 +185,15 @@ export default function Quiz() {
           };
 
           const isNumberTower = q.type === 'blank' && q.tags?.includes('数塔');
+          const isWordProblem = q.type === 'blank' && q.tags?.[0] === '应用题';
 
-          const questionComponent = isNumberTower ? (
+          const questionComponent = isWordProblem ? (
+            <WordProblemQuestion
+              {...commonProps}
+              onAnswer={(answer: string) => handleAnswer(q.id, answer)}
+              initialAnswer={answers[q.id]}
+            />
+          ) : isNumberTower ? (
             <NumberTowerQuestion
               {...commonProps}
               onAnswer={(answer: string) => handleAnswer(q.id, answer)}
