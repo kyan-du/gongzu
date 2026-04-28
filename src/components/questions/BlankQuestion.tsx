@@ -104,7 +104,7 @@ export default function BlankQuestion({ question, onAnswer, submitted, result, i
 
   const renderToken = (tok: Token, key: string) => {
     if (tok.kind === 'text') {
-      return <span key={key}>{tok.text}</span>;
+      return <span key={key} className={isCompactCalc ? 'whitespace-nowrap' : undefined}>{tok.text}</span>;
     }
     if (tok.kind === 'blank') {
       const bi = tok.idx;
@@ -127,7 +127,7 @@ export default function BlankQuestion({ question, onAnswer, submitted, result, i
           pattern={isCompactCalc ? '[0-9]*' : undefined}
           value={values[bi]}
           onChange={(e) => handleChange(bi, isCompactCalc ? e.target.value.replace(/[^0-9]/g, '') : e.target.value)}
-          className={`inline-block mx-1 border-b-2 border-blue-400 dark:border-blue-500 bg-transparent text-center text-blue-700 dark:text-blue-300 font-medium placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:border-blue-600 dark:focus:border-blue-400 ${isCompactCalc ? 'w-14 sm:w-16' : 'w-24'}`}
+          className={`inline-block mx-1 border-b-2 border-blue-400 dark:border-blue-500 bg-transparent text-center text-blue-700 dark:text-blue-300 font-medium placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:border-blue-600 dark:focus:border-blue-400 ${isCompactCalc ? 'w-12 sm:w-14' : 'w-24'}`}
           placeholder={hints[bi] || ''}
           autoComplete="off"
           autoCapitalize="off"
@@ -149,7 +149,7 @@ export default function BlankQuestion({ question, onAnswer, submitted, result, i
       {/* Stem */}
       <div className={isCompactCalc ? 'text-base leading-tight text-gray-900 dark:text-gray-100' : 'text-base leading-relaxed text-gray-900 dark:text-gray-100'}>
         {lines.map((lineTokens, li) => (
-          <div key={li} className={isCompactCalc ? 'flex flex-wrap items-center gap-y-0' : 'flex flex-wrap items-center gap-y-1'}>
+          <div key={li} className={isCompactCalc ? 'flex flex-nowrap items-center whitespace-nowrap' : 'flex flex-wrap items-center gap-y-1'}>
             {lineTokens.map((tok, ti) => renderToken(tok, `${li}-${ti}`))}
           </div>
         ))}
