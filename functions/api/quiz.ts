@@ -35,9 +35,14 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
         `SELECT * FROM questions WHERE id IN (${placeholders})`
       ).bind(...questionIds).all();
 
+      const questionById = new Map(questions.results.map((q: any) => [q.id, q]));
+      const orderedQuestions = questionIds
+        .map((id: string) => questionById.get(id))
+        .filter(Boolean);
+
       result.push({
         ...quiz,
-        questions: questions.results.map((q: any) => ({
+        questions: orderedQuestions.map((q: any) => ({
           ...q,
           content: JSON.parse(q.content),
           answer: JSON.parse(q.answer),
