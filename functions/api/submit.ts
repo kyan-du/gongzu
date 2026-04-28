@@ -58,11 +58,25 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     let correctCount = 0;
     const today = todayCST();
 
-    for (const ans of answers) {
-      const question = await context.env.DB.prepare(
-        'SELECT * FROM questions WHERE id = ?'
-      ).bind(ans.questionId).first();
+    // Batch-load questions instead of doing one D1 SELECT per answer.
+    const questionIds = answers.map((a: any) => a.questionId).filter(Boolean);
+    const placeholders = questionIds.map(() => '?').join(',');
+    const questionsResult = await context.env.DB.prepare(
+      `SELECT * FROM questions WHERE id IN (${placeholders})`
+    ).bind(...questionIds).all();
+    const questionMap = new Map((questionsResult.results || []).map((q: any) => [q.id, q]));
 
+    type MasteryAction = {
+      userId: string;
+      knowledgePoint: string;
+      category: string;
+      correct: boolean;
+    };
+    const masteryActions: MasteryAction[] = [];
+    const submissionStmts: D1PreparedStatement[] = [];
+
+    for (const ans of answers) {
+      const question = questionMap.get(ans.questionId) as any;
       if (!question) continue;
 
       const qAnswer = JSON.parse(question.answer as string);
@@ -105,9 +119,9 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       if (correct) correctCount++;
 
       const submissionId = crypto.randomUUID();
-      await context.env.DB.prepare(
+      submissionStmts.push(context.env.DB.prepare(
         'INSERT INTO submissions (id, user_id, question_id, quiz_id, answer, correct, submitted_at) VALUES (?, ?, ?, ?, ?, ?, ?)'
-      ).bind(submissionId, userId, ans.questionId, quizId, ans.answer || '', correct ? 1 : 0, Date.now()).run();
+      ).bind(submissionId, userId, ans.questionId, quizId, ans.answer || '', correct ? 1 : 0, Date.now()));
 
       results.push({
         questionId: ans.questionId,
@@ -119,66 +133,74 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
         ...(aiScore !== undefined ? { score: aiScore } : {}),
       });
 
-      // 更新知识点掌握记录
       const tags = question.tags ? JSON.parse(question.tags as string) : [];
       if (tags.length > 0) {
-        const knowledgePoint = tags[tags.length - 1]; // 最细粒度 tag
-        const category = tags[0]; // 顶级分类
+        masteryActions.push({
+          userId,
+          knowledgePoint: tags[tags.length - 1],
+          category: tags[0],
+          correct,
+        });
+      }
+    }
 
-        if (!correct) {
-          // 错题：更新或插入 mastery 记录
-          const existing = await context.env.DB.prepare(
-            'SELECT * FROM knowledge_mastery WHERE user_id = ? AND knowledge_point = ?'
-          ).bind(userId, knowledgePoint).first();
+    if (submissionStmts.length > 0) {
+      await context.env.DB.batch(submissionStmts);
+    }
 
-          if (!existing) {
-            // 新知识点，第一次错
-            const masteryId = crypto.randomUUID();
-            const tomorrow = addDays(today, 1);
-            await context.env.DB.prepare(
-              'INSERT INTO knowledge_mastery (id, user_id, knowledge_point, category, error_count, correct_streak, interval_days, next_review_at, last_error_at, last_review_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
-            ).bind(masteryId, userId, knowledgePoint, category, 1, 0, 1, tomorrow, today, today, Math.floor(Date.now() / 1000)).run();
-          } else {
-            // 已存在，增加错误计数
-            const tomorrow = addDays(today, 1);
-            if (existing.mastered === 1) {
-              // 之前标记了"我会了"但又错了，重置为未掌握
-              await context.env.DB.prepare(
-                'UPDATE knowledge_mastery SET mastered = 0, mastered_reason = NULL, error_count = error_count + 1, correct_streak = 0, interval_days = 1, next_review_at = ?, last_error_at = ?, last_review_at = ? WHERE user_id = ? AND knowledge_point = ?'
-              ).bind(tomorrow, today, today, userId, knowledgePoint).run();
-            } else {
-              // 未掌握状态，继续累计错误
-              await context.env.DB.prepare(
-                'UPDATE knowledge_mastery SET error_count = error_count + 1, correct_streak = 0, interval_days = 1, next_review_at = ?, last_error_at = ?, last_review_at = ? WHERE user_id = ? AND knowledge_point = ?'
-              ).bind(tomorrow, today, today, userId, knowledgePoint).run();
-            }
-          }
+    // Batch knowledge mastery lookups/updates. This used to do 1-2 D1 round trips per question.
+    const uniquePoints = Array.from(new Set(masteryActions.map(a => a.knowledgePoint)));
+    const existingMastery = new Map<string, any>();
+    if (uniquePoints.length > 0) {
+      const masteryPlaceholders = uniquePoints.map(() => '?').join(',');
+      const rows = await context.env.DB.prepare(
+        `SELECT * FROM knowledge_mastery WHERE user_id = ? AND knowledge_point IN (${masteryPlaceholders})`
+      ).bind(userId, ...uniquePoints).all();
+      for (const row of rows.results || []) existingMastery.set(row.knowledge_point as string, row);
+    }
+
+    const masteryStmts: D1PreparedStatement[] = [];
+    for (const action of masteryActions) {
+      const { knowledgePoint, category, correct } = action;
+      const existing = existingMastery.get(knowledgePoint);
+
+      if (!correct) {
+        const tomorrow = addDays(today, 1);
+        if (!existing) {
+          const masteryId = crypto.randomUUID();
+          masteryStmts.push(context.env.DB.prepare(
+            'INSERT INTO knowledge_mastery (id, user_id, knowledge_point, category, error_count, correct_streak, interval_days, next_review_at, last_error_at, last_review_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+          ).bind(masteryId, userId, knowledgePoint, category, 1, 0, 1, tomorrow, today, today, Math.floor(Date.now() / 1000)));
+          existingMastery.set(knowledgePoint, { knowledge_point: knowledgePoint, error_count: 1, correct_streak: 0, interval_days: 1, mastered: 0 });
+        } else if (existing.mastered === 1) {
+          masteryStmts.push(context.env.DB.prepare(
+            'UPDATE knowledge_mastery SET mastered = 0, mastered_reason = NULL, error_count = error_count + 1, correct_streak = 0, interval_days = 1, next_review_at = ?, last_error_at = ?, last_review_at = ? WHERE user_id = ? AND knowledge_point = ?'
+          ).bind(tomorrow, today, today, userId, knowledgePoint));
         } else {
-          // 答对了，检查是否有 mastery 记录
-          const existing = await context.env.DB.prepare(
-            'SELECT * FROM knowledge_mastery WHERE user_id = ? AND knowledge_point = ?'
-          ).bind(userId, knowledgePoint).first();
+          masteryStmts.push(context.env.DB.prepare(
+            'UPDATE knowledge_mastery SET error_count = error_count + 1, correct_streak = 0, interval_days = 1, next_review_at = ?, last_error_at = ?, last_review_at = ? WHERE user_id = ? AND knowledge_point = ?'
+          ).bind(tomorrow, today, today, userId, knowledgePoint));
+        }
+      } else if (existing) {
+        const newStreak = (existing.correct_streak as number) + 1;
+        const currentInterval = existing.interval_days as number;
 
-          if (existing) {
-            const newStreak = (existing.correct_streak as number) + 1;
-            const currentInterval = existing.interval_days as number;
-
-            if (newStreak >= 3 && currentInterval >= 14) {
-              // 连对 3 次且间隔 >= 14 天，自动标记为已掌握
-              await context.env.DB.prepare(
-                'UPDATE knowledge_mastery SET correct_streak = ?, mastered = 1, mastered_reason = ?, last_review_at = ? WHERE user_id = ? AND knowledge_point = ?'
-              ).bind(newStreak, 'auto', today, userId, knowledgePoint).run();
-            } else {
-              // 增加间隔（最多 30 天）
-              const newInterval = Math.min(currentInterval * 2, 30);
-              const nextReview = addDays(today, newInterval);
-              await context.env.DB.prepare(
-                'UPDATE knowledge_mastery SET correct_streak = ?, interval_days = ?, next_review_at = ?, last_review_at = ? WHERE user_id = ? AND knowledge_point = ?'
-              ).bind(newStreak, newInterval, nextReview, today, userId, knowledgePoint).run();
-            }
-          }
+        if (newStreak >= 3 && currentInterval >= 14) {
+          masteryStmts.push(context.env.DB.prepare(
+            'UPDATE knowledge_mastery SET correct_streak = ?, mastered = 1, mastered_reason = ?, last_review_at = ? WHERE user_id = ? AND knowledge_point = ?'
+          ).bind(newStreak, 'auto', today, userId, knowledgePoint));
+        } else {
+          const newInterval = Math.min(currentInterval * 2, 30);
+          const nextReview = addDays(today, newInterval);
+          masteryStmts.push(context.env.DB.prepare(
+            'UPDATE knowledge_mastery SET correct_streak = ?, interval_days = ?, next_review_at = ?, last_review_at = ? WHERE user_id = ? AND knowledge_point = ?'
+          ).bind(newStreak, newInterval, nextReview, today, userId, knowledgePoint));
         }
       }
+    }
+
+    if (masteryStmts.length > 0) {
+      await context.env.DB.batch(masteryStmts);
     }
 
     // Fire webhook notification (best-effort, don't block response)
