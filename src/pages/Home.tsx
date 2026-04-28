@@ -96,13 +96,27 @@ export default function Home() {
   // 获取用户模块配置
   useEffect(() => {
     if (!userId) return;
-    // Clear calendar cache when user switches
+    // Clear user-scoped UI state immediately when switching users.
+    setUserModules([]);
     setMonthlyCache({});
     setMonthlyData({});
+    setQuizzes([]);
+    setQuizStatus({});
+    setMistakesCount(0);
+    setCardCount(0);
+    setCardTotalWords(0);
+    setCardMastered(0);
+    setCardLearning(0);
+    setCardReviewDue(0);
+    setMatryoshkaCompleted(0);
+    setGridCompleted(0);
+
+    let cancelled = false;
     fetch(`/api/modules?userId=${userId}`)
       .then(r => r.json())
-      .then((data: any) => setUserModules(data.modules || []))
+      .then((data: any) => { if (!cancelled) setUserModules(data.modules || []); })
       .catch(() => {});
+    return () => { cancelled = true; };
   }, [userId]);
 
   // Fetch selected day's data
@@ -186,12 +200,14 @@ export default function Home() {
   useEffect(() => {
     if (!userId || !modulesLoaded) return;
     const monthKey = toMonthStr(calMonth);
+    const cacheKey = `${userId}:${monthKey}`;
 
-    if (monthlyCache[monthKey]) {
-      setMonthlyData(monthlyCache[monthKey]);
+    if (monthlyCache[cacheKey]) {
+      setMonthlyData(monthlyCache[cacheKey]);
       return;
     }
 
+    setMonthlyData({});
     let cancelled = false;
     fetch(`/api/status/monthly?userId=${userId}&month=${monthKey}`)
       .then(r => r.json())
@@ -202,7 +218,7 @@ export default function Home() {
         for (const [date, d] of Object.entries(days) as [string, any][]) {
           map[date] = { date, ...d };
         }
-        setMonthlyCache(prev => ({ ...prev, [monthKey]: map }));
+        setMonthlyCache(prev => ({ ...prev, [cacheKey]: map }));
         setMonthlyData(map);
       })
       .catch(() => { if (!cancelled) setMonthlyData({}); });
