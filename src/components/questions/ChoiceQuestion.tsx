@@ -18,17 +18,21 @@ export default function ChoiceQuestion({ question, onAnswer, submitted, result, 
   const [selected, setSelected] = useState(initialAnswer || '');
   const content = question.content;
 
-  // Normalize: support both content.options [{label, text}] and content.choices [string]
+  // Normalize: support content.options as either [{label, text}] or [string],
+  // and content.choices as [string]. Some generated quizzes use string arrays.
   const options = useMemo(() => {
-    if (content.options?.length) return content.options;
-    if (content.choices?.length) {
-      const labels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
-      return content.choices.map((text: string, i: number) => ({
-        label: labels[i] || String(i + 1),
-        text,
-      }));
-    }
-    return [];
+    const labels = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+    const rawOptions = content.options?.length ? content.options : content.choices;
+    if (!rawOptions?.length) return [];
+    return rawOptions.map((opt: any, i: number) => {
+      if (typeof opt === 'string') {
+        return { label: labels[i] || String(i + 1), text: opt };
+      }
+      return {
+        label: opt.label || labels[i] || String(i + 1),
+        text: opt.text ?? opt.value ?? String(opt),
+      };
+    });
   }, [content.options, content.choices]);
 
   const handleSelect = (label: string) => {

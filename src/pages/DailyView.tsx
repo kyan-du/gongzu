@@ -108,7 +108,7 @@ export default function DailyView() {
       .then(d => setCardStats({
         totalWords: d.stats?.totalWords || 0,
         reviewedToday: d.stats?.reviewedToday || 0,
-        learnedToday: d.stats?.newRemaining || 0,
+        learnedToday: d.stats?.todayNewDueCount || 0,
         reviewDue: d.stats?.reviewDueCount || 0,
       }))
       .catch(() => setCardStats(null));
