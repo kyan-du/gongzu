@@ -19,6 +19,8 @@ const tagToSlug: Record<string, string> = {
   '单词记忆': 'vocab-memory',
   '几何题': 'geometry',
   '数学思维·答牛TS': 'daniu-ts-math',
+  '答牛TS口算50题': 'daniu-ts-calc-50',
+  '答牛TS规律提升': 'daniu-ts-pattern',
 };
 
 /** Check if a tag represents a memory game quiz */
