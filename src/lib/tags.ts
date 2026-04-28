@@ -19,6 +19,7 @@ const tagToSlug: Record<string, string> = {
   '单词记忆': 'vocab-memory',
   '几何题': 'geometry',
   '数学思维训练': 'math-thinking',
+  '应用题': 'word-problems',
   '口算题': 'mental-math',
   '规律训练': 'patterns',
 };
