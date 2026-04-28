@@ -19,7 +19,7 @@ type Token = { kind: 'text'; text: string } | { kind: 'blank'; idx: number } | {
 
 export default function BlankQuestion({ question, onAnswer, submitted, result, initialAnswer }: BlankQuestionProps) {
   const content = question.content;
-  const isCompactCalc = question.tags?.[0] === '答牛TS口算50题';
+  const isCompactCalc = question.tags?.[0] === '口算50题' || question.tags?.[0] === '答牛TS口算50题';
   const stem: string = content.stem || '';
   const blanksData: Array<{ hint?: string; answer?: string }> = content.blanks || [];
 
@@ -123,9 +123,11 @@ export default function BlankQuestion({ question, onAnswer, submitted, result, i
         <input
           key={key}
           type="text"
+          inputMode={isCompactCalc ? 'numeric' : 'text'}
+          pattern={isCompactCalc ? '[0-9]*' : undefined}
           value={values[bi]}
-          onChange={(e) => handleChange(bi, e.target.value)}
-          className="inline-block mx-1 w-24 border-b-2 border-blue-400 dark:border-blue-500 bg-transparent text-center text-blue-700 dark:text-blue-300 font-medium placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:border-blue-600 dark:focus:border-blue-400"
+          onChange={(e) => handleChange(bi, isCompactCalc ? e.target.value.replace(/[^0-9]/g, '') : e.target.value)}
+          className={`inline-block mx-1 border-b-2 border-blue-400 dark:border-blue-500 bg-transparent text-center text-blue-700 dark:text-blue-300 font-medium placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:border-blue-600 dark:focus:border-blue-400 ${isCompactCalc ? 'w-14 sm:w-16' : 'w-24'}`}
           placeholder={hints[bi] || ''}
           autoComplete="off"
           autoCapitalize="off"
