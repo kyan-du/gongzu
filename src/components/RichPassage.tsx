@@ -42,6 +42,24 @@ function parsePassage(text: string) {
   return parts;
 }
 
+function renderPlainText(text: string, keyPrefix: string) {
+  // In pinyin exercises, unannotated Chinese characters are the target characters.
+  // Render them with a red verification box so young learners can spot what to answer.
+  return Array.from(text).map((ch, idx) => {
+    if (/^[\u4e00-\u9fff]$/.test(ch)) {
+      return (
+        <span
+          key={`${keyPrefix}-${idx}`}
+          className="inline-flex items-center justify-center mx-0.5 px-1 min-w-[1.55em] rounded border-2 border-red-400 bg-red-50/70 dark:bg-red-950/30 text-red-700 dark:text-red-300 font-semibold align-baseline"
+        >
+          {ch}
+        </span>
+      );
+    }
+    return <span key={`${keyPrefix}-${idx}`}>{ch}</span>;
+  });
+}
+
 export default function RichPassage({ passage }: { passage: string }) {
   const [tooltip, setTooltip] = useState<TooltipState | null>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
@@ -74,14 +92,14 @@ export default function RichPassage({ passage }: { passage: string }) {
   const paragraphs = passage.split('\n').filter(p => p.trim());
 
   return (
-    <div ref={containerRef} className="relative leading-[2.2] text-[15px] tracking-wide">
+    <div ref={containerRef} className="relative leading-[2.5] text-[19px] sm:text-[20px] tracking-wide">
       {paragraphs.map((para, pIdx) => {
         const parts = parsePassage(para);
         return (
           <p key={pIdx} className={pIdx > 0 ? 'mt-3' : ''}>
             {parts.map((part, i) => {
               if (part.type === 'text') {
-                return <span key={i}>{part.text}</span>;
+                return <span key={i}>{renderPlainText(part.text, `${pIdx}-${i}`)}</span>;
               }
 
               if (part.type === 'ruby') {
@@ -89,7 +107,7 @@ export default function RichPassage({ passage }: { passage: string }) {
                   <ruby key={i} className="ruby-annotation">
                     {part.text}
                     <rp>(</rp>
-                    <rt className="text-[10px] font-normal text-blue-500 dark:text-blue-400 tracking-normal">{part.annotation}</rt>
+                    <rt className="text-[12px] sm:text-[13px] font-normal text-blue-500 dark:text-blue-400 tracking-normal">{part.annotation}</rt>
                     <rp>)</rp>
                   </ruby>
                 );
