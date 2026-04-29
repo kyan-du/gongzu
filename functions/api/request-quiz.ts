@@ -113,7 +113,8 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
               : `拱卒出题请求：${displayName}在拱卒上点了"出题"按钮，今天（${today}）还没有题目，请尽快为 ${displayName}(${userId}) 出题。`,
             name: '拱卒',
             deliver: true,
-            channel: 'telegram',
+            channel: 'wechat',
+            to: '34438530917@chatroom',
           }),
         }).catch(() => {})
       );

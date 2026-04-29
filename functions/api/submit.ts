@@ -225,11 +225,11 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            message: `拱卒提交通知：${displayName}完成了「${tag}」练习，正确率 ${accuracy}%（${correctCount}/${answers.length}）。请把这条消息转发到微信群「日拱一卒功不唐捐」(34438530917@chatroom)，用自然语言鼓励一下孩子，不要照搬原文。`,
+            message: `拱卒提交通知：${displayName}完成了「${tag}」练习，正确率 ${accuracy}%（${correctCount}/${answers.length}）。请用自然语言鼓励一下孩子，不要照搬原文。`,
             name: 'GongZu',
             deliver: true,
-            channel: 'telegram',
-            to: '7958430491',
+            channel: 'wechat',
+            to: '34438530917@chatroom',
           }),
         }).catch(() => {})  // silently ignore webhook errors
       );
