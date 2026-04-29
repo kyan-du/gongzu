@@ -50,7 +50,7 @@ function renderPlainText(text: string, keyPrefix: string) {
       return (
         <span
           key={`${keyPrefix}-${idx}`}
-          className="inline-flex items-center justify-center mx-0.5 px-1 min-w-[1.55em] rounded border-2 border-red-400 bg-red-50/70 dark:bg-red-950/30 text-red-700 dark:text-red-300 font-semibold align-baseline"
+          className="text-red-600 dark:text-red-400 font-semibold"
         >
           {ch}
         </span>
