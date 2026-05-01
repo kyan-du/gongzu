@@ -1,23 +1,12 @@
 import { useEffect, useRef, useId } from 'react';
 import JXG from 'jsxgraph';
+import type { GeometrySpec } from '../../lib/types';
 
 /**
  * GeometryFigure — Renders a geometry diagram from a declarative JSON spec.
  * Colors are allowed and encouraged for visual clarity.
  * Right-angle marks are drawn manually (small square) to avoid JSXGraph rendering bugs.
  */
-
-interface GeometrySpec {
-  points: Record<string, [number, number]>;
-  segments?: { from: string; to: string; style?: string; color?: string; label?: string; text?: string }[];
-  angles?: { points: [string, string, string]; type?: string; label?: string }[];
-  highlights?: { from: string; to: string; color?: string; label?: string; text?: string }[];
-  equalMarks?: [string, string][];
-  labels?: Record<string, [number, number]>;
-  sideLabels?: { from: string; to: string; text?: string; label?: string; offset?: number; color?: string }[];
-  boundingBox?: [number, number, number, number];
-  angleLabels?: { vertex: string; from: string; to: string; text: string }[];
-}
 
 interface Props {
   geometry: GeometrySpec;

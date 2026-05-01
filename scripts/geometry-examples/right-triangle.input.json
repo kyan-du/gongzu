@@ -1,0 +1,25 @@
+{
+  "constructions": [
+    {
+      "type": "triangle",
+      "vertices": ["A", "B", "C"],
+      "spec": { "kind": "right_angle", "rightAt": "C", "legs": [4, 5] }
+    },
+    { "type": "foot", "point": "D", "from": "C", "to_line": ["A", "B"] }
+  ],
+  "segments": [
+    { "from": "A", "to": "B" },
+    { "from": "B", "to": "C" },
+    { "from": "C", "to": "A" },
+    { "from": "C", "to": "D", "style": "dashed", "color": "#16a34a", "label": "高" }
+  ],
+  "angles": [
+    { "points": ["A", "C", "B"], "type": "right" },
+    { "points": ["C", "D", "B"], "type": "right" }
+  ],
+  "checks": [
+    { "check": "perpendicular", "line1": ["C", "A"], "line2": ["C", "B"] },
+    { "check": "perpendicular", "line1": ["C", "D"], "line2": ["A", "B"] },
+    { "check": "on_segment", "point": "D", "segment": ["A", "B"] }
+  ]
+}

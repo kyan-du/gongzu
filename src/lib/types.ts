@@ -1,6 +1,18 @@
 // All question/quiz IDs are strings throughout the frontend.
 // Backend may return numbers — normalize at the API boundary.
 
+export interface GeometrySpec {
+  points: Record<string, [number, number]>;
+  segments?: { from: string; to: string; style?: string; color?: string; label?: string; text?: string }[];
+  angles?: { points: [string, string, string]; type?: string; label?: string }[];
+  highlights?: { from: string; to: string; color?: string; label?: string; text?: string }[];
+  equalMarks?: [string, string][];
+  labels?: Record<string, [number, number]>;
+  sideLabels?: { from: string; to: string; text?: string; label?: string; offset?: number; color?: string }[];
+  boundingBox?: [number, number, number, number];
+  angleLabels?: { vertex: string; from: string; to: string; text: string }[];
+}
+
 export interface Question {
   id: string;
   type: 'choice' | 'blank' | 'reading' | 'rewrite' | 'judgment' | 'proof';

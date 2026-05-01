@@ -1,0 +1,77 @@
+{
+  "userId": "cyan",
+  "date": "2026-05-02",
+  "tag": "几何题",
+  "title": "几何基础：角与垂线",
+  "questions": [
+    {
+      "type": "choice",
+      "content": {
+        "stem": "如图，AB = AC，AD 平分 ∠A，∠BAD = 20°，则 ∠A 等于多少？",
+        "options": [
+          { "label": "A", "text": "20°" },
+          { "label": "B", "text": "40°" },
+          { "label": "C", "text": "70°" },
+          { "label": "D", "text": "80°" }
+        ],
+        "geometry_input": {
+          "constructions": [
+            { "type": "triangle", "vertices": ["A", "B", "C"], "spec": { "kind": "isosceles", "vertex": "A", "base": ["B", "C"], "angle": 40, "sideLength": 6 } },
+            { "type": "angle_bisector", "point": "D", "vertex": "A", "ray1": "B", "ray2": "C", "on_segment": ["B", "C"] }
+          ],
+          "segments": [
+            { "from": "A", "to": "B" },
+            { "from": "A", "to": "C" },
+            { "from": "B", "to": "C" },
+            { "from": "A", "to": "D", "style": "dashed", "color": "#16a34a" }
+          ],
+          "angleLabels": [
+            { "vertex": "A", "from": "B", "to": "D", "text": "20°" }
+          ],
+          "equalMarks": [["A", "B"], ["A", "C"]],
+          "checks": [
+            { "check": "angle_equals", "vertex": "A", "ray1": "B", "ray2": "C", "degrees": 40 },
+            { "check": "angle_equals", "vertex": "A", "ray1": "B", "ray2": "D", "degrees": 20 },
+            { "check": "on_segment", "point": "D", "segment": ["B", "C"] }
+          ]
+        }
+      },
+      "answer": { "correctIndex": 1 },
+      "explanation": "AD 平分 ∠A，所以 ∠A = 2 × ∠BAD = 40°。",
+      "tags": ["几何题", "角平分线", "等腰三角形"],
+      "difficulty": 2
+    },
+    {
+      "type": "proof",
+      "content": {
+        "stem": "如图，△ABC 中，∠ACB = 90°，CD ⟂ AB。请说明图中为什么有两个直角。",
+        "hint": "一个直角来自题设 ∠ACB = 90°，另一个直角来自 CD ⟂ AB。",
+        "geometry_input": {
+          "constructions": [
+            { "type": "triangle", "vertices": ["A", "B", "C"], "spec": { "kind": "right_angle", "rightAt": "C", "legs": [4, 5] } },
+            { "type": "foot", "point": "D", "from": "C", "to_line": ["A", "B"] }
+          ],
+          "segments": [
+            { "from": "A", "to": "B" },
+            { "from": "B", "to": "C" },
+            { "from": "C", "to": "A" },
+            { "from": "C", "to": "D", "style": "dashed", "color": "#16a34a" }
+          ],
+          "angles": [
+            { "points": ["A", "C", "B"], "type": "right" },
+            { "points": ["C", "D", "B"], "type": "right" }
+          ],
+          "checks": [
+            { "check": "perpendicular", "line1": ["C", "A"], "line2": ["C", "B"] },
+            { "check": "perpendicular", "line1": ["C", "D"], "line2": ["A", "B"] },
+            { "check": "on_segment", "point": "D", "segment": ["A", "B"] }
+          ]
+        }
+      },
+      "answer": { "solution": "因为 ∠ACB = 90°，所以 CA ⟂ CB；又因为 CD ⟂ AB，且 D 在 AB 上，所以 ∠CDB = 90°。", "finalAnswer": "∠ACB 和 ∠CDB 都是直角" },
+      "explanation": "直角可以由角度等于 90° 或两条直线互相垂直得到。",
+      "tags": ["几何题", "垂直", "直角三角形"],
+      "difficulty": 3
+    }
+  ]
+}

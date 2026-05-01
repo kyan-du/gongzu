@@ -1,0 +1,28 @@
+{
+  "constructions": [
+    {
+      "type": "triangle",
+      "vertices": ["A", "B", "C"],
+      "spec": { "kind": "isosceles", "vertex": "A", "base": ["B", "C"], "angle": 40, "sideLength": 6 }
+    },
+    { "type": "angle_bisector", "point": "D", "vertex": "A", "ray1": "B", "ray2": "C", "on_segment": ["B", "C"] }
+  ],
+  "segments": [
+    { "from": "A", "to": "B" },
+    { "from": "A", "to": "C" },
+    { "from": "B", "to": "C" },
+    { "from": "A", "to": "D", "style": "dashed", "color": "#16a34a", "label": "角平分线" }
+  ],
+  "angleLabels": [
+    { "vertex": "A", "from": "B", "to": "D", "text": "20°" },
+    { "vertex": "A", "from": "D", "to": "C", "text": "20°" }
+  ],
+  "equalMarks": [["A", "B"], ["A", "C"]],
+  "checks": [
+    { "check": "angle_equals", "vertex": "A", "ray1": "B", "ray2": "C", "degrees": 40 },
+    { "check": "angle_equals", "vertex": "A", "ray1": "B", "ray2": "D", "degrees": 20 },
+    { "check": "angle_equals", "vertex": "A", "ray1": "D", "ray2": "C", "degrees": 20 },
+    { "check": "lengths_equal", "pairs": [["A", "B"], ["A", "C"]] },
+    { "check": "on_segment", "point": "D", "segment": ["B", "C"] }
+  ]
+}

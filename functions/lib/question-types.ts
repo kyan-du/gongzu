@@ -107,6 +107,52 @@ export const QUESTION_TYPES: QuestionTypeSchema[] = [
     },
     requiredFields: ['stem'],
   },
+  {
+    type: 'geometry',
+    label: '几何题（生成草稿，发布前必须后处理）',
+    example: {
+      type: 'choice',
+      content: {
+        stem: '如图，AB = AC，AD 平分 ∠A，∠BAD = 20°，则 ∠A 等于多少？',
+        options: [
+          { label: 'A', text: '20°' },
+          { label: 'B', text: '40°' },
+          { label: 'C', text: '70°' },
+          { label: 'D', text: '80°' },
+        ],
+        geometry_input: {
+          constructions: [
+            {
+              type: 'triangle',
+              vertices: ['A', 'B', 'C'],
+              spec: { kind: 'isosceles', vertex: 'A', base: ['B', 'C'], angle: 40, sideLength: 6 },
+            },
+            { type: 'angle_bisector', point: 'D', vertex: 'A', ray1: 'B', ray2: 'C', on_segment: ['B', 'C'] },
+          ],
+          segments: [
+            { from: 'A', to: 'B' },
+            { from: 'A', to: 'C' },
+            { from: 'B', to: 'C' },
+            { from: 'A', to: 'D', style: 'dashed', color: '#16a34a' },
+          ],
+          angleLabels: [
+            { vertex: 'A', from: 'B', to: 'D', text: '20°' },
+          ],
+          equalMarks: [['A', 'B'], ['A', 'C']],
+          checks: [
+            { check: 'angle_equals', vertex: 'A', ray1: 'B', ray2: 'C', degrees: 40 },
+            { check: 'angle_equals', vertex: 'A', ray1: 'B', ray2: 'D', degrees: 20 },
+            { check: 'on_segment', point: 'D', segment: ['B', 'C'] },
+          ],
+        },
+      },
+      answer: { correctIndex: 1 },
+      explanation: 'AD 平分 ∠A，所以 ∠A = 2 × ∠BAD = 40°。',
+      tags: ['几何题', '角平分线', '等腰三角形'],
+      difficulty: 2,
+    },
+    requiredFields: ['stem', 'geometry_input'],
+  },
 ];
 
 // 根据题型列表动态生成 prompt 中的格式说明
@@ -146,6 +192,8 @@ ${typeExamples}
 - 只选用需要的题型，不必全部用上
 - tags 数组：第一个元素是科目标签，最后一个是细粒度知识点
 - difficulty: 1-5，默认 3
+- 几何题可以用 choice / blank / proof 承载；如果使用 geometry_input，发布前必须先运行 scripts/geometry-postprocess.py，把 geometry_input 转成 geometry
+- geometry_input 必须写 checks 校验题干里的关键几何事实（角度、垂直、共线、在线段上、等长等）
 - JSON 必须合法，不能有中文引号（""）、注释、trailing comma
 - 直接输出 JSON，不要包裹在 markdown code block 里`;
 }
