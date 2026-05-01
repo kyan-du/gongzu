@@ -21,6 +21,7 @@ const MemorySelect = lazy(() => import('./pages/MemorySelect'));
 const GridReasoning = lazy(() => import('./pages/GridReasoning'));
 const BalanceSort = lazy(() => import('./pages/BalanceSort'));
 const EquivSubstitution = lazy(() => import('./pages/EquivSubstitution'));
+const RiverCrossing = lazy(() => import('./pages/RiverCrossing'));
 
 function App() {
   return (
@@ -51,6 +52,7 @@ function App() {
         <Route path="/:userId/brain/reasoning" element={<GridReasoning />} />
         <Route path="/:userId/brain/balance" element={<BalanceSort />} />
         <Route path="/:userId/brain/equivalence" element={<EquivSubstitution />} />
+        <Route path="/:userId/brain/river" element={<RiverCrossing />} />
         {/* Legacy /memory redirects */}
         <Route path="/:userId/memory" element={<Navigate to="../brain" replace />} />
         <Route path="/:userId/memory/*" element={<Navigate to="../brain" replace />} />

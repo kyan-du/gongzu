@@ -172,6 +172,45 @@ export default function MemorySelect() {
             </div>
           </button>
 
+          {/* 过河游戏 */}
+          <button
+            onClick={() => navigate(`/${userId}/brain/river`)}
+            className="group relative bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden active:scale-[0.98] p-6"
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-cyan-50 to-sky-50 dark:from-cyan-900/10 dark:to-sky-900/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+
+            <div className="relative flex flex-col items-center">
+              <div className="w-16 h-16 mb-3 flex items-center justify-center bg-cyan-100 dark:bg-cyan-900/30 rounded-2xl group-hover:scale-110 transition-transform">
+                <span className="text-4xl">🚢</span>
+              </div>
+
+              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+                过河游戏
+              </h2>
+
+              <p className="text-sm text-gray-500 dark:text-gray-400 text-center mb-3">
+                开船搬运，避开危险组合
+              </p>
+
+              <div className="flex items-center gap-2 text-xs">
+                <span className="px-2 py-1 bg-cyan-100 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-400 rounded-full font-medium">
+                  步骤推理
+                </span>
+                <span className="px-2 py-1 bg-cyan-100 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-400 rounded-full font-medium">
+                  动态操作
+                </span>
+              </div>
+            </div>
+
+            <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="w-8 h-8 rounded-full bg-cyan-500 flex items-center justify-center">
+                <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </div>
+            </div>
+          </button>
+
           {/* 等量代换 */}
           <button
             onClick={() => navigate(`/${userId}/brain/equivalence`)}
