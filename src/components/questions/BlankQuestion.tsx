@@ -24,11 +24,12 @@ export default function BlankQuestion({ question, onAnswer, submitted, result, i
   const blanksData: Array<{ hint?: string; answer?: string }> = content.blanks || [];
 
   // Split stem into segments
-  // Detect format: stem with ___ vs blanks with before/after
-  const hasBlanksInStem = /_{3,}/.test(stem);
+  // Detect format: stem with ___, □ placeholder, or blanks with before/after.
+  // Ryan's mental math questions use "23 + 15 = □"; render □ as an input.
+  const hasBlanksInStem = /_{3,}|□/.test(stem);
   const hasBlanksBeforeAfter = blanksData.length > 0 && (blanksData[0] as any).before !== undefined;
 
-  const rawParts = hasBlanksInStem ? stem.split(/_{3,}/) : [stem];
+  const rawParts = hasBlanksInStem ? stem.split(/_{3,}|□/g) : [stem];
   const blankCount = hasBlanksBeforeAfter ? blanksData.length : rawParts.length - 1;
 
   const initials = (initialAnswer || '').split(/\s+/);

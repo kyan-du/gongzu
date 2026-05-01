@@ -7,16 +7,23 @@ interface TooltipState {
 }
 
 // Parse markup: {r:字|pīnyīn} {t:词|注释} {w:词|注释}
+function normalizeRubyHtml(text: string) {
+  // Some generated passages were stored as literal HTML-like ruby markup:
+  // <ruby>中<rt>zhōng</rt></ruby>. Convert it to our safe internal syntax.
+  return text.replace(/<ruby>(.*?)<rt>(.*?)<\/rt><\/ruby>/g, (_m, body, pinyin) => `{r:${body}|${pinyin}}`);
+}
+
 function parsePassage(text: string) {
+  const normalizedText = normalizeRubyHtml(text);
   const regex = /\{(r|t|w):([^|]+)\|([^}]+)\}/g;
   const parts: Array<{ type: 'text' | 'ruby' | 'tooltip' | 'word'; text: string; annotation?: string }> = [];
   let lastIndex = 0;
 
   let match;
-  while ((match = regex.exec(text)) !== null) {
+  while ((match = regex.exec(normalizedText)) !== null) {
     // Add plain text before this match
     if (match.index > lastIndex) {
-      parts.push({ type: 'text', text: text.slice(lastIndex, match.index) });
+      parts.push({ type: 'text', text: normalizedText.slice(lastIndex, match.index) });
     }
 
     const tag = match[1];
@@ -35,8 +42,8 @@ function parsePassage(text: string) {
   }
 
   // Add remaining text
-  if (lastIndex < text.length) {
-    parts.push({ type: 'text', text: text.slice(lastIndex) });
+  if (lastIndex < normalizedText.length) {
+    parts.push({ type: 'text', text: normalizedText.slice(lastIndex) });
   }
 
   return parts;

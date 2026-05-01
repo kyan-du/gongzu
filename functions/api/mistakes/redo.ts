@@ -100,12 +100,35 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       });
     }
 
-    // 3. 创建一个临时 quiz 结构，同时写入 daily_quizzes + questions 表
+    // 3. 创建一次独立的错题重做 quiz。
+    // Do not reuse original question IDs: a redo attempt must behave like a fresh quiz
+    // (blank answer state until submitted), not like the historical wrong-answer record.
     const quizId = crypto.randomUUID();
     const tag = '错题重做';
     const title = `错题重做 (${selectedQuestions.length}题)`;
+    const now = Math.floor(Date.now() / 1000);
 
-    const questionIds = selectedQuestions.map(q => q.id);
+    const clonedQuestions = selectedQuestions.map((q) => ({
+      ...q,
+      id: crypto.randomUUID(),
+      tags: Array.isArray(q.tags) ? Array.from(new Set(['错题重做', ...q.tags])) : ['错题重做'],
+    }));
+    const questionIds = clonedQuestions.map(q => q.id);
+
+    const insertQuestionStmts = clonedQuestions.map((q) => context.env.DB.prepare(
+      'INSERT INTO questions (id, type, content, answer, explanation, tags, difficulty, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
+    ).bind(
+      q.id,
+      q.type,
+      JSON.stringify(q.content),
+      JSON.stringify(q.answer),
+      q.explanation || null,
+      JSON.stringify(q.tags || [tag]),
+      q.difficulty || 3,
+      now
+    ));
+
+    await context.env.DB.batch(insertQuestionStmts);
 
     // Insert into daily_quizzes
     await context.env.DB.prepare(
@@ -117,7 +140,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       tag,
       title,
       JSON.stringify(questionIds),
-      Math.floor(Date.now() / 1000)
+      now
     ).run();
 
     // 4. 返回 quiz 结构
@@ -126,7 +149,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       tag,
       date,
       title,
-      questions: selectedQuestions,
+      questions: clonedQuestions,
     }), {
       headers: { 'Content-Type': 'application/json' },
     });

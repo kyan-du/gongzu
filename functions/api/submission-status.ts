@@ -13,10 +13,10 @@ function getCorrectAnswer(question: any): string {
     if (Array.isArray(qAnswer)) return qAnswer[0] || '';
     if (qAnswer.blanks?.length) {
       return qAnswer.blanks
-        .map((b: any) => String(b.accepts?.[0] ?? b.answer ?? ''))
+        .map((b: any) => typeof b === 'string' ? b : String(b.accepts?.[0] ?? b.answer ?? ''))
         .join('\n');
     }
-    return qAnswer.answers?.[0] || '';
+    return Array.isArray(qAnswer.answers) ? qAnswer.answers.join('\n') : (qAnswer.answers || '');
   }
 
   if (question.type === 'reading') {

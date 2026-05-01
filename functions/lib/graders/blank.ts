@@ -25,10 +25,10 @@ export function gradeBlank(qAnswer: any, qContent: any, userAnswer: string | und
     expectedAnswers = [qAnswer];
   } else if (Array.isArray(qAnswer)) {
     expectedAnswers = qAnswer;
+  } else if (Array.isArray(qAnswer.blanks) && qAnswer.blanks.length > 0) {
+    expectedAnswers = qAnswer.blanks.map((b: any) => typeof b === 'string' ? b : ((b.accepts || [])[0] || b.answer || ''));
   } else if (qAnswer.answers) {
     expectedAnswers = Array.isArray(qAnswer.answers) ? qAnswer.answers : [qAnswer.answers];
-  } else if (Array.isArray(qAnswer.blanks)) {
-    expectedAnswers = qAnswer.blanks.map((b: any) => (b.accepts || [])[0] || '');
   }
 
   // Accepted answers may live either in content.blanks (old format) or answer.blanks

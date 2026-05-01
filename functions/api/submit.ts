@@ -309,8 +309,10 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
             correctAnswer = qAnswer;
           } else if (Array.isArray(qAnswer)) {
             correctAnswer = qAnswer[0] || '';
+          } else if (Array.isArray(qAnswer.blanks) && qAnswer.blanks.length > 0) {
+            correctAnswer = qAnswer.blanks.map((b: any) => typeof b === 'string' ? b : ((b.accepts || [])[0] || b.answer || '')).join('\n');
           } else {
-            correctAnswer = qAnswer.answers?.[0] || '';
+            correctAnswer = Array.isArray(qAnswer.answers) ? qAnswer.answers.join('\n') : (qAnswer.answers || '');
           }
         } else if (question.type === 'reading') {
           correctAnswer = Array.isArray(qAnswer) ? qAnswer.join(',') : (qAnswer.answers || []).join(',');
