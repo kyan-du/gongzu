@@ -26,6 +26,11 @@ dist-ssr
 !.vscode/extensions.json
 .idea
 .DS_Store
+
+# Local scratch files / generated one-off quiz payloads
+# May contain production admin keys or student-specific data.
+tmp/
+
 *.suo
 *.ntvs*
 *.njsproj
