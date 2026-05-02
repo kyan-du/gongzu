@@ -50,7 +50,9 @@ async function judgeViaAiProxy(input: JudgeInput, apiKey: string): Promise<Judge
       'Authorization': `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      model: 'gpt-5.2',
+      // Keep this on a chat-completions-compatible model. GPT-5.x currently
+      // returns provider-side invalid_request_error on this AI Proxy route.
+      model: 'gpt-4o-mini',
       messages: [
         { role: 'system', content: SYSTEM_PROMPT },
         { role: 'user', content: buildUserPrompt(input) },

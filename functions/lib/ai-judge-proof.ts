@@ -74,7 +74,10 @@ export async function judgeProof(
       'Authorization': `Bearer ${env.AI_PROXY_KEY}`,
     },
     body: JSON.stringify({
-      model: 'gpt-5.2',
+      // The current AI Proxy chat-completions route does not accept GPT-5.x
+      // model names here and returns a provider-side 500/invalid_request_error.
+      // Use a vision-capable chat model for handwritten proof grading.
+      model: 'gpt-4o-mini',
       messages: [
         { role: 'system', content: SYSTEM_PROMPT },
         {
