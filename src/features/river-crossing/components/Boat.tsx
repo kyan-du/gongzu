@@ -20,7 +20,7 @@ export function Boat({ boatBank, boatItems, maxWeight, totalWeight, onBoardItem,
     <div onDragOver={(e) => e.preventDefault()} onDrop={onDrop} className={`absolute top-1/2 flex w-40 -translate-y-1/2 flex-col items-center rounded-[2rem] border-4 border-amber-700 bg-amber-200 p-3 shadow-xl transition-all duration-700 ease-in-out ${boatBank === 'left' ? 'left-2 sm:left-4' : 'left-[calc(100%-10.5rem)] sm:left-[calc(100%-11rem)]'}`}>
       <div className="text-4xl">🚢</div>
       <div className="mt-2 flex min-h-[72px] flex-wrap items-center justify-center gap-1">
-        {boatItems.length ? boatItems.map(item => <ItemButton key={item.id} item={item} onClick={() => onBoardItem(item.id)} draggable={false} selected />) : <span className="rounded-xl bg-white/70 px-3 py-2 text-xs font-medium text-amber-800">拖/点上船</span>}
+        {boatItems.length ? boatItems.map(item => <ItemButton key={item.id} item={item} onClick={() => onBoardItem(item.id)} draggable={false} selected />) : <span className="rounded-xl bg-white/70 px-3 py-2 text-xs font-medium text-amber-800">先点岸上角色</span>}
       </div>
       {maxWeight && <div className="mt-1 text-xs font-bold text-amber-900">{totalWeight}/{maxWeight}</div>}
     </div>

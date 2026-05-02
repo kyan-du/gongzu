@@ -20,6 +20,7 @@ export default function RiverCrossing() {
     rightItems,
     boatItems,
     totalWeight,
+    canSail,
     chooseLevel,
     reset,
     undo,
@@ -34,7 +35,7 @@ export default function RiverCrossing() {
     <div className="mb-3 rounded-3xl bg-white p-3 shadow-sm dark:bg-gray-800 sm:mb-4 sm:p-4"><h2 className="font-bold text-gray-900 dark:text-gray-100">{level.title}</h2><p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{level.subtitle}</p><p className="mt-1 text-xs text-gray-400 sm:mt-2">船容量：{level.capacity}；{level.maxWeight ? `最大承重：${level.maxWeight}；` : ''}{level.needsDriver ? '必须有会划船的人。' : '不限制驾驶员。'}</p></div>
     <StatusBar moves={moves} status={status} message={message} />
     <GameBoard boatBank={boatBank} leftItems={leftItems} rightItems={rightItems} boatItems={boatItems} maxWeight={level.maxWeight} totalWeight={totalWeight} onBoardItem={boardItem} onDrop={handleDrop} />
-    <div className="mt-5 mx-auto max-w-md"><button onClick={sail} disabled={status !== 'playing'} className="min-h-[56px] w-full rounded-2xl bg-blue-600 px-8 py-3 text-lg font-bold text-white shadow-sm transition active:scale-95 disabled:cursor-not-allowed disabled:bg-gray-400">开船</button></div>
+    <div className="mt-5 mx-auto max-w-md"><button onClick={sail} disabled={!canSail} className="min-h-[56px] w-full rounded-2xl bg-blue-600 px-8 py-3 text-lg font-bold text-white shadow-sm transition active:scale-95 disabled:cursor-not-allowed disabled:bg-gray-400">{boatItems.length ? '开船' : '空船返回'}</button></div>
     <MoveHistory history={history} items={level.items} onUndo={undo} onReset={reset} />
   </div></Layout>;
 }

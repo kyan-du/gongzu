@@ -92,10 +92,12 @@ export function useRiverGame() {
     if (level.items.some(item => item.id === id)) boardItem(id);
   };
 
+  const canSail = status === 'playing';
+
   const sail = () => {
     if (status !== 'playing') return;
-    if (passengers.length === 0) {
-      setMessage('至少放一个角色上船。');
+    if (passengers.length === 0 && level.needsDriver) {
+      setMessage('这关需要会划船的人在船上。');
       return;
     }
     if (level.needsDriver && !boatItems.some(i => i.canDrive)) {
@@ -123,7 +125,7 @@ export function useRiverGame() {
       setMessage(`第 ${levelIndex + 1} 关通过！`);
       return;
     }
-    setMessage(`船到了${nextBank === 'left' ? '左岸' : '右岸'}，下一步从这里出发。`);
+    setMessage(passengers.length ? `船到了${nextBank === 'left' ? '左岸' : '右岸'}，下一步从这里出发。` : `空船回到${nextBank === 'left' ? '左岸' : '右岸'}，可以继续接角色。`);
   };
 
   return {
@@ -141,6 +143,7 @@ export function useRiverGame() {
     rightItems,
     boatItems,
     totalWeight,
+    canSail,
     chooseLevel,
     reset,
     undo,
