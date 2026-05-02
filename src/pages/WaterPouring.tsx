@@ -1,4 +1,4 @@
-import { Droplets, RotateCcw, Undo2 } from 'lucide-react';
+import { Droplets, PartyPopper, RotateCcw, Undo2 } from 'lucide-react';
 import Layout from '../components/Layout';
 import { useParams } from 'react-router-dom';
 import { useWaterGame } from '../features/water-pouring/useWaterGame';
@@ -10,7 +10,26 @@ export default function WaterPouring() {
 
   return (
     <Layout userId={userId || ''} showBack backTo={`/${userId}/brain`} maxWidth="max-w-5xl">
-      <div className="py-4 space-y-4">
+      <div className="py-4 space-y-4 relative">
+        {game.status === 'won' && (
+          <div className="pointer-events-none fixed inset-0 z-50 overflow-hidden" aria-hidden="true">
+            <div className="absolute inset-0 bg-yellow-300/10 animate-pulse" />
+            {Array.from({ length: 28 }).map((_, index) => (
+              <span
+                key={index}
+                className="absolute top-[-10%] text-2xl animate-bounce"
+                style={{
+                  left: `${(index * 37) % 100}%`,
+                  animationDelay: `${(index % 7) * 0.12}s`,
+                  animationDuration: `${1.2 + (index % 5) * 0.18}s`,
+                }}
+              >
+                {['🎉', '✨', '🎊', '⭐', '💧'][index % 5]}
+              </span>
+            ))}
+          </div>
+        )}
+
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">杯子倒水</h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">装满、倒空、互倒，量出目标水量</p>
@@ -79,9 +98,21 @@ export default function WaterPouring() {
             })}
           </div>
 
+          {game.status === 'won' && (
+            <div className="mt-5 rounded-3xl border-4 border-yellow-300 bg-gradient-to-r from-yellow-100 via-orange-100 to-pink-100 dark:from-yellow-900/40 dark:via-orange-900/30 dark:to-pink-900/30 p-5 shadow-xl text-center animate-pulse">
+              <div className="flex items-center justify-center gap-2 text-3xl font-black text-orange-600 dark:text-orange-300">
+                <PartyPopper className="w-8 h-8" />
+                闯关成功！
+              </div>
+              <div className="mt-2 text-lg font-bold text-gray-800 dark:text-gray-100">
+                {game.message} 共用了 {game.history.length} 步。
+              </div>
+            </div>
+          )}
+
           <div className="mt-5 rounded-2xl bg-white dark:bg-gray-900 p-4 shadow-sm">
             <div className={`text-sm font-medium mb-3 ${game.status === 'won' ? 'text-green-600 dark:text-green-400' : 'text-gray-700 dark:text-gray-200'}`}>
-              {game.status === 'won' ? `🎉 ${game.message}` : game.message}
+              {game.status === 'won' ? '太棒了，可以换下一关继续挑战。' : game.message}
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <button disabled={!game.selected} onClick={game.fillSelected} className="rounded-xl bg-blue-600 disabled:bg-gray-300 disabled:text-gray-500 text-white py-3 font-bold active:scale-[0.98]">
