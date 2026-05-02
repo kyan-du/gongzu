@@ -1,0 +1,8 @@
+import type { JugId, WaterLevel, WaterLevelDef } from './types';
+export function initialWater(level: WaterLevelDef): WaterLevel { return Object.fromEntries(level.jugs.map(j => [j.id, 0])); }
+export function fill(level: WaterLevelDef, water: WaterLevel, jugId: JugId): WaterLevel { const jug = level.jugs.find(j => j.id === jugId); return jug ? { ...water, [jugId]: jug.capacity } : water; }
+export function empty(water: WaterLevel, jugId: JugId): WaterLevel { return { ...water, [jugId]: 0 }; }
+export function pour(level: WaterLevelDef, water: WaterLevel, fromId: JugId, toId: JugId): WaterLevel { if (fromId === toId) return water; const toJug = level.jugs.find(j => j.id === toId); if (!toJug) return water; const amount = Math.min(water[fromId] || 0, toJug.capacity - (water[toId] || 0)); return amount > 0 ? { ...water, [fromId]: water[fromId] - amount, [toId]: water[toId] + amount } : water; }
+export function isWon(level: WaterLevelDef, water: WaterLevel): boolean { return level.target.jugId ? water[level.target.jugId] === level.target.amount : level.jugs.some(j => water[j.id] === level.target.amount); }
+export function waterKey(level: WaterLevelDef, water: WaterLevel): string { return level.jugs.map(j => water[j.id] || 0).join(','); }
+export function moveLabel(level: WaterLevelDef, type: 'fill' | 'empty' | 'pour', fromId: JugId, toId?: JugId): string { const from = level.jugs.find(j => j.id === fromId)?.name || fromId; const to = toId ? level.jugs.find(j => j.id === toId)?.name || toId : ''; if (type === 'fill') return `装满${from}`; if (type === 'empty') return `倒空${from}`; return `${from}倒入${to}`; }
