@@ -43,10 +43,20 @@ const slugToTag: Record<string, string> = Object.fromEntries(
   Object.entries(tagToSlug).map(([k, v]) => [v, k])
 );
 
+function fallbackSlug(tag: string): string {
+  let hash = 5381;
+  for (const char of tag) {
+    hash = ((hash << 5) + hash) ^ char.codePointAt(0)!;
+  }
+  return `quiz-${(hash >>> 0).toString(36)}`;
+}
+
 export function getSlug(tag: string): string {
-  return tagToSlug[tag] || encodeURIComponent(tag);
+  const normalized = tag.trim();
+  return tagToSlug[normalized] || fallbackSlug(normalized);
 }
 
 export function getTag(slug: string): string {
+  // Keep decodeURIComponent fallback so old Chinese/percent-encoded links still open.
   return slugToTag[slug] || decodeURIComponent(slug);
 }
