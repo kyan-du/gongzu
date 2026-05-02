@@ -3,10 +3,13 @@
 ## URL / Route Rules
 
 - **Never put Chinese characters in URL paths, route slugs, filenames used in links, or shareable links.**
+- **Never send percent-encoded Chinese slugs** such as `/%E5%8F%A3...` in WeChat/Telegram notifications, cron outputs, scripts, docs examples, or UI links.
 - Every quiz tag that can appear in `/:userId/:date/:tag` must have an explicit ASCII slug in `src/lib/tags.ts`.
+- Generate quiz links through `getSlug(tag)` or the explicit mapping in `src/lib/tags.ts`; do not hand-roll link strings from raw Chinese tags.
 - Do not rely on `encodeURIComponent(tag)` for user-facing quiz links; add a stable English/kebab-case slug first.
 - When adding a new Chinese tag, update both directions through `tagToSlug`/`slugToTag` by adding it to `tagToSlug`.
-- Share links using ASCII slugs only, e.g. `/ryan/2026-04-30/chinese-pinyin`, not percent-encoded Chinese.
+- Share links using ASCII slugs only, e.g. `/ryan/2026-05-02/mental-math`, `/ryan/2026-05-02/patterns`, `/ryan/2026-05-02/word-problems`; never use percent-encoded Chinese.
+- Before committing link/notification changes, run `npm run check`; it includes `scripts/check-ascii-slugs.mjs` to catch Chinese/percent-encoded slug regressions.
 
 ## Data Safety
 
