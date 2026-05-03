@@ -50,21 +50,9 @@ function parsePassage(text: string) {
 }
 
 function renderPlainText(text: string, keyPrefix: string) {
-  // In pinyin exercises, unannotated Chinese characters are the target characters.
-  // Render them with a red verification box so young learners can spot what to answer.
-  return Array.from(text).map((ch, idx) => {
-    if (/^[\u4e00-\u9fff]$/.test(ch)) {
-      return (
-        <span
-          key={`${keyPrefix}-${idx}`}
-          className="text-red-600 dark:text-red-400 font-semibold"
-        >
-          {ch}
-        </span>
-      );
-    }
-    return <span key={`${keyPrefix}-${idx}`}>{ch}</span>;
-  });
+  // Render passage body text in the normal foreground color.
+  // Annotations (ruby/tooltip/word) keep their own styling below.
+  return Array.from(text).map((ch, idx) => <span key={`${keyPrefix}-${idx}`}>{ch}</span>);
 }
 
 export default function RichPassage({ passage }: { passage: string }) {
