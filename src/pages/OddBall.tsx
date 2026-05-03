@@ -1,3 +1,4 @@
+import type { DragEvent } from 'react';
 import { RotateCcw, Scale, SearchCheck } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 import Layout from '../components/Layout';
@@ -8,10 +9,17 @@ import { useOddBallGame } from '../features/odd-ball/useOddBallGame';
 const sideLabel: Record<PanSide, string> = { left: '放左盘', right: '放右盘', pool: '收回' };
 
 function BallButton({ ball, onClick, selected }: { ball: number; onClick: () => void; selected?: boolean }) {
+  const handleDragStart = (event: DragEvent<HTMLButtonElement>) => {
+    event.dataTransfer.setData('text/plain', String(ball));
+    event.dataTransfer.effectAllowed = 'move';
+  };
+
   return (
     <button
       onClick={onClick}
-      className={`aspect-square min-h-11 rounded-full border-2 font-black shadow-sm transition active:scale-95 ${selected ? 'border-purple-400 bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-100' : 'border-slate-200 bg-white text-slate-800 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100'}`}
+      draggable
+      onDragStart={handleDragStart}
+      className={`aspect-square min-h-11 rounded-full border-2 font-black shadow-sm transition active:scale-95 cursor-grab active:cursor-grabbing ${selected ? 'border-purple-400 bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-100' : 'border-slate-200 bg-white text-slate-800 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100'}`}
       aria-label={`${ball} 号球`}
     >
       {ball}
@@ -23,6 +31,17 @@ export default function OddBall() {
   const { userId } = useParams<{ userId: string }>();
   const game = useOddBallGame();
   const isLastLevel = game.levelIndex === game.levels.length - 1;
+
+  const handleDrop = (side: PanSide) => (event: DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    const ball = Number(event.dataTransfer.getData('text/plain'));
+    if (!Number.isNaN(ball)) game.placeBallOnSide(ball, side);
+  };
+
+  const allowDrop = (event: DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
+  };
 
   return (
     <Layout userId={userId || ''} showBack backTo={`/${userId}/brain`} maxWidth="max-w-5xl">
@@ -81,11 +100,16 @@ export default function OddBall() {
           </div>
 
           <div className="grid md:grid-cols-[1fr_auto_1fr] gap-4 items-stretch">
-            <div className="rounded-3xl bg-white dark:bg-gray-900 p-4 border-2 border-purple-100 dark:border-purple-900/40">
+            <div
+              onDragOver={allowDrop}
+              onDrop={handleDrop('left')}
+              className="rounded-3xl bg-white dark:bg-gray-900 p-4 border-2 border-dashed border-purple-200 dark:border-purple-800 hover:border-purple-400 dark:hover:border-purple-500 transition"
+            >
               <div className="text-center font-bold text-purple-700 dark:text-purple-300 mb-3">左盘</div>
               <div className="grid grid-cols-4 sm:grid-cols-5 gap-2 min-h-28">
                 {game.left.map(ball => <BallButton key={ball} ball={ball} onClick={() => game.placeBall(ball)} selected />)}
               </div>
+              <div className="text-center text-xs text-gray-400 dark:text-gray-500 mt-2">可拖球到这里</div>
             </div>
 
             <div className="flex flex-col items-center justify-center gap-3">
@@ -102,17 +126,27 @@ export default function OddBall() {
               <button onClick={game.resetCurrentWeigh} className="text-sm text-gray-500 dark:text-gray-400 underline">清空天平</button>
             </div>
 
-            <div className="rounded-3xl bg-white dark:bg-gray-900 p-4 border-2 border-indigo-100 dark:border-indigo-900/40">
+            <div
+              onDragOver={allowDrop}
+              onDrop={handleDrop('right')}
+              className="rounded-3xl bg-white dark:bg-gray-900 p-4 border-2 border-dashed border-indigo-200 dark:border-indigo-800 hover:border-indigo-400 dark:hover:border-indigo-500 transition"
+            >
               <div className="text-center font-bold text-indigo-700 dark:text-indigo-300 mb-3">右盘</div>
               <div className="grid grid-cols-4 sm:grid-cols-5 gap-2 min-h-28">
                 {game.right.map(ball => <BallButton key={ball} ball={ball} onClick={() => game.placeBall(ball)} selected />)}
               </div>
+              <div className="text-center text-xs text-gray-400 dark:text-gray-500 mt-2">可拖球到这里</div>
             </div>
           </div>
 
-          <div className="mt-4 rounded-3xl bg-white dark:bg-gray-900 p-4">
-            <div className="font-bold text-gray-900 dark:text-gray-100 mb-3">球池：点球后会执行“{sideLabel[game.activeSide]}”</div>
-            <div className="grid grid-cols-6 sm:grid-cols-9 md:grid-cols-12 gap-2">
+          <div
+            onDragOver={allowDrop}
+            onDrop={handleDrop('pool')}
+            className="mt-4 rounded-3xl bg-white dark:bg-gray-900 p-4 border-2 border-dashed border-transparent hover:border-gray-300 dark:hover:border-gray-700 transition"
+          >
+            <div className="font-bold text-gray-900 dark:text-gray-100 mb-1">球池：点球后会执行“{sideLabel[game.activeSide]}”</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400 mb-3">也可以按住球拖到左盘、右盘，或拖回球池。</div>
+            <div className="grid grid-cols-6 sm:grid-cols-9 md:grid-cols-12 gap-2 min-h-14">
               {game.pool.map(ball => <BallButton key={ball} ball={ball} onClick={() => game.placeBall(ball)} />)}
             </div>
           </div>

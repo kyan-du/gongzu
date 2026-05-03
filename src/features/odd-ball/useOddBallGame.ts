@@ -35,14 +35,16 @@ export function useOddBallGame() {
     clearPans();
   };
 
-  const placeBall = (ball: number) => {
+  const placeBallOnSide = (ball: number, side: PanSide) => {
     if (submitted) return;
     setLeft(current => current.filter(item => item !== ball));
     setRight(current => current.filter(item => item !== ball));
 
-    if (activeSide === 'left') setLeft(current => [...current, ball].sort((a, b) => a - b));
-    if (activeSide === 'right') setRight(current => [...current, ball].sort((a, b) => a - b));
+    if (side === 'left') setLeft(current => [...current, ball].sort((a, b) => a - b));
+    if (side === 'right') setRight(current => [...current, ball].sort((a, b) => a - b));
   };
+
+  const placeBall = (ball: number) => placeBallOnSide(ball, activeSide);
 
   const resetCurrentWeigh = () => clearPans();
 
@@ -85,6 +87,7 @@ export function useOddBallGame() {
     chooseLevel,
     setActiveSide,
     placeBall,
+    placeBallOnSide,
     resetCurrentWeigh,
     doWeigh,
     setSelectedAnswer,
