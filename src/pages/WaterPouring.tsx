@@ -73,7 +73,7 @@ export default function WaterPouring() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+          <div className="flex flex-nowrap gap-3 md:gap-4 items-end overflow-x-auto pb-2 -mx-1 px-1 snap-x">
             {game.level.jugs.map(jug => {
               const amount = game.water[jug.id] || 0;
               const percent = Math.round((amount / jug.capacity) * 100);
@@ -82,13 +82,13 @@ export default function WaterPouring() {
                 <button
                   key={jug.id}
                   onClick={() => game.selectJug(jug.id)}
-                  className={`relative rounded-3xl bg-white dark:bg-gray-900 p-4 border-2 transition active:scale-[0.99] ${active ? 'border-blue-500 shadow-lg ring-4 ring-blue-100 dark:ring-blue-900/40' : 'border-gray-100 dark:border-gray-700 hover:border-blue-200'}`}
+                  className={`relative shrink-0 w-[calc((100%-0.75rem)/2)] min-w-[136px] md:w-auto md:flex-1 rounded-3xl bg-white dark:bg-gray-900 p-3 md:p-4 border-2 transition active:scale-[0.99] snap-start ${active ? 'border-blue-500 shadow-lg ring-4 ring-blue-100 dark:ring-blue-900/40' : 'border-gray-100 dark:border-gray-700 hover:border-blue-200'}`}
                 >
-                  <div className="h-48 rounded-2xl border-4 border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 overflow-hidden flex items-end relative">
+                  <div className="h-44 md:h-48 rounded-2xl border-4 border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 overflow-hidden flex items-end relative">
                     <div className="absolute inset-x-0 top-3 z-10 text-center font-bold text-gray-700 dark:text-gray-200">{jug.name}</div>
                     <div className={`w-full bg-gradient-to-t ${jug.color} transition-all duration-500`} style={{ height: `${percent}%` }} />
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="rounded-full bg-white/85 dark:bg-gray-950/80 px-4 py-2 text-2xl font-black text-gray-900 dark:text-gray-100 shadow">
+                      <span className="rounded-full bg-white/85 dark:bg-gray-950/80 px-3 md:px-4 py-2 text-xl md:text-2xl font-black text-gray-900 dark:text-gray-100 shadow">
                         {amount} / {jug.capacity}L
                       </span>
                     </div>
