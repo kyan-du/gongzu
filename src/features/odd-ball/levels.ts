@@ -1,0 +1,58 @@
+import type { OddBallLevel } from './types';
+
+export const ODD_BALL_LEVELS: OddBallLevel[] = [
+  {
+    id: 'three-start',
+    title: '1 三球入门',
+    subtitle: '三个球里有一个重球，一次称重就能破案。',
+    ballCount: 3,
+    maxWeighs: 1,
+    mode: 'find-heavy',
+    strategyHint: '称 1 个对 1 个：如果平衡，剩下那个就是重球。',
+  },
+  {
+    id: 'four-try',
+    title: '2 四球试探',
+    subtitle: '多一个球，先把范围缩小，再做确认。',
+    ballCount: 4,
+    maxWeighs: 2,
+    mode: 'find-heavy',
+    strategyHint: '先称 2 对 2 或 1 对 1，把嫌疑球缩小到一边。',
+  },
+  {
+    id: 'eight-split',
+    title: '3 八球二分',
+    subtitle: '八个球里找重球，练习分组排除。',
+    ballCount: 8,
+    maxWeighs: 2,
+    mode: 'find-heavy',
+    strategyHint: '可以先称 3 对 3，平衡就查剩下两个，不平衡就查重的一边。',
+  },
+  {
+    id: 'nine-thirds',
+    title: '4 九球三分',
+    subtitle: '经典三分：每次把可能性切成三份。',
+    ballCount: 9,
+    maxWeighs: 2,
+    mode: 'find-heavy',
+    strategyHint: '先 3 对 3：平衡查剩下 3 个，不平衡查重的一边 3 个。',
+  },
+  {
+    id: 'twelve-filter',
+    title: '5 十二球排除',
+    subtitle: '球更多了，称重记录会帮你保存线索。',
+    ballCount: 12,
+    maxWeighs: 3,
+    mode: 'find-heavy',
+    strategyHint: '先 4 对 4，把范围缩小到 4 个；再继续分组。',
+  },
+  {
+    id: 'twenty-seven-challenge',
+    title: '6 二十七球挑战',
+    subtitle: '真正的信息量挑战：三次称重找出重球。',
+    ballCount: 27,
+    maxWeighs: 3,
+    mode: 'find-heavy',
+    strategyHint: '每次尽量三等分：9 对 9，再 3 对 3，最后 1 对 1。',
+  },
+];

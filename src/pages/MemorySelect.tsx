@@ -290,6 +290,45 @@ export default function MemorySelect() {
             </div>
           </button>
 
+          {/* 天平侦探 */}
+          <button
+            onClick={() => navigate(`/${userId}/brain/odd-ball`)}
+            className="group relative bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden active:scale-[0.98] p-6"
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-900/10 dark:to-indigo-900/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+
+            <div className="relative flex flex-col items-center">
+              <div className="w-16 h-16 mb-3 flex items-center justify-center bg-purple-100 dark:bg-purple-900/30 rounded-2xl group-hover:scale-110 transition-transform">
+                <span className="text-4xl">🕵️</span>
+              </div>
+
+              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+                天平侦探
+              </h2>
+
+              <p className="text-sm text-gray-500 dark:text-gray-400 text-center mb-3">
+                用天平称重，找出异常重球
+              </p>
+
+              <div className="flex items-center gap-2 text-xs">
+                <span className="px-2 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 rounded-full font-medium">
+                  信息量
+                </span>
+                <span className="px-2 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 rounded-full font-medium">
+                  三分思维
+                </span>
+              </div>
+            </div>
+
+            <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center">
+                <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </div>
+            </div>
+          </button>
+
           {/* 等量代换 */}
           <button
             onClick={() => navigate(`/${userId}/brain/equivalence`)}

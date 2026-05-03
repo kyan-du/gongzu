@@ -24,6 +24,7 @@ const EquivSubstitution = lazy(() => import('./pages/EquivSubstitution'));
 const RiverCrossing = lazy(() => import('./pages/RiverCrossing'));
 const WaterPouring = lazy(() => import('./pages/WaterPouring'));
 const LightsOut = lazy(() => import('./pages/LightsOut'));
+const OddBall = lazy(() => import('./pages/OddBall'));
 
 function App() {
   return (
@@ -57,6 +58,7 @@ function App() {
         <Route path="/:userId/brain/river" element={<RiverCrossing />} />
         <Route path="/:userId/brain/water" element={<WaterPouring />} />
         <Route path="/:userId/brain/lights" element={<LightsOut />} />
+        <Route path="/:userId/brain/odd-ball" element={<OddBall />} />
         {/* Legacy /memory redirects */}
         <Route path="/:userId/memory" element={<Navigate to="../brain" replace />} />
         <Route path="/:userId/memory/*" element={<Navigate to="../brain" replace />} />
