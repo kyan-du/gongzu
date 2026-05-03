@@ -7,6 +7,7 @@ export default function LightsOut() {
   const { userId } = useParams<{ userId: string }>();
   const game = useLightsOutGame();
   const litCount = game.board.filter(Boolean).length;
+  const isLastLevel = game.levelIndex === game.levels.length - 1;
 
   return (
     <Layout userId={userId || ''} showBack backTo={`/${userId}/brain`} maxWidth="max-w-4xl">
@@ -106,7 +107,11 @@ export default function LightsOut() {
 
           <div className="mt-5 rounded-2xl bg-white dark:bg-gray-900 p-4 shadow-sm">
             <div className={`text-sm font-medium mb-3 ${game.solved ? 'text-green-600 dark:text-green-400' : 'text-gray-700 dark:text-gray-200'}`}>
-              {game.solved ? '太棒了，可以换下一关。' : `还亮着 ${litCount} 盏灯。点击一个灯泡，会同时切换上下左右。`}
+              {game.solved
+                ? isLastLevel
+                  ? '太棒了，灯泡开关全部通关！'
+                  : '太棒了，可以换下一关。'
+                : `还亮着 ${litCount} 盏灯。点击一个灯泡，会同时切换上下左右。`}
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <div className="rounded-xl bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200 py-3 font-bold text-center">
