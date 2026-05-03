@@ -7,7 +7,7 @@ import { resultHint, resultText } from '../features/odd-ball/engine';
 import type { PanSide } from '../features/odd-ball/types';
 import { useOddBallGame } from '../features/odd-ball/useOddBallGame';
 
-const sideLabel: Record<PanSide, string> = { left: '放左盘', right: '放右盘', pool: '收回' };
+const sideLabel: Record<PanSide, string> = { left: '放左盘', right: '放右盘', pool: '收回单球' };
 
 type DragState = {
   ball: number;
@@ -136,15 +136,24 @@ export default function OddBall() {
           </div>
 
           <div className="grid grid-cols-3 gap-2 mb-4">
-            {(['left', 'right', 'pool'] as PanSide[]).map(side => (
-              <button
-                key={side}
-                onClick={() => game.setActiveSide(side)}
-                className={`rounded-2xl py-3 font-bold transition active:scale-[0.98] ${game.activeSide === side ? 'bg-purple-600 text-white shadow' : 'bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200'}`}
-              >
-                {sideLabel[side]}
-              </button>
-            ))}
+            <button
+              onClick={() => game.setActiveSide('left')}
+              className={`rounded-2xl py-3 font-bold transition active:scale-[0.98] ${game.activeSide === 'left' ? 'bg-purple-600 text-white shadow' : 'bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200'}`}
+            >
+              放左盘
+            </button>
+            <button
+              onClick={() => game.setActiveSide('right')}
+              className={`rounded-2xl py-3 font-bold transition active:scale-[0.98] ${game.activeSide === 'right' ? 'bg-purple-600 text-white shadow' : 'bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200'}`}
+            >
+              放右盘
+            </button>
+            <button
+              onClick={game.resetCurrentWeigh}
+              className="rounded-2xl py-3 font-bold transition active:scale-[0.98] bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200"
+            >
+              全部收回
+            </button>
           </div>
 
           <div className="grid grid-cols-[1fr_auto_1fr] gap-2 sm:gap-4 items-stretch">
@@ -170,7 +179,7 @@ export default function OddBall() {
               >
                 称一下
               </button>
-              <button onClick={game.resetCurrentWeigh} className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 underline whitespace-nowrap">清空</button>
+              <button onClick={game.resetCurrentWeigh} className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 underline whitespace-nowrap">全部收回</button>
             </div>
 
             <div
@@ -190,7 +199,7 @@ export default function OddBall() {
             className={`mt-4 rounded-3xl bg-white dark:bg-gray-900 p-4 border-2 border-dashed border-transparent transition ${dropClass('pool')}`}
           >
             <div className="font-bold text-gray-900 dark:text-gray-100 mb-1">球池：点球后会执行“{sideLabel[game.activeSide]}”</div>
-            <div className="text-xs text-gray-500 dark:text-gray-400 mb-3">手机上按住球移动，松手放到左盘、右盘，或拖回球池。</div>
+            <div className="text-xs text-gray-500 dark:text-gray-400 mb-3">“全部收回”会把左右盘的球都放回球池；也可以按住单个球拖回球池。</div>
             <div className="grid grid-cols-6 sm:grid-cols-9 md:grid-cols-12 gap-2 min-h-14">
               {game.pool.map(ball => <BallButton key={ball} ball={ball} onClick={() => game.placeBall(ball)} {...ballProps} />)}
             </div>
