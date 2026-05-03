@@ -36,22 +36,35 @@ export function boardKey(board: boolean[]): string {
 
 export function findOptimalMoves(level: LightsOutLevel): number {
   if (isSolved(level.start)) return 0;
-  const queue: Array<{ board: boolean[]; moves: number }> = [{ board: level.start, moves: 0 }];
-  const seen = new Set([boardKey(level.start)]);
 
-  while (queue.length) {
-    const current = queue.shift();
-    if (!current) break;
+  let best = Number.POSITIVE_INFINITY;
+  const size = level.size;
 
-    for (let index = 0; index < current.board.length; index += 1) {
-      const next = toggleCell(current.board, level.size, index);
-      const key = boardKey(next);
-      if (seen.has(key)) continue;
-      if (isSolved(next)) return current.moves + 1;
-      seen.add(key);
-      queue.push({ board: next, moves: current.moves + 1 });
+  for (let firstRowMask = 0; firstRowMask < 2 ** size; firstRowMask += 1) {
+    let board = [...level.start];
+    let moves = 0;
+
+    for (let col = 0; col < size; col += 1) {
+      if ((firstRowMask & (1 << col)) !== 0) {
+        board = toggleCell(board, size, col);
+        moves += 1;
+      }
+    }
+
+    for (let row = 1; row < size; row += 1) {
+      for (let col = 0; col < size; col += 1) {
+        const above = (row - 1) * size + col;
+        if (board[above]) {
+          board = toggleCell(board, size, row * size + col);
+          moves += 1;
+        }
+      }
+    }
+
+    if (isSolved(board)) {
+      best = Math.min(best, moves);
     }
   }
 
-  return -1;
+  return Number.isFinite(best) ? best : -1;
 }
