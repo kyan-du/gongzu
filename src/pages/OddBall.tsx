@@ -147,41 +147,41 @@ export default function OddBall() {
             ))}
           </div>
 
-          <div className="grid md:grid-cols-[1fr_auto_1fr] gap-4 items-stretch">
+          <div className="grid grid-cols-[1fr_auto_1fr] gap-2 sm:gap-4 items-stretch">
             <div
               data-drop-side="left"
-              className={`rounded-3xl bg-white dark:bg-gray-900 p-4 border-2 border-dashed border-purple-200 dark:border-purple-800 transition ${dropClass('left')}`}
+              className={`rounded-3xl bg-white dark:bg-gray-900 p-2 sm:p-4 border-2 border-dashed border-purple-200 dark:border-purple-800 transition ${dropClass('left')}`}
             >
-              <div className="text-center font-bold text-purple-700 dark:text-purple-300 mb-3">左盘</div>
-              <div className="grid grid-cols-4 sm:grid-cols-5 gap-2 min-h-28">
+              <div className="text-center font-bold text-purple-700 dark:text-purple-300 mb-2 sm:mb-3">左盘</div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-2 min-h-32 sm:min-h-28 content-start">
                 {game.left.map(ball => <BallButton key={ball} ball={ball} onClick={() => game.placeBall(ball)} selected {...ballProps} />)}
               </div>
-              <div className="text-center text-xs text-gray-400 dark:text-gray-500 mt-2">拖球到这里，或点球按当前模式放置</div>
+              <div className="text-center text-[10px] sm:text-xs text-gray-400 dark:text-gray-500 mt-2">拖到这里</div>
             </div>
 
-            <div className="flex flex-col items-center justify-center gap-3">
-              <div className="w-20 h-20 rounded-full bg-purple-600 text-white flex items-center justify-center shadow-lg">
-                <Scale className="w-10 h-10" />
+            <div className="flex flex-col items-center justify-center gap-2 sm:gap-3 min-w-16 sm:min-w-24">
+              <div className="w-14 h-14 sm:w-20 sm:h-20 rounded-full bg-purple-600 text-white flex items-center justify-center shadow-lg">
+                <Scale className="w-7 h-7 sm:w-10 sm:h-10" />
               </div>
               <button
                 onClick={game.doWeigh}
                 disabled={!game.canWeigh}
-                className="rounded-2xl bg-purple-600 disabled:bg-gray-300 dark:disabled:bg-gray-700 text-white px-6 py-3 font-black shadow active:scale-[0.98]"
+                className="rounded-2xl bg-purple-600 disabled:bg-gray-300 dark:disabled:bg-gray-700 text-white px-3 sm:px-6 py-2 sm:py-3 text-sm sm:text-base font-black shadow active:scale-[0.98] whitespace-nowrap"
               >
                 称一下
               </button>
-              <button onClick={game.resetCurrentWeigh} className="text-sm text-gray-500 dark:text-gray-400 underline">清空天平</button>
+              <button onClick={game.resetCurrentWeigh} className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 underline whitespace-nowrap">清空</button>
             </div>
 
             <div
               data-drop-side="right"
-              className={`rounded-3xl bg-white dark:bg-gray-900 p-4 border-2 border-dashed border-indigo-200 dark:border-indigo-800 transition ${dropClass('right')}`}
+              className={`rounded-3xl bg-white dark:bg-gray-900 p-2 sm:p-4 border-2 border-dashed border-indigo-200 dark:border-indigo-800 transition ${dropClass('right')}`}
             >
-              <div className="text-center font-bold text-indigo-700 dark:text-indigo-300 mb-3">右盘</div>
-              <div className="grid grid-cols-4 sm:grid-cols-5 gap-2 min-h-28">
+              <div className="text-center font-bold text-indigo-700 dark:text-indigo-300 mb-2 sm:mb-3">右盘</div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-2 min-h-32 sm:min-h-28 content-start">
                 {game.right.map(ball => <BallButton key={ball} ball={ball} onClick={() => game.placeBall(ball)} selected {...ballProps} />)}
               </div>
-              <div className="text-center text-xs text-gray-400 dark:text-gray-500 mt-2">拖球到这里，或点球按当前模式放置</div>
+              <div className="text-center text-[10px] sm:text-xs text-gray-400 dark:text-gray-500 mt-2">拖到这里</div>
             </div>
           </div>
 
