@@ -29,6 +29,7 @@ const KenKen = lazy(() => import('./pages/KenKen'));
 const Futoshiki = lazy(() => import('./pages/Futoshiki'));
 const Skyscrapers = lazy(() => import('./pages/Skyscrapers'));
 const Kakuro = lazy(() => import('./pages/Kakuro'));
+const KillerSudoku = lazy(() => import('./pages/KillerSudoku'));
 
 function App() {
   return (
@@ -67,6 +68,7 @@ function App() {
         <Route path="/:userId/brain/futoshiki" element={<Futoshiki />} />
         <Route path="/:userId/brain/skyscrapers" element={<Skyscrapers />} />
         <Route path="/:userId/brain/kakuro" element={<Kakuro />} />
+        <Route path="/:userId/brain/killer-sudoku" element={<KillerSudoku />} />
         {/* Legacy /memory redirects */}
         <Route path="/:userId/memory" element={<Navigate to="../brain" replace />} />
         <Route path="/:userId/memory/*" element={<Navigate to="../brain" replace />} />
