@@ -231,26 +231,34 @@ export default function GeometryFigure({ geometry, height = 280 }: Props) {
         : 90;
       const arcRadius = angleDeg < 50 ? 1.2 : angleDeg < 90 ? 0.9 : 0.7;
 
-      // Draw arc only, no built-in label
-      board.create('angle', [pF, pV, pT], {
-        radius: arcRadius,
+      // Draw the smaller angle arc manually. JSXGraph's built-in angle can choose
+      // the reflex/exterior side when three points are almost collinear on a side,
+      // which makes arcs appear outside the intended angle.
+      const start = Math.atan2(vf[1], vf[0]);
+      const end = Math.atan2(vt_vec[1], vt_vec[0]);
+      let delta = end - start;
+      while (delta <= -Math.PI) delta += Math.PI * 2;
+      while (delta > Math.PI) delta -= Math.PI * 2;
+
+      const steps = 24;
+      const arcXs: number[] = [];
+      const arcYs: number[] = [];
+      for (let i = 0; i <= steps; i += 1) {
+        const a = start + (delta * i) / steps;
+        arcXs.push(v[0] + Math.cos(a) * arcRadius);
+        arcYs.push(v[1] + Math.sin(a) * arcRadius);
+      }
+      board.create('curve', [arcXs, arcYs], {
         strokeColor: ANGLE_COLOR,
-        fillColor: 'transparent',
         strokeWidth: 1.5,
-        name: '',
-        withLabel: false,
-        orthoType: 'square',
-        orthoSensitivity: 0.5,
+        fixed: true,
       });
 
-      // Place text along the angle bisector, just outside the arc
-      const uVF = m1 > 0 ? [vf[0] / m1, vf[1] / m1] : [0, 1];
-      const uVT = m2 > 0 ? [vt_vec[0] / m2, vt_vec[1] / m2] : [1, 0];
-      const bisector = [uVF[0] + uVT[0], uVF[1] + uVT[1]];
-      const bisLen = Math.sqrt(bisector[0] ** 2 + bisector[1] ** 2) || 1;
+      // Place text along the smaller-angle bisector, just outside the arc.
+      const mid = start + delta / 2;
       const textDist = arcRadius + 0.3;
-      const tx = v[0] + bisector[0] / bisLen * textDist;
-      const ty = v[1] + bisector[1] / bisLen * textDist;
+      const tx = v[0] + Math.cos(mid) * textDist;
+      const ty = v[1] + Math.sin(mid) * textDist;
 
       board.create('text', [tx, ty, al.text || ''], {
         fontSize: 12,
