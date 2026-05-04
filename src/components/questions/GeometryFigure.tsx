@@ -49,7 +49,10 @@ export default function GeometryFigure({ geometry, height = 280 }: Props) {
     boardRef.current = board;
 
     const DEFAULT_COLOR = '#2563eb';
-    const LABEL_COLOR = '#1e293b';
+    // Keep geometry labels readable in both light and dark mode: the JSXGraph
+    // canvas inherits the surrounding dark background, so dark slate labels can
+    // disappear at night. Use near-black on an explicit white canvas instead.
+    const LABEL_COLOR = '#0f172a';
 
     const drawSideLabel = (from: string, to: string, text?: string, offset = 0.35, color = LABEL_COLOR) => {
       if (!text) return;
@@ -281,7 +284,7 @@ export default function GeometryFigure({ geometry, height = 280 }: Props) {
     <div
       ref={containerRef}
       id={`geo_${id}`}
-      className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-hidden"
+      className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white overflow-hidden"
       style={{ width: '100%', height }}
     />
   );
