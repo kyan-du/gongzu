@@ -2,6 +2,7 @@ import type { KakuroCell, KakuroPuzzle, KakuroRun } from './types';
 
 const B = (right?: number, down?: number): KakuroCell => ({ kind: 'block', clue: { right, down } });
 const P = (): KakuroCell => ({ kind: 'play' });
+
 const makeRuns = (cells: KakuroCell[][]) => {
   const acrossRuns: KakuroRun[] = [];
   const downRuns: KakuroRun[] = [];
@@ -21,11 +22,96 @@ const makeRuns = (cells: KakuroCell[][]) => {
   }
   return { acrossRuns, downRuns };
 };
-const makePuzzle = (id: string, title: string, cells: KakuroCell[][], solution: (number | null)[][]): KakuroPuzzle => ({ id, title, rows: cells.length, cols: cells[0].length, cells, solution, ...makeRuns(cells) });
+
+const makePuzzle = (id: string, title: string, cells: KakuroCell[][], solution: (number | null)[][]): KakuroPuzzle => ({
+  id,
+  title,
+  rows: cells.length,
+  cols: cells[0].length,
+  cells,
+  solution,
+  ...makeRuns(cells),
+});
+
+function rectanglePuzzle(id: string, title: string, answer: number[][]): KakuroPuzzle {
+  const cols = answer[0].length;
+  const colSums = Array.from({ length: cols }, (_, c) => answer.reduce((sum, row) => sum + row[c], 0));
+  const rowSums = answer.map(row => row.reduce((sum, n) => sum + n, 0));
+  const cells: KakuroCell[][] = [
+    [B(), ...colSums.map(sum => B(undefined, sum))],
+    ...answer.map((_, r) => [B(rowSums[r]), ...Array.from({ length: cols }, () => P())]),
+  ];
+  const solution: (number | null)[][] = [
+    Array(cols + 1).fill(null),
+    ...answer.map(row => [null, ...row]),
+  ];
+  return makePuzzle(id, title, cells, solution);
+}
 
 export const KAKURO_LEVELS: KakuroPuzzle[] = [
-  makePuzzle('kakuro1', '入门：两格求和', [[B(),B(undefined,4),B(undefined,6),B()],[B(3),P(),P(),B()],[B(7),P(),P(),B()],[B(),B(),B(),B()]], [[null,null,null,null],[null,1,2,null],[null,3,4,null],[null,null,null,null]]),
-  makePuzzle('kakuro2', '进阶：三格组合', [[B(),B(undefined,5),B(undefined,7),B(undefined,9),B()],[B(6),P(),P(),P(),B()],[B(15),P(),P(),P(),B()],[B(),B(),B(),B(),B()]], [[null,null,null,null,null],[null,1,2,3,null],[null,4,5,6,null],[null,null,null,null,null]]),
-  makePuzzle('kakuro3', '交叉：横竖互锁', [[B(),B(undefined,7),B(undefined,9),B(undefined,11),B()],[B(9),P(),P(),P(),B()],[B(18),P(),P(),P(),B()],[B(),B(),B(),B(),B()]], [[null,null,null,null,null],[null,2,3,4,null],[null,5,6,7,null],[null,null,null,null,null]]),
-  makePuzzle('kakuro4', '综合：多段求和', [[B(),B(undefined,9),B(undefined,11),B(undefined,13),B()],[B(12),P(),P(),P(),B()],[B(21),P(),P(),P(),B()],[B(),B(),B(),B(),B()]], [[null,null,null,null,null],[null,3,4,5,null],[null,6,7,8,null],[null,null,null,null,null]]),
+  rectanglePuzzle('kakuro1', '1 三格起步', [
+    [1, 2, 4],
+    [2, 4, 3],
+    [4, 3, 1],
+  ]),
+  rectanglePuzzle('kakuro2', '2 四格横竖', [
+    [1, 3, 4, 2],
+    [2, 4, 1, 3],
+    [3, 1, 2, 4],
+  ]),
+  rectanglePuzzle('kakuro3', '3 交叉加深', [
+    [2, 5, 1, 4],
+    [3, 1, 4, 5],
+    [5, 4, 2, 1],
+    [1, 2, 5, 3],
+  ]),
+  rectanglePuzzle('kakuro4', '4 大和数训练', [
+    [6, 1, 5, 2],
+    [2, 6, 3, 5],
+    [5, 3, 2, 6],
+    [1, 5, 6, 3],
+  ]),
+  rectanglePuzzle('kakuro5', '5 五列迷阵', [
+    [1, 4, 6, 2, 5],
+    [3, 6, 2, 5, 1],
+    [6, 2, 5, 1, 4],
+    [2, 5, 1, 4, 6],
+  ]),
+  rectanglePuzzle('kakuro6', '6 五行推进', [
+    [7, 1, 4, 6, 2],
+    [2, 7, 6, 1, 4],
+    [4, 6, 2, 7, 1],
+    [1, 4, 7, 2, 6],
+    [6, 2, 1, 4, 7],
+  ]),
+  rectanglePuzzle('kakuro7', '7 高位数字', [
+    [8, 2, 5, 7, 1],
+    [3, 8, 7, 1, 5],
+    [5, 7, 1, 3, 8],
+    [7, 1, 8, 5, 3],
+    [1, 5, 3, 8, 7],
+  ]),
+  rectanglePuzzle('kakuro8', '8 六列挑战', [
+    [1, 4, 7, 2, 6, 8],
+    [2, 6, 8, 1, 4, 7],
+    [4, 7, 1, 6, 8, 2],
+    [6, 8, 2, 4, 7, 1],
+    [8, 1, 4, 7, 2, 6],
+  ]),
+  rectanglePuzzle('kakuro9', '9 六行六列', [
+    [9, 1, 5, 8, 2, 6],
+    [1, 5, 8, 2, 6, 9],
+    [5, 8, 2, 6, 9, 1],
+    [8, 2, 6, 9, 1, 5],
+    [2, 6, 9, 1, 5, 8],
+    [6, 9, 1, 5, 8, 2],
+  ]),
+  rectanglePuzzle('kakuro10', '10 终极十关', [
+    [3, 7, 9, 1, 5, 8],
+    [8, 3, 1, 5, 9, 7],
+    [7, 9, 5, 8, 1, 3],
+    [1, 5, 8, 7, 3, 9],
+    [5, 8, 3, 9, 7, 1],
+    [9, 1, 7, 3, 8, 5],
+  ]),
 ];
